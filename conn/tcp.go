@@ -1,0 +1,55 @@
+package conn
+
+import (
+	"context"
+	"github.com/Dreamacro/clash/component/dialer"
+	"github.com/Dreamacro/clash/constant"
+	C "github.com/Dreamacro/clash/constant"
+	"github.com/gofrs/uuid"
+	"github.com/igoogolx/itun2socks/constants"
+	"github.com/igoogolx/itun2socks/global"
+	"net"
+	"sync"
+)
+
+type TcpConnContext struct {
+	Wg       *sync.WaitGroup
+	id       uuid.UUID
+	metadata *constant.Metadata
+	conn     net.Conn
+	Rule     constants.IpRule
+	Ctx      context.Context
+}
+
+func (t *TcpConnContext) ID() uuid.UUID {
+	return t.id
+}
+
+func (t *TcpConnContext) Metadata() *constant.Metadata {
+	return t.metadata
+}
+
+func (t *TcpConnContext) Conn() net.Conn {
+	return t.conn
+}
+
+func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *constant.Metadata, wg *sync.WaitGroup) *TcpConnContext {
+	id, _ := uuid.NewV4()
+	rule := global.GetMatcher().GetRule(metadata.DstIP.String())
+	return &TcpConnContext{
+		wg,
+		id,
+		metadata,
+		conn,
+		rule,
+		ctx,
+	}
+
+}
+
+func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule constants.IpRule, defaultInterface string) (net.Conn, error) {
+	if rule == constants.DistributionBypass {
+		return dialer.DialContext(ctx, "tcp", metadata.RemoteAddress(), dialer.WithInterface(defaultInterface))
+	}
+	return getProxy().DialContext(ctx, metadata, dialer.WithInterface(defaultInterface))
+}
