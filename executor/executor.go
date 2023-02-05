@@ -37,7 +37,7 @@ func New() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	stack, err := sTun.NewStack("lwip", sTun.StackOptions{
+	stack, err := sTun.NewStack("gvisor", sTun.StackOptions{
 		Context:    context.TODO(),
 		Handler:    proxy_handler.New(),
 		Tun:        tun,
