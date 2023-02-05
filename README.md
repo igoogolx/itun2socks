@@ -14,14 +14,14 @@
 <h3 align="center">Itun2socks</h3>
   <p align="center">
     <br />
-    <a href="https://github.com/igoogolx/lux/wiki"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/igoogolx/itun2socks/wiki"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://igoogolx.github.io/lux-dashboard/">View Demo</a>
     .
-    <a href="https://github.com/igoogolx/lux/issues">Report Bug</a>
+    <a href="https://github.com/igoogolx/itun2socks/issues">Report Bug</a>
     ·
-    <a href="https://github.com/igoogolx/lux/issues">Request Feature</a>
+    <a href="https://github.com/igoogolx/itun2socks/issues">Request Feature</a>
   </p>
 </div>
 
