@@ -48,6 +48,7 @@ jobs:
       - name: GH Release
         uses: softprops/action-gh-release@v1
         with:
+          repository: igoogolx/itun2socks
           draft: true
           files: |
             itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe
