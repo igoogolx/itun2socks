@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/cfg"
@@ -44,6 +45,8 @@ func (d Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	if *d.written {
 		return 0, io.EOF
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	start := time.Now()
 	dnsMessage := new(D.Msg)
 	err := dnsMessage.Unpack(data)
@@ -59,7 +62,7 @@ func (d Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 		return 0, fmt.Errorf("invalid dns question, err: %v", err)
 	}
 	dnsClient := getMatcher().GetDns(question, strings.Contains(question, d.proxyAddr))
-	res, err := dnsClient.Exchange(dnsMessage)
+	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return 0, fmt.Errorf("fail to exchage dns message, err: %v, quesion: %v, proxy addr: %v, server: %v", err, question, d.proxyAddr, dnsClient.Nameservers())
 	}
