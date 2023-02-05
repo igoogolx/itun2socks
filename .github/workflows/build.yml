@@ -25,14 +25,14 @@ jobs:
         shell: bash
         if: matrix.os == 'windows-latest'
         run: |
-          go build -o lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_lwip" main.go
-          sha256sum lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe > lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
+          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_lwip" main.go
+          sha256sum itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe > itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
 
       - name: Build for macos-latest
         if: matrix.os == 'macos-latest'
         run: |
-          go build -o lux-core-${{ matrix.os }}-${{ github.ref_name }} -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_lwip" main.go
-          shasum -a 256 lux-core-${{ matrix.os }}-${{ github.ref_name }} > lux-core-${{ matrix.os }}-${{ github.ref_name }}.sha256
+          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }} -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_lwip" main.go
+          shasum -a 256 itun2socks-${{ matrix.os }}-${{ github.ref_name }} > itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256
 
 
       - name: Archive production artifacts
@@ -40,19 +40,17 @@ jobs:
         with:
           name: ${{ matrix.os }}-${{ github.ref_name }}
           path: |
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}           
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}.sha256                    
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}           
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256                    
 
       - name: GH Release
         uses: softprops/action-gh-release@v0.1.13
         with:
-          repository: igoogolx/lux-core
-          token: ${{ secrets.PUBLIC_TOKEN }}
           draft: true
           files: |
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}           
-            lux-core-${{ matrix.os }}-${{ github.ref_name }}.sha256           
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}           
+            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256           
