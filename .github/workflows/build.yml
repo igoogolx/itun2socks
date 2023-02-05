@@ -46,7 +46,7 @@ jobs:
             itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256                    
 
       - name: GH Release
-        uses: softprops/action-gh-release@v0.1.13
+        uses: softprops/action-gh-release@v1
         with:
           draft: true
           files: |
