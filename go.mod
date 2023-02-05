@@ -1,6 +1,6 @@
 module github.com/igoogolx/itun2socks
 
-go 1.19
+go 1.20
 
 replace github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61 => github.com/igoogolx/go-tun2socks v1.16.12-0.20221207142718-53883f8ae3df
 
