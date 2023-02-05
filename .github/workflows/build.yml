@@ -28,13 +28,13 @@ jobs:
         shell: bash
         if: matrix.os == 'windows-latest'
         run: |
-          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_lwip" main.go
+          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_gvisor" main.go
           sha256sum itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe > itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
 
       - name: Build for macos-latest
         if: matrix.os == 'macos-latest'
         run: |
-          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }} -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_lwip" main.go
+          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }} -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_gvisor" main.go
           shasum -a 256 itun2socks-${{ matrix.os }}-${{ github.ref_name }} > itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256
 
 
