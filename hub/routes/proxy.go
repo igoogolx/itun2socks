@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"github.com/Dreamacro/clash/adapter"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
@@ -122,7 +121,7 @@ func getProxiesDelay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxies := make([]*adapter.Proxy, len(proxyConfigs))
+	proxies := make([]C.Proxy, len(proxyConfigs))
 	for _, proxy := range proxyConfigs {
 		p, err := parser.ParseProxy(proxy)
 		if err != nil {
@@ -144,7 +143,7 @@ func getProxiesDelay(w http.ResponseWriter, r *http.Request) {
 	for i, proxy := range proxies {
 		wg.Add(1)
 		i := i
-		go func(p *adapter.Proxy) {
+		go func(p C.Proxy) {
 			delay, err := p.URLTest(ctx, url)
 			if err != nil {
 				log.Errorln("error:%v", err)

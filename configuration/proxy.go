@@ -55,7 +55,7 @@ func DeleteProxy(id string) error {
 }
 
 func UpdateProxy(id string, proxy map[string]interface{}) error {
-	_, err := parser.ParseOption(proxy)
+	_, err := parser.ParseProxy(proxy)
 	if err != nil {
 		return fmt.Errorf("fail to update proxy,error:%v", err)
 	}

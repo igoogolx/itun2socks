@@ -1,7 +1,7 @@
 package cfg
 
 import (
-	"github.com/Dreamacro/clash/adapter"
+	"github.com/Dreamacro/clash/constant"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/cfg/local-server"
@@ -17,7 +17,7 @@ var (
 
 type Config struct {
 	Rule        distribution.Config
-	Proxy       *adapter.Proxy
+	Proxy       constant.Proxy
 	Device      tun.Config
 	LocalServer local_server.Cfg
 }
