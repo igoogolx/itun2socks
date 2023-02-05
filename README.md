@@ -9,7 +9,6 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![Build Status][build-shield]][build-url]
-[![Version][version-shield]][version-url]
 
 <h3 align="center">Itun2socks</h3>
   <p align="center">
@@ -35,11 +34,9 @@
 [issues-shield]: https://img.shields.io/github/issues/igoogolx/itun2socks.svg
 [issues-url]: https://github.com/igoogolx/itun2socks/issues
 [license-shield]: https://img.shields.io/github/license/igoogolx/itun2socks.svg
-[license-url]: https://github.com/igoogolx/itun2socks/blob/master/LICENSE.txt
+[license-url]: https://github.com/igoogolx/itun2socks/blob/main/LICENSE
 [build-shield]: https://github.com/igoogolx/itun2socks/actions/workflows/build.yml/badge.svg
 [build-url]: https://github.com/igoogolx/itun2socks/actions/workflows/build.yml
-[version-shield]: https://img.shields.io/github/package-json/v/igoogolx/itun2socks
-[version-url]: https://github.com/igoogolx/itun2socks/releases
 
 
 ### Build with lwip stack
