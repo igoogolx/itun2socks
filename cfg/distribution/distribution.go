@@ -3,7 +3,7 @@ package distribution
 import (
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/components/resolver"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
+	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/constants"
 	"golang.org/x/exp/slices"
 	"strings"
@@ -113,7 +113,7 @@ func (c Config) GetDns(domain string, isPrimary bool) resolver.Client {
 }
 
 func New(
-	rule configuration_types.RuleCfg,
+	rule configuration.RuleCfg,
 	trueProxyServer string,
 	dnsTable Cache,
 ) (Config, error) {

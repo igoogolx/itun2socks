@@ -8,7 +8,6 @@ import (
 	"github.com/igoogolx/itun2socks/cfg/outbound"
 	"github.com/igoogolx/itun2socks/cfg/tun"
 	db2 "github.com/igoogolx/itun2socks/configuration"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
 )
 
 var (
@@ -22,7 +21,7 @@ type Config struct {
 	LocalServer local_server.Cfg
 }
 
-func New(rawConfig configuration_types.Config) (Config, error) {
+func New(rawConfig db2.Config) (Config, error) {
 	selectedRule, err := db2.GetSelectedRule()
 	if err != nil {
 		return Config{}, err

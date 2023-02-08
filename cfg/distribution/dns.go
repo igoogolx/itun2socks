@@ -6,12 +6,12 @@ import (
 	"github.com/igoogolx/itun2socks/components/geo"
 	"github.com/igoogolx/itun2socks/components/list"
 	"github.com/igoogolx/itun2socks/components/resolver"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
+	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/constants"
 )
 
 func NewDnsDistribution(
-	config configuration_types.DnsItem,
+	config configuration.DnsItem,
 ) (DnsDistribution, error) {
 	localAddress := config.Local.Address
 	localDnsClient, err := resolver.NewClient(localAddress)

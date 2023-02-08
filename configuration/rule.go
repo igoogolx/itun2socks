@@ -3,13 +3,12 @@ package configuration
 import (
 	"fmt"
 	"github.com/gofrs/uuid"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
 )
 
-func GetSelectedRule() (configuration_types.RuleCfg, error) {
+func GetSelectedRule() (RuleCfg, error) {
 	c, err := Read()
 	if err != nil {
-		return configuration_types.RuleCfg{}, err
+		return RuleCfg{}, err
 	}
 	for _, v := range c.Rule {
 		if v.Id == c.Selected.Rule {
@@ -17,10 +16,10 @@ func GetSelectedRule() (configuration_types.RuleCfg, error) {
 		}
 	}
 
-	return configuration_types.RuleCfg{}, fmt.Errorf("error getting selected rule,id:%v,err:%v", c.Selected.Rule, err)
+	return RuleCfg{}, fmt.Errorf("error getting selected rule,id:%v,err:%v", c.Selected.Rule, err)
 }
 
-func GetRules() ([]configuration_types.RuleCfg, error) {
+func GetRules() ([]RuleCfg, error) {
 	c, err := Read()
 	if err != nil {
 		return nil, err
@@ -33,7 +32,7 @@ func DeleteRule(id string) error {
 	if err != nil {
 		return err
 	}
-	rules := make([]configuration_types.RuleCfg, 0)
+	rules := make([]RuleCfg, 0)
 	for _, v := range c.Rule {
 		if v.Id != id {
 			rules = append(rules, v)
@@ -47,7 +46,7 @@ func DeleteRule(id string) error {
 	return nil
 }
 
-func UpdateRule(id string, rule configuration_types.RuleCfg) error {
+func UpdateRule(id string, rule RuleCfg) error {
 	c, err := Read()
 	if err != nil {
 		return err
@@ -65,7 +64,7 @@ func UpdateRule(id string, rule configuration_types.RuleCfg) error {
 	return nil
 }
 
-func AddRule(rule configuration_types.RuleCfg) (string, error) {
+func AddRule(rule RuleCfg) (string, error) {
 	c, err := Read()
 	if err != nil {
 		return "", err

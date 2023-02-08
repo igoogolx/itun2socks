@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/configuration"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
 	"net"
 	"net/http"
 )
@@ -42,7 +41,7 @@ func getSetting(w http.ResponseWriter, r *http.Request) {
 }
 
 func setSetting(w http.ResponseWriter, r *http.Request) {
-	var req configuration_types.SettingCfg
+	var req configuration.SettingCfg
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)

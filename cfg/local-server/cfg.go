@@ -1,7 +1,7 @@
 package local_server
 
 import (
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
+	"github.com/igoogolx/itun2socks/configuration"
 	"strconv"
 )
 
@@ -9,7 +9,7 @@ type Cfg struct {
 	HttpAddr string
 }
 
-func New(config configuration_types.LocalServer) Cfg {
+func New(config configuration.LocalServer) Cfg {
 	cfg := Cfg{}
 	if config.Http.Enabled {
 		cfg.HttpAddr = ":" + strconv.Itoa(config.Http.Port)

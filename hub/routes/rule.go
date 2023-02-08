@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/configuration"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
 	"net/http"
 )
 
@@ -37,7 +36,7 @@ func getRules(w http.ResponseWriter, r *http.Request) {
 }
 
 func addRule(w http.ResponseWriter, r *http.Request) {
-	var req configuration_types.RuleCfg
+	var req configuration.RuleCfg
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
@@ -53,7 +52,7 @@ func addRule(w http.ResponseWriter, r *http.Request) {
 
 func updateRule(w http.ResponseWriter, r *http.Request) {
 	ruleId := chi.URLParam(r, "ruleId")
-	var req configuration_types.RuleCfg
+	var req configuration.RuleCfg
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Dreamacro/clash/log"
-	configurationTypes "github.com/igoogolx/itun2socks/configuration/configuration-types"
 	"go.uber.org/atomic"
 	"os"
 	"reflect"
@@ -12,7 +11,7 @@ import (
 )
 
 var mux sync.RWMutex
-var defaultConfig *configurationTypes.Config
+var defaultConfig *Config
 
 func deepCopy(v interface{}) (interface{}, error) {
 	data, err := json.Marshal(v)
@@ -28,37 +27,37 @@ func deepCopy(v interface{}) (interface{}, error) {
 	return vptr.Elem().Interface(), err
 }
 
-func deepCopyConfig(c configurationTypes.Config) (configurationTypes.Config, error) {
+func deepCopyConfig(c Config) (Config, error) {
 	copiedConfig, err := deepCopy(c)
 	if err != nil {
-		return configurationTypes.Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
+		return Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
 	}
-	result, ok := copiedConfig.(configurationTypes.Config)
+	result, ok := copiedConfig.(Config)
 	if !ok {
-		return configurationTypes.Config{}, fmt.Errorf("invald copied config, err:%v", err)
+		return Config{}, fmt.Errorf("invald copied config, err:%v", err)
 	}
 
 	return result, nil
 }
 
-func Read() (configurationTypes.Config, error) {
+func Read() (Config, error) {
 	mux.RLock()
 	defer mux.RUnlock()
 	var err error
 	if defaultConfig == nil {
 		defaultConfig, err = readFile()
 		if err != nil {
-			return configurationTypes.Config{}, err
+			return Config{}, err
 		}
 	}
 	copiedConfig, err := deepCopyConfig(*defaultConfig)
 	if err != nil {
-		return configurationTypes.Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
+		return Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
 	}
 	return copiedConfig, nil
 }
 
-func Write(c configurationTypes.Config) error {
+func Write(c Config) error {
 	mux.Lock()
 	defer mux.Unlock()
 	copiedConfig, err := deepCopyConfig(c)
@@ -79,10 +78,10 @@ func Write(c configurationTypes.Config) error {
 var fileMutex sync.RWMutex
 var ConfigFilePath = atomic.NewString("")
 
-func readFile() (*configurationTypes.Config, error) {
+func readFile() (*Config, error) {
 	fileMutex.RLock()
 	defer fileMutex.RUnlock()
-	c := &configurationTypes.Config{}
+	c := &Config{}
 	data, err := os.ReadFile(ConfigFilePath.Load())
 	if err != nil {
 		return nil, fmt.Errorf("fail to read config file, path:%v, err:%v", ConfigFilePath.Load(), err)
@@ -94,7 +93,7 @@ func readFile() (*configurationTypes.Config, error) {
 	return c, nil
 }
 
-func writeFile(config configurationTypes.Config) error {
+func writeFile(config Config) error {
 	fileMutex.Lock()
 	defer fileMutex.Unlock()
 	f, err := os.OpenFile(ConfigFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)

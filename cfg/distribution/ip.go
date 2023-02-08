@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/golang-lru"
 	geo2 "github.com/igoogolx/itun2socks/components/geo"
 	"github.com/igoogolx/itun2socks/components/list"
-	"github.com/igoogolx/itun2socks/configuration/configuration-types"
+	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/constants"
 )
 
@@ -24,7 +24,7 @@ type IpDistribution struct {
 }
 
 func NewIpDistribution(
-	config configuration_types.IpItem,
+	config configuration.IpItem,
 ) (IpDistribution, error) {
 	d := IpDistribution{}
 	d.Subnet = IpMatcher{
