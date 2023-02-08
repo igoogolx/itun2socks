@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/executor"
+	"runtime/debug"
 	"sync"
 )
 
@@ -40,6 +41,8 @@ func Start() error {
 func Close() error {
 	mux.Lock()
 	defer mux.Unlock()
+	//Pay attention to this because it may lead to performance problem
+	debug.FreeOSMemory()
 	if client != nil {
 		err := client.Close()
 		if err != nil {
