@@ -9,6 +9,13 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    flags:
+      - -v
+      - -trimpath
+    ldflags:
+      - -s -w -buildid=
+    tags:
+      - with_gvisor
     goos:
       - linux
       - windows
