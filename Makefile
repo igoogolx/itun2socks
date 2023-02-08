@@ -2,7 +2,7 @@ NAME=itun2socks
 BINDIR=bin
 VERSION=$(shell git describe --tags || echo "unknown version")
 BUILDTIME=$(shell date -u)
-GOBUILD=CGO_ENABLED=0 go build -trimpath -tags="with_gvisor" -ldflags '-X "github.com/igoogolx/itun2socks/constants.Version=$(VERSION)" \
+GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags -tags "with_gvisor" '-X "github.com/igoogolx/itun2socks/constants.Version=$(VERSION)" \
 		-X "github.com/igoogolx/itun2socks/constants.BuildTime=$(BUILDTIME)" \
 		-w -s -buildid='
 
