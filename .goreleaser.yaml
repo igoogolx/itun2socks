@@ -13,7 +13,7 @@ builds:
       - -v
       - -trimpath
     ldflags:
-      - -s -w -X github.com/igoogolx/itun2socks/constants.Version={{ .Tag }} github.com/igoogolx/itun2socks/constants.BuildTime={{ .Date }} -buildid=
+      - -s -w -X github.com/igoogolx/itun2socks/constants.Version={{ .Tag }} -X github.com/igoogolx/itun2socks/constants.BuildTime={{ .Date }} -buildid=
     tags:
       - with_gvisor
     goos:
