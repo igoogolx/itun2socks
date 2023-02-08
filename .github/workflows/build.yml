@@ -1,60 +1,36 @@
-name: Build
-
-permissions:
-  contents: write
+name: goreleaser
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
+    # run only against tags
     tags:
-      - v*.*.*           # Push events to v1.0, v1.1, and v1.9 tags
+      - '*'
+
+permissions:
+  contents: write
+  # packages: write
+  # issues: write
 
 jobs:
-  build:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ windows-latest, macos-latest ]
-
+  goreleaser:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup go
-        uses: actions/setup-go@v2
         with:
-          go-version: '1.20'
-
-      - name: Build for windows-latest
-        shell: bash
-        if: matrix.os == 'windows-latest'
-        run: |
-          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_gvisor" main.go
-          sha256sum itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe > itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
-
-      - name: Build for macos-latest
-        if: matrix.os == 'macos-latest'
-        run: |
-          go build -o itun2socks-${{ matrix.os }}-${{ github.ref_name }} -v -ldflags="-s -w -X github.com/igoogolx/itun2socks/constants.Version=${{ github.ref_name }}" -trimpath -tags="with_gvisor" main.go
-          shasum -a 256 itun2socks-${{ matrix.os }}-${{ github.ref_name }} > itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256
-
-
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: actions/setup-go@v3
         with:
-          name: ${{ matrix.os }}-${{ github.ref_name }}
-          path: |
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}           
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256                    
-
-      - name: GH Release
-        uses: softprops/action-gh-release@v1
+          go-version: '>=1.20.0'
+          cache: true
+      # More assembly might be required: Docker logins, GPG, etc. It all depends
+      # on your needs.
+      - uses: goreleaser/goreleaser-action@v4
         with:
-          repository: igoogolx/itun2socks
-          draft: true
-          files: |
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.exe.sha256
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}           
-            itun2socks-${{ matrix.os }}-${{ github.ref_name }}.sha256           
+          # either 'goreleaser' (default) or 'goreleaser-pro':
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+          # Your GoReleaser Pro key, if you are using the 'goreleaser-pro'
+          # distribution:
+          # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
