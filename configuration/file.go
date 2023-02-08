@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/Dreamacro/clash/log"
 	configurationTypes "github.com/igoogolx/itun2socks/configuration/configuration-types"
+	"go.uber.org/atomic"
+	"os"
 	"reflect"
 	"sync"
 )
@@ -44,7 +46,7 @@ func Read() (configurationTypes.Config, error) {
 	defer mux.RUnlock()
 	var err error
 	if defaultConfig == nil {
-		defaultConfig, err = configurationTypes.ReadFile()
+		defaultConfig, err = readFile()
 		if err != nil {
 			return configurationTypes.Config{}, err
 		}
@@ -66,10 +68,52 @@ func Write(c configurationTypes.Config) error {
 	defaultConfig = &copiedConfig
 
 	go func() {
-		err := configurationTypes.WriteFile(copiedConfig)
+		err := writeFile(copiedConfig)
 		if err != nil {
 			log.Errorln("fail to write file: %v", err)
 		}
 	}()
+	return nil
+}
+
+var fileMutex sync.RWMutex
+var ConfigFilePath = atomic.NewString("")
+
+func readFile() (*configurationTypes.Config, error) {
+	fileMutex.RLock()
+	defer fileMutex.RUnlock()
+	c := &configurationTypes.Config{}
+	data, err := os.ReadFile(ConfigFilePath.Load())
+	if err != nil {
+		return nil, fmt.Errorf("fail to read config file, path:%v, err:%v", ConfigFilePath.Load(), err)
+	}
+	err = json.Unmarshal(data, c)
+	if err != nil {
+		return nil, fmt.Errorf("fail to parse config file, path:%v, err:%v", ConfigFilePath.Load(), err)
+	}
+	return c, nil
+}
+
+func writeFile(config configurationTypes.Config) error {
+	fileMutex.Lock()
+	defer fileMutex.Unlock()
+	f, err := os.OpenFile(ConfigFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			log.Warnln("fail to close file: %v, err: %v", ConfigFilePath.Load(), err)
+		}
+	}(f)
+	if err != nil {
+		return fmt.Errorf("fail to open file:%v, err:%v", ConfigFilePath.Load(), err)
+	}
+	buf, err := json.MarshalIndent(config, "", " ")
+	if err != nil {
+		return fmt.Errorf("fail to marchal json, err:%v", err)
+	}
+	_, err = f.Write(buf)
+	if err != nil {
+		return fmt.Errorf("fail to write file:%v, err:%v", ConfigFilePath.Load(), err)
+	}
 	return nil
 }

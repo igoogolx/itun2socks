@@ -7,7 +7,7 @@ import (
 	_ "github.com/igoogolx/itun2socks/components/debug"
 	"github.com/igoogolx/itun2socks/components/is-elevated"
 	_ "github.com/igoogolx/itun2socks/components/log"
-	configurationTypes "github.com/igoogolx/itun2socks/configuration/configuration-types"
+	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/constants"
 	"github.com/igoogolx/itun2socks/hub"
 	"github.com/igoogolx/itun2socks/manager"
@@ -32,7 +32,7 @@ func main() {
 			return
 		}
 	}
-	configurationTypes.ConfigFilePath.Store(*config)
+	configuration.ConfigFilePath.Store(*config)
 	hub.Start(*port)
 	defer func() {
 		if p := recover(); p != nil {
