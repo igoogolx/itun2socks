@@ -36,7 +36,8 @@ const (
 )
 
 var (
-	Version = "undefined"
+	Version   = "undefined"
+	BuildTime = "undefined"
 )
 
 var LogFile = filepath.Join("logs", "lux.log")

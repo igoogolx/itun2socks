@@ -23,7 +23,7 @@ func main() {
 	checkElevated := flag.Bool("check_elevated", true, "Check whether it's run as the admin, default: true")
 	flag.Parse()
 	if *version {
-		fmt.Println(constants.Version)
+		fmt.Printf("version: %v, build on: %v", constants.Version, constants.BuildTime)
 		os.Exit(0)
 	}
 	if *checkElevated {
