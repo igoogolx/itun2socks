@@ -2,12 +2,12 @@ package routes
 
 import (
 	"context"
+	"github.com/Dreamacro/clash/adapter"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	db2 "github.com/igoogolx/itun2socks/configuration"
-	"github.com/igoogolx/itun2socks/parser"
 	"github.com/igoogolx/itun2socks/tunnel"
 	"net/http"
 	"sync"
@@ -48,7 +48,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	p, err := parser.ParseProxy(proxyOption)
+	p, err := adapter.ParseProxy(proxyOption)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -90,7 +90,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	p, err := parser.ParseProxy(proxyOption)
+	p, err := adapter.ParseProxy(proxyOption)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -123,7 +123,7 @@ func getProxiesDelay(w http.ResponseWriter, r *http.Request) {
 
 	proxies := make([]C.Proxy, len(proxyConfigs))
 	for _, proxy := range proxyConfigs {
-		p, err := parser.ParseProxy(proxy)
+		p, err := adapter.ParseProxy(proxy)
 		if err != nil {
 			continue
 		}

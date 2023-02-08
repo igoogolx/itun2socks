@@ -2,8 +2,8 @@ package configuration
 
 import (
 	"fmt"
+	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid"
-	"github.com/igoogolx/itun2socks/parser"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {
@@ -55,7 +55,7 @@ func DeleteProxy(id string) error {
 }
 
 func UpdateProxy(id string, proxy map[string]interface{}) error {
-	_, err := parser.ParseProxy(proxy)
+	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
 		return fmt.Errorf("fail to update proxy,error:%v", err)
 	}
@@ -77,7 +77,7 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 }
 
 func AddProxy(proxy map[string]interface{}) (string, error) {
-	_, err := parser.ParseProxy(proxy)
+	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
 		return "", fmt.Errorf("fail to parse proxy,error:%v", err)
 	}

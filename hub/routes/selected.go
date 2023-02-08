@@ -1,12 +1,12 @@
 package routes
 
 import (
+	"github.com/Dreamacro/clash/adapter"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/manager"
-	"github.com/igoogolx/itun2socks/parser"
 	"net/http"
 )
 
@@ -55,7 +55,7 @@ func setProxySelectedId(w http.ResponseWriter, r *http.Request) {
 			render.JSON(w, r, ErrBadRequest)
 			return
 		}
-		proxy, err := parser.ParseProxy(rawProxy)
+		proxy, err := adapter.ParseProxy(rawProxy)
 		if err != nil {
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, ErrBadRequest)
