@@ -43,7 +43,7 @@
 `go build -v -ldflags="-s -w" -trimpath -tags="with_lwip"`
 
 ### Supported net stack
-Build with tag `gvisor`,`lwip`,`system`
+Build with tag `with_gvisor`,`with_lwip`,`with_system`
 
 ### Enable debug mode
 Build with tag `debug`
