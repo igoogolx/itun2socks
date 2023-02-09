@@ -35,14 +35,14 @@ func getMatcher() Matcher {
 
 type Conn struct {
 	remoteAddr chan net.Addr
-	written    *bool
-	read       *bool
+	written    bool
+	read       bool
 	data       chan []byte
 	proxyAddr  string
 }
 
-func (d Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
-	if *d.written {
+func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
+	if d.written {
 		return 0, io.EOF
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -79,41 +79,38 @@ func (d Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	}
 	d.data <- resData
 	d.remoteAddr <- addr
-	*d.written = true
+	d.written = true
 	return len(data), err
 }
 
-func (d Conn) ReadFrom(data []byte) (int, net.Addr, error) {
-	if *d.read {
+func (d *Conn) ReadFrom(data []byte) (int, net.Addr, error) {
+	if d.read {
 		return 0, nil, io.EOF
 	}
 	n := copy(data, <-d.data)
-	*d.read = true
+	d.read = true
 	return n, <-d.remoteAddr, nil
 }
 
-func (d Conn) Close() error {
+func (d *Conn) Close() error {
 
 	return nil
 }
 
-func (d Conn) SetDeadline(t time.Time) error {
+func (d *Conn) SetDeadline(t time.Time) error {
 
 	return nil
 }
 
-func (d Conn) SetReadDeadline(t time.Time) error {
+func (d *Conn) SetReadDeadline(t time.Time) error {
 
 	return nil
 }
 
-func NewConn(proxyAddr string) Conn {
-	done := false
-	return Conn{
+func NewConn(proxyAddr string) *Conn {
+	return &Conn{
 		data:       make(chan []byte),
 		remoteAddr: make(chan net.Addr),
-		written:    &done,
-		read:       &done,
 		proxyAddr:  proxyAddr,
 	}
 }
