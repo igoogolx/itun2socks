@@ -1,11 +1,4 @@
-itun2socks
-*.exe
 *.log
-config.json
-*.json
-geoData
-wintun.dll
 .idea
-web
-./core
-dist/
+core
+dist
