@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"github.com/Dreamacro/clash/log"
@@ -78,9 +79,18 @@ func Write(c Config) error {
 var fileMutex sync.RWMutex
 var ConfigFilePath = atomic.NewString("")
 
+//go:embed assets/config.json
+var defaultConfigContent []byte
+
 func readFile() (*Config, error) {
 	fileMutex.RLock()
 	defer fileMutex.RUnlock()
+	if !fileExists(ConfigFilePath.Load()) {
+		err := write(defaultConfigContent)
+		if err != nil {
+			return nil, err
+		}
+	}
 	c := &Config{}
 	data, err := os.ReadFile(ConfigFilePath.Load())
 	if err != nil {
@@ -96,6 +106,23 @@ func readFile() (*Config, error) {
 func writeFile(config Config) error {
 	fileMutex.Lock()
 	defer fileMutex.Unlock()
+	buf, err := json.MarshalIndent(config, "", " ")
+	if err != nil {
+		return fmt.Errorf("fail to marchal json, err:%v", err)
+	}
+	return write(buf)
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
+func write(data []byte) error {
+	log.Infoln("Created the default config file")
 	f, err := os.OpenFile(ConfigFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	defer func(f *os.File) {
 		err := f.Close()
@@ -106,11 +133,7 @@ func writeFile(config Config) error {
 	if err != nil {
 		return fmt.Errorf("fail to open file:%v, err:%v", ConfigFilePath.Load(), err)
 	}
-	buf, err := json.MarshalIndent(config, "", " ")
-	if err != nil {
-		return fmt.Errorf("fail to marchal json, err:%v", err)
-	}
-	_, err = f.Write(buf)
+	_, err = f.Write(data)
 	if err != nil {
 		return fmt.Errorf("fail to write file:%v, err:%v", ConfigFilePath.Load(), err)
 	}
