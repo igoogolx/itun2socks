@@ -48,3 +48,6 @@ Build with tag `with_gvisor`,`with_lwip`,`with_system`
 
 ### Enable debug mode
 Build with tag `debug`
+
+### Debug with pprof
+`go tool pprof -http :8080 http://localhost:6060/debug/pprof/heap`
