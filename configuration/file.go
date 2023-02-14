@@ -76,15 +76,15 @@ func Write(c Config) error {
 	return nil
 }
 
-var fileMutex sync.RWMutex
+var fileMutex sync.Mutex
 var ConfigFilePath = atomic.NewString("")
 
 //go:embed assets/config.json
 var defaultConfigContent []byte
 
 func readFile() (*Config, error) {
-	fileMutex.RLock()
-	defer fileMutex.RUnlock()
+	fileMutex.Lock()
+	defer fileMutex.Unlock()
 	if !fileExists(ConfigFilePath.Load()) {
 		err := write(defaultConfigContent)
 		if err != nil {
