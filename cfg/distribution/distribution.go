@@ -30,11 +30,15 @@ func (c Config) GetRule(ip string) (result constants.IpRule) {
 	defer func() {
 		c.Ip.Cache.Add(ip, result)
 	}()
+	//TODO: determine the type of true proxy server: ip or domain
+	domain, ok := c.dnsTable.Get(ip)
 	if slices.Contains(c.Dns.Local.Client.Nameservers(), ip) {
 		result = constants.DistributionBypass
 	} else if slices.Contains(c.Dns.Remote.Client.Nameservers(), ip) {
 		result = constants.DistributionProxy
 	} else if strings.Contains(c.TrueProxyServer, ip) {
+		result = constants.DistributionBypass
+	} else if ok && strings.Contains(c.TrueProxyServer, domain.(string)) {
 		result = constants.DistributionBypass
 	} else {
 		switch c.Ip.Subnet.LookUp(ip) {
@@ -53,7 +57,6 @@ func (c Config) GetRule(ip string) (result constants.IpRule) {
 				result = constants.DistributionBypass
 				break
 			case constants.DistributionNotFound:
-				domain, ok := c.dnsTable.Get(ip)
 				if ok {
 					switch c.Ip.GeoSites.LookUp(domain.(string)) {
 					case constants.DistributionProxy:
