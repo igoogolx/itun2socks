@@ -14,8 +14,8 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/miekg/dns v1.1.50
-	github.com/sagernet/sing v0.1.1
-	github.com/sagernet/sing-tun v0.1.0
+	github.com/sagernet/sing v0.1.2
+	github.com/sagernet/sing-tun v0.1.1
 	github.com/sirupsen/logrus v1.9.0
 	go.uber.org/atomic v1.10.0
 	golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7
@@ -34,7 +34,6 @@ require (
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/mdlayher/netlink v1.7.2-0.20221213171556-9881fafed8c7 // indirect
 	github.com/mdlayher/socket v0.4.0 // indirect
-	github.com/sagernet/abx-go v0.0.0-20220819185957-dba1257d738e // indirect
 	github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61 // indirect
 	github.com/sagernet/netlink v0.0.0-20220905062125-8043b4a9aa97 // indirect
 	github.com/u-root/uio v0.0.0-20221213070652-c3537552635f // indirect
