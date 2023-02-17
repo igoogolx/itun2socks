@@ -22,13 +22,29 @@ type UdpConn interface {
 }
 
 type UdpConnContext struct {
-	Wg        *sync.WaitGroup
+	wg        *sync.WaitGroup
+	ctx       context.Context
 	id        uuid.UUID
 	metadata  *constant.Metadata
 	conn      UdpConn
-	Rule      constants.IpRule
-	Ctx       context.Context
-	ProxyAddr string
+	rule      constants.IpRule
+	proxyAddr string
+}
+
+func (u *UdpConnContext) ProxyAddr() string {
+	return u.proxyAddr
+}
+
+func (u *UdpConnContext) Wg() *sync.WaitGroup {
+	return u.wg
+}
+
+func (u *UdpConnContext) Ctx() context.Context {
+	return u.ctx
+}
+
+func (u *UdpConnContext) Rule() constants.IpRule {
+	return u.rule
 }
 
 func (u *UdpConnContext) ID() uuid.UUID {
@@ -52,11 +68,11 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Met
 	}
 	return &UdpConnContext{
 		wg,
+		ctx,
 		id,
 		metadata,
 		conn,
 		rule,
-		ctx,
 		proxyAddr,
 	}, nil
 }

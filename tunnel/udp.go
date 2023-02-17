@@ -51,7 +51,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 func handleUdpConn(ct *conn.UdpConnContext) {
 	log.Debugln("handle udp conn, dst ip: %v, dst port: %v", ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
 	defer func() {
-		ct.Wg.Done()
+		ct.Wg().Done()
 		err := closeConn(ct.Conn())
 		if err != nil {
 			log.Debugln("fail to close remote udp conn,err: %v", err)
@@ -60,14 +60,14 @@ func handleUdpConn(ct *conn.UdpConnContext) {
 	var lc conn.UdpConn
 	var err error
 	if ct.Metadata().DstPort == constants.DnsPort {
-		lc = dns.NewConn(ct.ProxyAddr)
+		lc = dns.NewConn(ct.ProxyAddr())
 	} else {
-		localConn, err := conn.NewUdpConn(ct.Ctx, ct.Metadata(), ct.Rule, global.GetDefaultInterfaceName())
+		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), global.GetDefaultInterfaceName())
 		if err != nil {
 			log.Warnln("fail to get udp conn, err: %v, target: %v", err, ct.Metadata().DstIP.String())
 			return
 		}
-		lc = statistic2.NewUDPTracker(localConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule)
+		lc = statistic2.NewUDPTracker(localConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule())
 	}
 
 	defer func() {

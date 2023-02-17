@@ -20,9 +20,9 @@ func AddTcpConn(ct conn.TcpConnContext) {
 }
 
 func handleTCPConn(ct conn.TcpConnContext) {
-	remoteConn, err := conn.NewTcpConn(ct.Ctx, ct.Metadata(), ct.Rule, global.GetDefaultInterfaceName())
+	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), global.GetDefaultInterfaceName())
 	defer func() {
-		ct.Wg.Done()
+		ct.Wg().Done()
 		if err := closeConn(ct.Conn()); err != nil {
 			log.Debugln("failed to close local tcp conn,err: %v", err)
 		}
@@ -34,7 +34,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		log.Warnln("failed to get tcp conn, err: %v", err)
 		return
 	}
-	remoteConn = statistic2.NewTCPTracker(remoteConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule)
+	remoteConn = statistic2.NewTCPTracker(remoteConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule())
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)

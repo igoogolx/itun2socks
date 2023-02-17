@@ -13,12 +13,24 @@ import (
 )
 
 type TcpConnContext struct {
-	Wg       *sync.WaitGroup
+	wg       *sync.WaitGroup
+	ctx      context.Context
 	id       uuid.UUID
 	metadata *constant.Metadata
 	conn     net.Conn
-	Rule     constants.IpRule
-	Ctx      context.Context
+	rule     constants.IpRule
+}
+
+func (t *TcpConnContext) Wg() *sync.WaitGroup {
+	return t.wg
+}
+
+func (t *TcpConnContext) Ctx() context.Context {
+	return t.ctx
+}
+
+func (t *TcpConnContext) Rule() constants.IpRule {
+	return t.rule
 }
 
 func (t *TcpConnContext) ID() uuid.UUID {
@@ -38,11 +50,11 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *constant.Me
 	rule := global.GetMatcher().GetRule(metadata.DstIP.String())
 	return &TcpConnContext{
 		wg,
+		ctx,
 		id,
 		metadata,
 		conn,
 		rule,
-		ctx,
 	}
 
 }
