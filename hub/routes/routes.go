@@ -35,7 +35,6 @@ func Start(addr string) error {
 		r.Mount("/version", versionRouter())
 		r.Mount("/runtime-detail", runtimeDetailRouter())
 		r.Mount("/ping", pingRouter())
-		r.Mount("/test-rule", testRuleRouter())
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
 		if defaultRouterHandler != nil {
