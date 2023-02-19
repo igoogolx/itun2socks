@@ -90,6 +90,7 @@ func readFile() (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
+		log.Infoln("Created the default config file")
 	}
 	c := &Config{}
 	data, err := os.ReadFile(ConfigFilePath.Load())
@@ -122,7 +123,6 @@ func fileExists(filename string) bool {
 }
 
 func write(data []byte) error {
-	log.Infoln("Created the default config file")
 	f, err := os.OpenFile(ConfigFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	defer func(f *os.File) {
 		err := f.Close()
