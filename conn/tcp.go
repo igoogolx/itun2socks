@@ -7,7 +7,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/gofrs/uuid"
 	"github.com/igoogolx/itun2socks/constants"
-	"github.com/igoogolx/itun2socks/global"
+	"github.com/igoogolx/itun2socks/tunnel"
 	"net"
 	"sync"
 )
@@ -47,7 +47,7 @@ func (t *TcpConnContext) Conn() net.Conn {
 
 func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *constant.Metadata, wg *sync.WaitGroup) *TcpConnContext {
 	id, _ := uuid.NewV4()
-	rule := global.GetMatcher().GetRule(metadata.DstIP.String())
+	rule := tunnel.GetMatcher().GetRule(metadata.DstIP.String())
 	return &TcpConnContext{
 		wg,
 		ctx,

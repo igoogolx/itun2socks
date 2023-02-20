@@ -1,13 +1,8 @@
 package tunnel
 
 import (
-	"github.com/igoogolx/itun2socks/constants"
 	"runtime"
 )
-
-type Matcher interface {
-	GetRule(ip string) constants.IpRule
-}
 
 func process() {
 	numUDPWorkers := 4
