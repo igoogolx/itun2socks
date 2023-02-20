@@ -1,4 +1,4 @@
-package tunnel
+package global
 
 import (
 	"github.com/igoogolx/itun2socks/constants"
