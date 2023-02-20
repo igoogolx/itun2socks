@@ -8,7 +8,6 @@ import (
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/dns"
-	"github.com/igoogolx/itun2socks/global"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/runtime-detail"
 	sTun "github.com/sagernet/sing-tun"
@@ -77,7 +76,7 @@ func updateCfg(config cfg.Config) error {
 }
 
 func updateMatcher(c cfg.Config) {
-	global.UpdateMatcher(c.Rule)
+	conn.UpdateMatcher(c.Rule)
 }
 
 func updateDns(c cfg.Config) {

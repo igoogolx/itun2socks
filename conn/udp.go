@@ -7,7 +7,6 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/gofrs/uuid"
 	"github.com/igoogolx/itun2socks/constants"
-	"github.com/igoogolx/itun2socks/global"
 	"net"
 	"sync"
 	"time"
@@ -61,7 +60,7 @@ func (u *UdpConnContext) Conn() UdpConn {
 
 func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 	id, _ := uuid.NewV4()
-	rule := global.GetMatcher().GetRule(metadata.DstIP.String())
+	rule := GetMatcher().GetRule(metadata.DstIP.String())
 	proxyAddr, _, err := net.SplitHostPort(getProxy().Addr())
 	if err != nil {
 		return nil, err
