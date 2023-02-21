@@ -27,10 +27,10 @@ type UdpConnContext struct {
 	metadata  *constant.Metadata
 	conn      UdpConn
 	rule      constants.IpRule
-	proxyAddr string
+	proxyAddr ProxyAddr
 }
 
-func (u *UdpConnContext) ProxyAddr() string {
+func (u *UdpConnContext) ProxyAddr() ProxyAddr {
 	return u.proxyAddr
 }
 
@@ -72,7 +72,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Met
 		metadata,
 		conn,
 		rule,
-		proxyAddr,
+		NewProxyAddr(proxyAddr),
 	}, nil
 }
 

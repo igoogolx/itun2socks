@@ -6,6 +6,7 @@ import (
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/cfg"
 	"github.com/igoogolx/itun2socks/components/resolver"
+	"github.com/igoogolx/itun2socks/conn"
 	D "github.com/miekg/dns"
 	"io"
 	"net"
@@ -38,7 +39,7 @@ type Conn struct {
 	written    bool
 	read       bool
 	data       chan []byte
-	proxyAddr  string
+	proxyAddr  conn.ProxyAddr
 }
 
 func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
@@ -61,7 +62,11 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsClient := getMatcher().GetDns(question, strings.Contains(question, d.proxyAddr))
+	var isPrimary bool
+	if d.proxyAddr.Type() == conn.ProxyAddrDomain {
+		isPrimary = strings.Contains(question, d.proxyAddr.Addr())
+	}
+	dnsClient := getMatcher().GetDns(question, isPrimary)
 	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, proxy addr: %v, server: %v", err, question, d.proxyAddr, dnsClient.Nameservers())
@@ -107,7 +112,7 @@ func (d *Conn) SetReadDeadline(t time.Time) error {
 	return nil
 }
 
-func NewConn(proxyAddr string) *Conn {
+func NewConn(proxyAddr conn.ProxyAddr) *Conn {
 	return &Conn{
 		data:       make(chan []byte),
 		remoteAddr: make(chan net.Addr),
