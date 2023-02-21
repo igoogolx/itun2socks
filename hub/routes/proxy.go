@@ -98,8 +98,9 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	delay, err := p.URLTest(ctx, url)
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
+		render.JSON(w, r, render.M{
+			"delay": -1,
+		})
 		return
 	}
 	render.JSON(w, r, render.M{
