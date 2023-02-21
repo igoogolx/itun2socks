@@ -10,7 +10,6 @@ import (
 	db2 "github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/tunnel"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -26,7 +25,6 @@ func proxyRouter() http.Handler {
 	r.Delete("/{proxyId}", deleteProxy)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
-	r.Get("/delays", getProxiesDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
 	return r
 }
@@ -106,58 +104,6 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	}
 	render.JSON(w, r, render.M{
 		"delay": delay,
-	})
-}
-
-func getProxiesDelay(w http.ResponseWriter, r *http.Request) {
-	url := chi.URLParam(r, "url")
-	if url == "" {
-		url = defaultDelayTestUrl
-	}
-	proxyConfigs, err := db2.GetProxies()
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-
-	proxies := make([]C.Proxy, len(proxyConfigs))
-	for _, proxy := range proxyConfigs {
-		p, err := adapter.ParseProxy(proxy)
-		if err != nil {
-			continue
-		}
-		proxies = append(proxies, p)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), defaultDelayTimeout)
-	defer cancel()
-
-	wg := &sync.WaitGroup{}
-
-	type Delay struct {
-		Id    string `json:"id"`
-		Value uint16 `json:"value"`
-	}
-	delays := make([]Delay, 0)
-	var m sync.Mutex
-	for i, proxy := range proxies {
-		wg.Add(1)
-		i := i
-		go func(p C.Proxy) {
-			delay, err := p.URLTest(ctx, url)
-			if err != nil {
-				log.Errorln("error:%v", err)
-			}
-			m.Lock()
-			currentProxy := proxyConfigs[i]
-			delays = append(delays, Delay{Id: currentProxy["id"].(string), Value: delay})
-			m.Unlock()
-			wg.Done()
-		}(proxy)
-	}
-	wg.Wait()
-	render.JSON(w, r, render.M{
-		"delays": delays,
 	})
 }
 
