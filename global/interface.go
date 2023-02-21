@@ -1,5 +1,6 @@
 package global
 
+//TODO: remove global module
 import "go.uber.org/atomic"
 
 var defaultInterfaceName = atomic.NewString("")
