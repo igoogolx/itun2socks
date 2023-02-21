@@ -5,7 +5,7 @@ import (
 	"github.com/igoogolx/itun2socks/components/pool"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/global"
-	statistic2 "github.com/igoogolx/itun2socks/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	"io"
 	"net"
 	"sync"
@@ -34,7 +34,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		log.Warnln("failed to get tcp conn, err: %v", err)
 		return
 	}
-	remoteConn = statistic2.NewTCPTracker(remoteConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule())
+	remoteConn = statistic.NewTCPTracker(remoteConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
