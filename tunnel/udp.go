@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	udpQueue = make(chan *conn.UdpConnContext, 200)
+	udpQueue = make(chan conn.UdpConnContext, 200)
 )
 
-func AddUdpConn(conn *conn.UdpConnContext) {
-	udpQueue <- conn
+func UdpQueue() chan conn.UdpConnContext {
+	return udpQueue
 }
 
 func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
@@ -48,7 +48,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 
 }
 
-func handleUdpConn(ct *conn.UdpConnContext) {
+func handleUdpConn(ct conn.UdpConnContext) {
 	log.Debugln("handle udp conn, dst ip: %v, dst port: %v", ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
 	defer func() {
 		ct.Wg().Done()

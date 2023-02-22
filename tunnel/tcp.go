@@ -15,8 +15,8 @@ var (
 	tcpQueue = make(chan conn.TcpConnContext, 200)
 )
 
-func AddTcpConn(ct conn.TcpConnContext) {
-	tcpQueue <- ct
+func TcpQueue() chan conn.TcpConnContext {
+	return tcpQueue
 }
 
 func handleTCPConn(ct conn.TcpConnContext) {

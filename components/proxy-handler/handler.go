@@ -42,6 +42,8 @@ func (uc udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
 }
 
 type ConnHandler struct {
+	tcpIn chan conn.TcpConnContext
+	udpIn chan conn.UdpConnContext
 }
 
 func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metadata M.Metadata) error {
@@ -58,7 +60,7 @@ func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metada
 	wg.Add(1)
 	defer wg.Wait()
 	ct := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
-	tunnel.AddTcpConn(*ct)
+	c.tcpIn <- *ct
 	return nil
 }
 
@@ -79,13 +81,17 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 	if err != nil {
 		return err
 	}
-	tunnel.AddUdpConn(ct)
+	c.udpIn <- *ct
 	return nil
 }
 
 func (c ConnHandler) NewError(ctx context.Context, err error) {
 	log.Errorln("proxy handler, err: %v", err)
 }
-func New() *ConnHandler {
-	return &ConnHandler{}
+func New(tcpIn chan conn.TcpConnContext,
+	udpIn chan conn.UdpConnContext) *ConnHandler {
+	return &ConnHandler{
+		tcpIn,
+		udpIn,
+	}
 }

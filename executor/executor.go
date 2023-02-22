@@ -10,6 +10,7 @@ import (
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/runtime-detail"
+	"github.com/igoogolx/itun2socks/tunnel"
 	sTun "github.com/sagernet/sing-tun"
 	"net/netip"
 	"time"
@@ -38,7 +39,7 @@ func New() (*Client, error) {
 	}
 	stack, err := sTun.NewStack("gvisor", sTun.StackOptions{
 		Context:    context.TODO(),
-		Handler:    proxy_handler.New(),
+		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		Tun:        tun,
 		Name:       tunDevice.Name,
 		MTU:        uint32(tunDevice.Mtu),
