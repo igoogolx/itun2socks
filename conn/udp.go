@@ -61,7 +61,7 @@ func (u *UdpConnContext) Conn() UdpConn {
 func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 	id, _ := uuid.NewV4()
 	rule := GetMatcher().GetRule(metadata.DstIP.String())
-	proxyAddr, _, err := net.SplitHostPort(getProxy().Addr())
+	proxyAddr, _, err := net.SplitHostPort(getProxy(constants.DistributionProxy).Addr())
 	if err != nil {
 		return nil, err
 	}
@@ -77,8 +77,5 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Met
 }
 
 func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule constants.IpRule, defaultInterface string) (net.PacketConn, error) {
-	if rule == constants.DistributionBypass {
-		return dialer.ListenPacket(ctx, "udp", "", dialer.WithAddrReuse(true), dialer.WithInterface(defaultInterface))
-	}
-	return getProxy().ListenPacketContext(ctx, metadata, dialer.WithInterface(defaultInterface))
+	return getProxy(rule).ListenPacketContext(ctx, metadata, dialer.WithInterface(defaultInterface))
 }

@@ -59,8 +59,5 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *constant.Me
 }
 
 func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule constants.IpRule, defaultInterface string) (net.Conn, error) {
-	if rule == constants.DistributionBypass {
-		return dialer.DialContext(ctx, "tcp", metadata.RemoteAddress(), dialer.WithInterface(defaultInterface))
-	}
-	return getProxy().DialContext(ctx, metadata, dialer.WithInterface(defaultInterface))
+	return getProxy(rule).DialContext(ctx, metadata, dialer.WithInterface(defaultInterface))
 }

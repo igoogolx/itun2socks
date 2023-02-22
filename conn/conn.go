@@ -1,20 +1,25 @@
 package conn
 
 import (
+	"github.com/Dreamacro/clash/adapter"
+	"github.com/Dreamacro/clash/adapter/outbound"
 	C "github.com/Dreamacro/clash/constant"
+	"github.com/igoogolx/itun2socks/constants"
 	"net/netip"
 	"sync"
 )
 
-var defaultProxy C.Proxy
-var mux sync.RWMutex
-
-type ProxyAddrType int
+var (
+	proxies map[constants.IpRule]C.Proxy
+	mux     sync.RWMutex
+)
 
 const (
 	ProxyAddrDomain ProxyAddrType = 0
 	ProxyAddrIp     ProxyAddrType = 1
 )
+
+type ProxyAddrType int
 
 type ProxyAddr struct {
 	addr     string
@@ -43,11 +48,13 @@ func (p ProxyAddr) Type() ProxyAddrType {
 func UpdateProxy(proxy C.Proxy) {
 	mux.Lock()
 	defer mux.Unlock()
-	defaultProxy = proxy
+	proxies = make(map[constants.IpRule]C.Proxy)
+	proxies[constants.DistributionProxy] = proxy
+	proxies[constants.DistributionBypass] = adapter.NewProxy(outbound.NewDirect())
 }
 
-func getProxy() C.Proxy {
+func getProxy(rule constants.IpRule) C.Proxy {
 	mux.RLock()
 	defer mux.RUnlock()
-	return defaultProxy
+	return proxies[rule]
 }
