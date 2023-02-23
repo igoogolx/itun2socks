@@ -9,12 +9,12 @@ import (
 	"strings"
 )
 
-type List struct {
+type Lister struct {
 	Items  []string
 	Mather func(s, i string) bool
 }
 
-func (l *List) Has(i string) bool {
+func (l *Lister) Has(i string) bool {
 	for _, item := range l.Items {
 		if l.Mather(item, i) {
 			return true
@@ -23,7 +23,7 @@ func (l *List) Has(i string) bool {
 	return false
 }
 
-func (l *List) Insert(s string) error {
+func (l *Lister) Insert(s string) error {
 	l.Items = append(l.Items, s)
 	return nil
 }
@@ -64,8 +64,8 @@ func ParseFile(file string) ([]string, error) {
 	return items, nil
 }
 
-func New(items []string, matcher func(s, i string) bool) *List {
-	return &List{
+func New(items []string, matcher func(s, i string) bool) *Lister {
+	return &Lister{
 		Items:  items,
 		Mather: matcher,
 	}

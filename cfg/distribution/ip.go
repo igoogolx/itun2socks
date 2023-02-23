@@ -11,8 +11,8 @@ import (
 )
 
 type IpMatcher struct {
-	Proxy  list.List
-	Bypass list.List
+	Proxy  list.Lister
+	Bypass list.Lister
 }
 
 type IpDistribution struct {
@@ -28,11 +28,11 @@ func NewIpDistribution(
 ) (IpDistribution, error) {
 	d := IpDistribution{}
 	d.Subnet = IpMatcher{
-		Proxy: list.List{
+		Proxy: list.Lister{
 			Items:  config.Subnet.Proxy,
 			Mather: IsSubnetContainsIp,
 		},
-		Bypass: list.List{
+		Bypass: list.Lister{
 			Items:  config.Subnet.Bypass,
 			Mather: IsSubnetContainsIp,
 		},
@@ -46,11 +46,11 @@ func NewIpDistribution(
 		return IpDistribution{}, fmt.Errorf("fail to parse bypass ip geo ips :%v", err)
 	}
 	d.GeoIps = IpMatcher{
-		Proxy: list.List{
+		Proxy: list.Lister{
 			Items:  proxyGeoIps,
 			Mather: IsSubnetContainsIp,
 		},
-		Bypass: list.List{
+		Bypass: list.Lister{
 			Items:  bypassGeoIps,
 			Mather: IsSubnetContainsIp,
 		},
@@ -65,11 +65,11 @@ func NewIpDistribution(
 		return IpDistribution{}, fmt.Errorf("fail to parse bypass ip geo sites :%v", err)
 	}
 	d.GeoSites = IpMatcher{
-		Proxy: list.List{
+		Proxy: list.Lister{
 			Items:  proxyGeoSites,
 			Mather: IsContainsDomain,
 		},
-		Bypass: list.List{
+		Bypass: list.Lister{
 			Items:  bypassGeoSites,
 			Mather: IsContainsDomain,
 		},
