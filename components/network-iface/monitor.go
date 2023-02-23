@@ -4,11 +4,17 @@ import (
 	"context"
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/configuration"
-	"github.com/igoogolx/itun2socks/global"
 	tun "github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
+	"go.uber.org/atomic"
 	"net/netip"
 )
+
+var defaultInterfaceName = atomic.NewString("")
+
+func GetDefaultInterfaceName() string {
+	return defaultInterfaceName.Load()
+}
 
 type ErrorHandler struct {
 }
@@ -53,6 +59,6 @@ func Update(name string) error {
 	if len(setting.DefaultInterface) != 0 {
 		nextName = setting.DefaultInterface
 	}
-	global.UpdateDefaultInterfaceName(nextName)
+	defaultInterfaceName.Store(nextName)
 	return err
 }

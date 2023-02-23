@@ -2,9 +2,9 @@ package tunnel
 
 import (
 	"github.com/Dreamacro/clash/log"
+	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/components/pool"
 	"github.com/igoogolx/itun2socks/conn"
-	"github.com/igoogolx/itun2socks/global"
 	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	"io"
 	"net"
@@ -20,7 +20,7 @@ func TcpQueue() chan conn.TcpConnContext {
 }
 
 func handleTCPConn(ct conn.TcpConnContext) {
-	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), global.GetDefaultInterfaceName())
+	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 	defer func() {
 		ct.Wg().Done()
 		if err := closeConn(ct.Conn()); err != nil {

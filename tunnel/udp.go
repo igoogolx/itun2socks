@@ -3,11 +3,11 @@ package tunnel
 import (
 	"fmt"
 	"github.com/Dreamacro/clash/log"
+	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/components/pool"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/constants"
 	"github.com/igoogolx/itun2socks/dns"
-	"github.com/igoogolx/itun2socks/global"
 	statistic2 "github.com/igoogolx/itun2socks/tunnel/statistic"
 	"io"
 	"net"
@@ -62,7 +62,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	if ct.Metadata().DstPort == constants.DnsPort {
 		lc = dns.NewConn(ct.ProxyAddr())
 	} else {
-		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), global.GetDefaultInterfaceName())
+		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 		if err != nil {
 			log.Warnln("fail to get udp conn, err: %v, target: %v", err, ct.Metadata().DstIP.String())
 			return

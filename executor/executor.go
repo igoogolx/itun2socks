@@ -9,7 +9,6 @@ import (
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/dns"
-	"github.com/igoogolx/itun2socks/global"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/tunnel"
 	sTun "github.com/sagernet/sing-tun"
@@ -89,7 +88,7 @@ func updateConn(c cfg.Config) {
 }
 
 func NewRuntimeDetail(tunInterfaceName string, localDns []string, remoteDns []string) (*Detail, error) {
-	networkInterface, err := iface.ResolveInterface(global.GetDefaultInterfaceName())
+	networkInterface, err := iface.ResolveInterface(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err
 	}

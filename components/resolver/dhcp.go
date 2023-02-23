@@ -3,7 +3,7 @@ package resolver
 import (
 	"context"
 	"github.com/Dreamacro/clash/component/dhcp"
-	"github.com/igoogolx/itun2socks/global"
+	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/miekg/dns"
 	"net"
 	"time"
@@ -32,7 +32,7 @@ func (d dhcpClient) ExchangeContext(ctx context.Context, m *dns.Msg) (*dns.Msg, 
 func (d dhcpClient) resolveDns() ([]net.IP, error) {
 	rCtx, cancel := context.WithTimeout(context.Background(), DhcpResolveTimeout)
 	defer cancel()
-	return dhcp.ResolveDNSFromDHCP(rCtx, global.GetDefaultInterfaceName())
+	return dhcp.ResolveDNSFromDHCP(rCtx, network_iface.GetDefaultInterfaceName())
 }
 
 func (d dhcpClient) Nameservers() []string {
