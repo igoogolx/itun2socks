@@ -33,9 +33,6 @@ func (c *Client) Start() error {
 func (c *Client) Close() error {
 	var err error
 	statistic.DefaultManager.CloseAllConnections()
-	if err = c.stack.Close(); err != nil {
-		return err
-	}
 	if err = c.tun.Close(); err != nil {
 		return err
 	}
