@@ -19,5 +19,11 @@ func getDetail(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError("the client is not started"))
 		return
 	}
-	render.JSON(w, r, manager.RuntimeDetail())
+	detail, err := manager.RuntimeDetail()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, err)
+		return
+	}
+	render.JSON(w, r, detail)
 }

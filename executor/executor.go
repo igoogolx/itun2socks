@@ -2,7 +2,6 @@ package executor
 
 import (
 	"context"
-	"github.com/Dreamacro/clash/component/iface"
 	"github.com/igoogolx/itun2socks/cfg"
 	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/components/proxy-handler"
@@ -51,6 +50,9 @@ func New() (*Client, error) {
 
 	newLocalServer := localserver.New(config.LocalServer.HttpAddr)
 	interfaceHandler, err := network_iface.New()
+	if err != nil {
+		return nil, err
+	}
 	err = interfaceHandler.Monitor.Start()
 	if err != nil {
 		return nil, err
@@ -58,13 +60,14 @@ func New() (*Client, error) {
 	if err = updateCfg(config); err != nil {
 		return nil, err
 	}
-	runtimeDetail, err := NewRuntimeDetail(config.Device.Name, config.Rule.Dns.Local.Client.Nameservers(), config.Rule.Dns.Remote.Client.Nameservers())
 	return &Client{
 		stack:                   stack,
 		tun:                     tun,
 		localserver:             newLocalServer,
 		defaultInterfaceHandler: *interfaceHandler,
-		runtimeDetail:           *runtimeDetail,
+		deviceName:              config.Device.Name,
+		localDns:                config.Rule.Dns.Local.Client.Nameservers(),
+		remoteDns:               config.Rule.Dns.Remote.Client.Nameservers(),
 	}, nil
 }
 
@@ -85,22 +88,4 @@ func updateDns(c cfg.Config) {
 
 func updateConn(c cfg.Config) {
 	conn.UpdateProxy(c.Proxy)
-}
-
-func NewRuntimeDetail(tunInterfaceName string, localDns []string, remoteDns []string) (*Detail, error) {
-	networkInterface, err := iface.ResolveInterface(network_iface.GetDefaultInterfaceName())
-	if err != nil {
-		return nil, err
-	}
-	addr, err := networkInterface.PickIPv4Addr(nil)
-	if err != nil {
-		return nil, err
-	}
-	return &Detail{
-		DirectedInterfaceV4Addr: addr.IP.String(),
-		DirectedInterfaceName:   networkInterface.Name,
-		TunInterfaceName:        tunInterfaceName,
-		LocalDns:                localDns,
-		RemoteDns:               remoteDns,
-	}, nil
 }

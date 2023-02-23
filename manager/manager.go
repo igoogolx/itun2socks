@@ -58,6 +58,6 @@ func GetIsStarted() bool {
 	return client != nil
 }
 
-func RuntimeDetail() executor.Detail {
+func RuntimeDetail() (*executor.Detail, error) {
 	return client.RuntimeDetail()
 }

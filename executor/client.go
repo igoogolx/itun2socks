@@ -2,6 +2,7 @@ package executor
 
 import (
 	"fmt"
+	"github.com/Dreamacro/clash/component/iface"
 	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
@@ -24,11 +25,28 @@ type Client struct {
 	stack                   sTun.Stack
 	localserver             localserver.Server
 	defaultInterfaceHandler network_iface.Handler
+	deviceName              string
+	localDns                []string
+	remoteDns               []string
 	runtimeDetail           Detail
 }
 
-func (c *Client) RuntimeDetail() Detail {
-	return c.runtimeDetail
+func (c *Client) RuntimeDetail() (*Detail, error) {
+	networkInterface, err := iface.ResolveInterface(network_iface.GetDefaultInterfaceName())
+	if err != nil {
+		return nil, err
+	}
+	addr, err := networkInterface.PickIPv4Addr(nil)
+	if err != nil {
+		return nil, err
+	}
+	return &Detail{
+		DirectedInterfaceV4Addr: addr.IP.String(),
+		DirectedInterfaceName:   networkInterface.Name,
+		TunInterfaceName:        c.deviceName,
+		LocalDns:                c.localDns,
+		RemoteDns:               c.remoteDns,
+	}, nil
 }
 
 func (c *Client) Start() error {
