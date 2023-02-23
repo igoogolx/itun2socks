@@ -45,11 +45,11 @@ func (p ProxyAddr) Type() ProxyAddrType {
 	return p.addrType
 }
 
-func UpdateProxy(proxy C.Proxy) {
+func UpdateProxy(remoteProxy C.Proxy) {
 	mux.Lock()
 	defer mux.Unlock()
 	proxies = make(map[constants.IpRule]C.Proxy)
-	proxies[constants.DistributionProxy] = proxy
+	proxies[constants.DistributionProxy] = remoteProxy
 	proxies[constants.DistributionBypass] = adapter.NewProxy(outbound.NewDirect())
 }
 
