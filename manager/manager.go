@@ -57,3 +57,7 @@ func Close() error {
 func GetIsStarted() bool {
 	return client != nil
 }
+
+func RuntimeDetail() executor.Detail {
+	return client.RuntimeDetail()
+}

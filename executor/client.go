@@ -10,12 +10,25 @@ import (
 	"sync"
 )
 
+type Detail struct {
+	DirectedInterfaceName   string   `json:"directedInterfaceName"`
+	DirectedInterfaceV4Addr string   `json:"directedInterfaceV4Addr"`
+	TunInterfaceName        string   `json:"tunInterfaceName"`
+	LocalDns                []string `json:"localDns"`
+	RemoteDns               []string `json:"remoteDns"`
+}
+
 type Client struct {
 	sync.RWMutex
 	tun                     sTun.Tun
 	stack                   sTun.Stack
 	localserver             localserver.Server
 	defaultInterfaceHandler network_iface.Handler
+	runtimeDetail           Detail
+}
+
+func (c *Client) RuntimeDetail() Detail {
+	return c.runtimeDetail
 }
 
 func (c *Client) Start() error {

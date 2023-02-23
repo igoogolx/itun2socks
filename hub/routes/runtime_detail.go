@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/manager"
-	"github.com/igoogolx/itun2socks/runtime-detail"
 	"net/http"
 )
 
@@ -20,5 +19,5 @@ func getDetail(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError("the client is not started"))
 		return
 	}
-	render.JSON(w, r, runtime_detail.Get())
+	render.JSON(w, r, manager.RuntimeDetail())
 }
