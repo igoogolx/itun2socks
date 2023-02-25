@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const DnsMsg = "google.com."
+
 func MakeDnsMsg(host string) ([]byte, error) {
 	m := new(dns.Msg)
 	m.SetQuestion(host, dns.TypeA)
@@ -34,7 +36,7 @@ func UdpTest(pc net.PacketConn, target string) bool {
 		log.Warnln("fail to resolve udp, err: %v\n", err)
 		return false
 	}
-	msg, err := MakeDnsMsg("google.com.")
+	msg, err := MakeDnsMsg(DnsMsg)
 	if err != nil {
 		log.Warnln("fail to make msg, err: %v\n", err)
 		return false
@@ -46,7 +48,7 @@ func UdpTest(pc net.PacketConn, target string) bool {
 	}
 	err = pc.SetDeadline(time.Now().Add(5 * time.Second))
 	if err != nil {
-		log.Warnln("fail to set deadlie for pc, err: %v\n", err)
+		log.Warnln("fail to set deadline for pc, err: %v\n", err)
 		return false
 	}
 	for {
