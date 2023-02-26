@@ -7,7 +7,7 @@ import (
 	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	db2 "github.com/igoogolx/itun2socks/configuration"
+	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/tunnel"
 	"net/http"
 	"time"
@@ -40,7 +40,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 	if url == "" {
 		url = defaultDelayTestUrl
 	}
-	proxyOption, err := db2.GetProxy(proxyId)
+	proxyOption, err := configuration.GetProxy(proxyId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -82,7 +82,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	if url == "" {
 		url = defaultDelayTestUrl
 	}
-	proxyOption, err := db2.GetProxy(proxyId)
+	proxyOption, err := configuration.GetProxy(proxyId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -109,13 +109,13 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProxies(w http.ResponseWriter, r *http.Request) {
-	proxiesMap, err := db2.GetProxies()
+	proxiesMap, err := configuration.GetProxies()
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	selectedId, err := db2.GetSelectedId("proxy")
+	selectedId, err := configuration.GetSelectedId("proxy")
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -138,7 +138,7 @@ func addProxy(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	id, err := db2.AddProxy(req)
+	id, err := configuration.AddProxy(req)
 	if err != nil {
 		log.Warnln("failed to add proxy: %v", err)
 		render.Status(r, http.StatusInternalServerError)
@@ -150,7 +150,7 @@ func addProxy(w http.ResponseWriter, r *http.Request) {
 
 func deleteProxy(w http.ResponseWriter, r *http.Request) {
 	proxyId := chi.URLParam(r, "proxyId")
-	err := db2.DeleteProxy(proxyId)
+	err := configuration.DeleteProxy(proxyId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -167,7 +167,7 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	if err := db2.UpdateProxy(proxyId, req.(map[string]interface{})); err != nil {
+	if err := configuration.UpdateProxy(proxyId, req.(map[string]interface{})); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
