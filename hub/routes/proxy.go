@@ -3,12 +3,14 @@ package routes
 import (
 	"context"
 	"github.com/Dreamacro/clash/adapter"
+	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/tunnel"
+	"io"
 	"net/http"
 	"time"
 )
@@ -22,12 +24,34 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Put("/", addProxy)
+	r.Put("/clash-url", addProxiesFromClashUrl)
 	r.Delete("/", deleteAllProxies)
 	r.Delete("/{proxyId}", deleteProxy)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
 	return r
+}
+
+func ParseProxiesFromClashUrl(url string) ([]map[string]any, error) {
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return ParseProxiesFromClashConfig(body)
+}
+
+func ParseProxiesFromClashConfig(content []byte) ([]map[string]any, error) {
+	rawConfig, err := config.UnmarshalRawConfig(content)
+	if err != nil {
+		return nil, err
+	}
+	return rawConfig.Proxy, err
 }
 
 func testProxyUdp(w http.ResponseWriter, r *http.Request) {
@@ -168,6 +192,29 @@ func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.NoContent(w, r)
+}
+
+func addProxiesFromClashUrl(w http.ResponseWriter, r *http.Request) {
+	var req map[string]string
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+
+	}
+	proxies, err := ParseProxiesFromClashUrl(req["url"])
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	newProxies, err := configuration.AddProxies(proxies)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.JSON(w, r, render.M{"proxies": newProxies})
 }
 
 func updateProxy(w http.ResponseWriter, r *http.Request) {
