@@ -54,6 +54,16 @@ func DeleteProxy(id string) error {
 	return nil
 }
 
+func DeleteAllProxies() error {
+	data, err := Read()
+	if err != nil {
+		return err
+	}
+	data.Proxy = make([]map[string]interface{}, 0)
+	err = Write(data)
+	return err
+}
+
 func UpdateProxy(id string, proxy map[string]interface{}) error {
 	_, err := adapter.ParseProxy(proxy)
 	if err != nil {

@@ -22,6 +22,7 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Put("/", addProxy)
+	r.Delete("/", deleteAllProxies)
 	r.Delete("/{proxyId}", deleteProxy)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
@@ -151,6 +152,16 @@ func addProxy(w http.ResponseWriter, r *http.Request) {
 func deleteProxy(w http.ResponseWriter, r *http.Request) {
 	proxyId := chi.URLParam(r, "proxyId")
 	err := configuration.DeleteProxy(proxyId)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
+	err := configuration.DeleteAllProxies()
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
