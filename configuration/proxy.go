@@ -86,6 +86,32 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 	return nil
 }
 
+func AddProxies(proxies []map[string]interface{}) ([]map[string]interface{}, error) {
+	data, err := Read()
+	if err != nil {
+		return nil, err
+	}
+	for _, proxy := range proxies {
+		_, err := adapter.ParseProxy(proxy)
+		if err != nil {
+			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
+		}
+
+		id, err := uuid.NewV4()
+		if err != nil {
+			return nil, err
+		}
+		proxy["id"] = id.String()
+		data.Proxy = append(data.Proxy, proxy)
+	}
+
+	err = Write(data)
+	if err != nil {
+		return nil, err
+	}
+	return data.Proxy, nil
+}
+
 func AddProxy(proxy map[string]interface{}) (string, error) {
 	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
