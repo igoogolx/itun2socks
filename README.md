@@ -7,11 +7,12 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![GPL License][license-shield]][license-url]
 [![Build Status][build-shield]][build-url]
 
 <h3 align="center">Itun2socks</h3>
-The engine that powers the [lux](https://github.com/igoogolx/lux)
+The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux</strong></a>.
+
   <p align="center">
     <br />
     <a href="https://github.com/igoogolx/itun2socks/wiki"><strong>Explore the docs »</strong></a>
