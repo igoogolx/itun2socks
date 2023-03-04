@@ -41,8 +41,8 @@ The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux
 [build-url]: https://github.com/igoogolx/itun2socks/actions/workflows/build.yml
 
 
-### Build with lwip stack
-`go build -v -ldflags="-s -w" -trimpath -tags="with_lwip"`
+### Build with gvisor stack
+`go build -v -ldflags="-s -w" -trimpath -tags="with_gvisor"`
 
 ### Supported net stack
 Build with tag `with_gvisor`,`with_lwip`,`with_system`
