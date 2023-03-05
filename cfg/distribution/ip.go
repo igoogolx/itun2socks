@@ -25,6 +25,7 @@ type IpDistribution struct {
 
 func NewIpDistribution(
 	config configuration.IpItem,
+	rootDir string,
 ) (IpDistribution, error) {
 	d := IpDistribution{}
 	d.Subnet = IpMatcher{
@@ -37,11 +38,11 @@ func NewIpDistribution(
 			Mather: IsSubnetContainsIp,
 		},
 	}
-	proxyGeoIps, err := geo2.LoadGeoIPs(config.GeoIps.Proxy)
+	proxyGeoIps, err := geo2.LoadGeoIPs(rootDir, config.GeoIps.Proxy)
 	if err != nil {
 		return IpDistribution{}, fmt.Errorf("fail to parse proxy ip geo ips :%v", err)
 	}
-	bypassGeoIps, err := geo2.LoadGeoIPs(config.GeoIps.Bypass)
+	bypassGeoIps, err := geo2.LoadGeoIPs(rootDir, config.GeoIps.Bypass)
 	if err != nil {
 		return IpDistribution{}, fmt.Errorf("fail to parse bypass ip geo ips :%v", err)
 	}
@@ -56,11 +57,11 @@ func NewIpDistribution(
 		},
 	}
 
-	proxyGeoSites, err := geo2.LoadGeoSites(config.GeoSites.Proxy)
+	proxyGeoSites, err := geo2.LoadGeoSites(rootDir, config.GeoSites.Proxy)
 	if err != nil {
 		return IpDistribution{}, fmt.Errorf("fail to parse proxy ip geo sites :%v", err)
 	}
-	bypassGeoSites, err := geo2.LoadGeoSites(config.GeoSites.Bypass)
+	bypassGeoSites, err := geo2.LoadGeoSites(rootDir, config.GeoSites.Bypass)
 	if err != nil {
 		return IpDistribution{}, fmt.Errorf("fail to parse bypass ip geo sites :%v", err)
 	}

@@ -36,6 +36,7 @@ const (
 )
 
 var (
+	HomeDir   = ""
 	Version   = "undefined"
 	BuildTime = "undefined"
 )

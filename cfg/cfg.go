@@ -21,12 +21,12 @@ type Config struct {
 	LocalServer local_server.Cfg
 }
 
-func New(rawConfig db2.Config) (Config, error) {
+func New(rawConfig db2.Config, geoDataDir string) (Config, error) {
 	selectedRule, err := db2.GetSelectedRule()
 	if err != nil {
 		return Config{}, err
 	}
-	rule, err := distribution.New(selectedRule, rawConfig.Setting.TrueProxyServer, DnsTable)
+	rule, err := distribution.New(selectedRule, rawConfig.Setting.TrueProxyServer, DnsTable, geoDataDir)
 	if err != nil {
 		return Config{}, err
 	}
