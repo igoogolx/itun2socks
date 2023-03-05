@@ -5,14 +5,13 @@ import (
 	"github.com/go-chi/cors"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
 type RouterHandler func(r chi.Router)
 
 var defaultRouterHandler RouterHandler
 
-func Start(addr string) error {
+func Start(addr string, webDir string) error {
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -41,17 +40,16 @@ func Start(addr string) error {
 			defaultRouterHandler(r)
 		}
 	})
-	FileServer(r)
+	FileServer(r, webDir)
 	err := http.ListenAndServe(addr, r)
 	return err
 }
 
-func FileServer(router *chi.Mux) {
-	root := filepath.Join("web", "dist")
-	fs := http.FileServer(http.Dir(root))
+func FileServer(router *chi.Mux, webDir string) {
+	fs := http.FileServer(http.Dir(webDir))
 
 	router.Get("/*", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := os.Stat(root + r.RequestURI); os.IsNotExist(err) {
+		if _, err := os.Stat(webDir + r.RequestURI); os.IsNotExist(err) {
 			http.StripPrefix(r.RequestURI, fs).ServeHTTP(w, r)
 		} else {
 			fs.ServeHTTP(w, r)

@@ -119,12 +119,13 @@ func New(
 	rule configuration.RuleCfg,
 	trueProxyServer string,
 	dnsTable Cache,
+	geoDataDir string,
 ) (Config, error) {
-	dns, err := NewDnsDistribution(rule.Dns)
+	dns, err := NewDnsDistribution(rule.Dns, geoDataDir)
 	if err != nil {
 		return Config{}, err
 	}
-	ip, err := NewIpDistribution(rule.Ip)
+	ip, err := NewIpDistribution(rule.Ip, geoDataDir)
 	if err != nil {
 		return Config{}, err
 	}

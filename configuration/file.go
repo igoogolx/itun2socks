@@ -77,7 +77,11 @@ func Write(c Config) error {
 }
 
 var fileMutex sync.Mutex
-var ConfigFilePath = atomic.NewString("")
+var configFilePath = atomic.NewString("")
+
+func SetConfigFilePath(path string) {
+	configFilePath.Store(path)
+}
 
 //go:embed assets/config.json
 var defaultConfigContent []byte
@@ -85,7 +89,7 @@ var defaultConfigContent []byte
 func readFile() (*Config, error) {
 	fileMutex.Lock()
 	defer fileMutex.Unlock()
-	if !fileExists(ConfigFilePath.Load()) {
+	if !fileExists(configFilePath.Load()) {
 		err := write(defaultConfigContent)
 		if err != nil {
 			return nil, err
@@ -93,13 +97,13 @@ func readFile() (*Config, error) {
 		log.Infoln("Created the default config file")
 	}
 	c := &Config{}
-	data, err := os.ReadFile(ConfigFilePath.Load())
+	data, err := os.ReadFile(configFilePath.Load())
 	if err != nil {
-		return nil, fmt.Errorf("fail to read config file, path:%v, err:%v", ConfigFilePath.Load(), err)
+		return nil, fmt.Errorf("fail to read config file, path:%v, err:%v", configFilePath.Load(), err)
 	}
 	err = json.Unmarshal(data, c)
 	if err != nil {
-		return nil, fmt.Errorf("fail to parse config file, path:%v, err:%v", ConfigFilePath.Load(), err)
+		return nil, fmt.Errorf("fail to parse config file, path:%v, err:%v", configFilePath.Load(), err)
 	}
 	return c, nil
 }
@@ -123,19 +127,19 @@ func fileExists(filename string) bool {
 }
 
 func write(data []byte) error {
-	f, err := os.OpenFile(ConfigFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(configFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			log.Warnln("fail to close file: %v, err: %v", ConfigFilePath.Load(), err)
+			log.Warnln("fail to close file: %v, err: %v", configFilePath.Load(), err)
 		}
 	}(f)
 	if err != nil {
-		return fmt.Errorf("fail to open file:%v, err:%v", ConfigFilePath.Load(), err)
+		return fmt.Errorf("fail to open file:%v, err:%v", configFilePath.Load(), err)
 	}
 	_, err = f.Write(data)
 	if err != nil {
-		return fmt.Errorf("fail to write file:%v, err:%v", ConfigFilePath.Load(), err)
+		return fmt.Errorf("fail to write file:%v, err:%v", configFilePath.Load(), err)
 	}
 	return nil
 }

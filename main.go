@@ -1,5 +1,6 @@
 package main
 
+import "C"
 import (
 	"flag"
 	"fmt"
@@ -13,15 +14,36 @@ import (
 	"github.com/igoogolx/itun2socks/manager"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 )
 
 func main() {
+	homeDir := *flag.String("home-dir", "", "Config dir, default: current dir")
 	version := flag.Bool("version", false, "Print version")
 	port := flag.Int("port", constants.DefaultHubPort, "Running port, default:9000")
-	config := flag.String("config", constants.DbFileName, "Config file path, default: config.json")
+	configFile := *flag.String("configFile", "", "Config file path, default: configFile.json")
 	checkElevated := flag.Bool("check_elevated", true, "Check whether it's run as the admin, default: true")
 	flag.Parse()
+
+	if homeDir != "" {
+		if !filepath.IsAbs(homeDir) {
+			currentDir, _ := os.Getwd()
+			homeDir = filepath.Join(currentDir, homeDir)
+		}
+		constants.Path.SetHomeDir(homeDir)
+	}
+
+	if configFile != "" {
+		if !filepath.IsAbs(configFile) {
+			currentDir, _ := os.Getwd()
+			configFile = filepath.Join(currentDir, configFile)
+		}
+		configuration.SetConfigFilePath(configFile)
+	} else {
+		configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
+	}
+
 	if *version {
 		fmt.Printf("version: %v, build on: %v", constants.Version, constants.BuildTime)
 		os.Exit(0)
@@ -32,8 +54,7 @@ func main() {
 			return
 		}
 	}
-	configuration.ConfigFilePath.Store(*config)
-	hub.Start(*port)
+	hub.Start(*port, constants.Path.WebDir())
 	defer func() {
 		if p := recover(); p != nil {
 			log.Errorln("internal error: %v", p)

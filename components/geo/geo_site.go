@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 )
 
-func LoadGeoSites(countries []string) ([]string, error) {
+func LoadGeoSites(rootDir string, countries []string) ([]string, error) {
 	sites := make([]string, 0)
 	if len(countries) == 0 {
 		return sites, nil
 	}
 	for _, country := range countries {
-		path := filepath.Join("geoData", "site", country)
+		path := filepath.Join(rootDir, "site", country)
 		items, err := list.ParseFile(path)
 		if err != nil {
 			return sites, nil
