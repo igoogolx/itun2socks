@@ -34,7 +34,7 @@ func New(rawConfig db2.Config, geoDataDir string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	proxy, err := outbound.New(rawConfig.Proxy, rawConfig.Selected.Proxy)
+	proxy, err := outbound.New(rawConfig.Proxy, rawConfig.Selected.Proxy, true)
 	if err != nil {
 		return Config{}, err
 	}

@@ -5,6 +5,7 @@ import (
 	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/Dreamacro/clash/constant"
 	C "github.com/Dreamacro/clash/constant"
+	"github.com/Dreamacro/clash/log"
 	"github.com/gofrs/uuid"
 	"github.com/igoogolx/itun2socks/constants"
 	"net"
@@ -61,7 +62,13 @@ func (u *UdpConnContext) Conn() UdpConn {
 func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 	id, _ := uuid.NewV4()
 	rule := GetMatcher().GetRule(metadata.DstIP.String())
-	proxyAddr, _, err := net.SplitHostPort(getProxy(constants.DistributionProxy).Addr())
+	curProxy := getProxy(constants.DistributionProxy)
+	selectedProxyAddr := curProxy.Addr()
+	if len(selectedProxyAddr) == 0 {
+		selectedProxyAddr = curProxy.Unwrap(&C.Metadata{}).Addr()
+	}
+	proxyAddr, _, err := net.SplitHostPort(selectedProxyAddr)
+	log.Infoln("proxy addr: %v", proxyAddr)
 	if err != nil {
 		return nil, err
 	}
