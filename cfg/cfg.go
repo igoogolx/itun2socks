@@ -34,7 +34,18 @@ func New(rawConfig db2.Config, geoDataDir string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	proxy, err := outbound.New(rawConfig.Proxy, rawConfig.Selected.Proxy, true)
+	outboundOption := outbound.Option{
+		Mode:    rawConfig.Setting.Outbound.Mode,
+		Proxies: rawConfig.Proxy,
+	}
+	if rawConfig.Setting.Outbound.Mode == "select" {
+		outboundOption.Config = map[string]string{
+			"selected": rawConfig.Selected.Proxy,
+		}
+	} else if rawConfig.Setting.Outbound.Mode == "auto" {
+		outboundOption.Config = rawConfig.Setting.Outbound.Config
+	}
+	proxy, err := outbound.New(outboundOption)
 	if err != nil {
 		return Config{}, err
 	}

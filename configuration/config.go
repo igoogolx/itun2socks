@@ -46,6 +46,7 @@ type SettingCfg struct {
 	DefaultInterface string      `json:"defaultInterface"`
 	TrueProxyServer  string      `json:"trueProxyServer"`
 	LocalServer      LocalServer `json:"localServer"`
+	Outbound         Outbound    `json:"outbound"`
 }
 
 type LocalServer struct {
@@ -53,4 +54,9 @@ type LocalServer struct {
 		Port    int  `json:"port"`
 		Enabled bool `json:"enabled"`
 	} `json:"http"`
+}
+
+type Outbound struct {
+	Mode   string            `json:"mode"`
+	Config map[string]string `json:"config"`
 }

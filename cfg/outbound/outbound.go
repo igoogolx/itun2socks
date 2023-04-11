@@ -8,50 +8,67 @@ import (
 	"github.com/Dreamacro/clash/constant/provider"
 )
 
-func New(proxyConfig []map[string]interface{}, selected string, fallback bool) (constant.Proxy, error) {
+type Option struct {
+	Mode    string
+	Proxies []map[string]interface{}
+	Config  map[string]string
+}
+
+func New(option Option) (constant.Proxy, error) {
 
 	var proxy constant.Proxy
 	var err error
 	var ids = []string{}
 
-	if fallback {
-		var proxyMap = map[string]constant.Proxy{}
-		for _, v := range proxyConfig {
-			p, err := adapter.ParseProxy(v)
-			if err != nil {
-				return nil, fmt.Errorf("fail to parse proxy: %v", err)
+	switch option.Mode {
+	case "select":
+		{
+			var selectedProxy map[string]interface{}
+			for _, v := range option.Proxies {
+				if v["id"] == option.Config["selected"] {
+					selectedProxy = v
+					break
+				}
 			}
-			proxyMap[v["id"].(string)] = p
-			ids = append(ids, v["id"].(string))
+			if selectedProxy == nil {
+				return nil, fmt.Errorf("error getting seleted proxyConfig, id:%v", option.Config["selected"])
+			}
+			proxy, err = adapter.ParseProxy(selectedProxy)
+			if err != nil {
+				return nil, err
+			}
+			break
 		}
-		proxyGroupConfig := map[string]any{
-			"name":     "fallback-auto",
-			"type":     "url-test",
-			"proxies":  ids,
-			"url":      "https://www.google.com/",
-			"interval": 300,
+	case "auto":
+		{
+			proxyMap := map[string]constant.Proxy{}
+			for _, v := range option.Proxies {
+				p, err := adapter.ParseProxy(v)
+				if err != nil {
+					return nil, fmt.Errorf("fail to parse proxy: %v", err)
+				}
+				proxyMap[v["id"].(string)] = p
+				ids = append(ids, v["id"].(string))
+			}
+			proxyGroupConfig := map[string]any{
+				"name":     "auto",
+				"proxies":  ids,
+				"interval": 300,
+				"url":      option.Config["url"],
+				"type":     option.Config["type"],
+			}
+
+			proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{})
+			if err != nil {
+				return nil, fmt.Errorf("fail to parse proxy group: %v", err)
+			}
+			proxy = adapter.NewProxy(proxyGroup)
+			break
 		}
 
-		proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{})
-		if err != nil {
-			return nil, fmt.Errorf("fail to parse proxy group: %v", err)
-		}
-		proxy = adapter.NewProxy(proxyGroup)
-	} else {
-		var selectedProxy map[string]interface{}
-		for _, v := range proxyConfig {
-			if v["id"] == selected {
-				selectedProxy = v
-				break
-			}
-		}
-		if selectedProxy == nil {
-			return nil, fmt.Errorf("error getting seleted proxyConfig, id:%v", selected)
-		}
-		proxy, err = adapter.ParseProxy(selectedProxy)
-		if err != nil {
-			return nil, err
-		}
+	default:
+		return nil, fmt.Errorf("unsupported outbound Mode: %v", option.Mode)
+
 	}
 
 	return proxy, nil
