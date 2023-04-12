@@ -2,6 +2,7 @@ package network_iface
 
 import (
 	"context"
+	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/configuration"
 	tun "github.com/sagernet/sing-tun"
@@ -60,5 +61,6 @@ func Update(name string) error {
 		nextName = setting.DefaultInterface
 	}
 	defaultInterfaceName.Store(nextName)
-	return err
+	dialer.DefaultInterface.Store(nextName)
+	return nil
 }

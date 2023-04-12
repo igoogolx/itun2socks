@@ -9,8 +9,6 @@ import (
 
 type RouterHandler func(r chi.Router)
 
-var defaultRouterHandler RouterHandler
-
 func Start(addr string, webDir string) error {
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
@@ -36,9 +34,6 @@ func Start(addr string, webDir string) error {
 		r.Mount("/ping", pingRouter())
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
-		if defaultRouterHandler != nil {
-			defaultRouterHandler(r)
-		}
 	})
 	FileServer(r, webDir)
 	err := http.ListenAndServe(addr, r)
