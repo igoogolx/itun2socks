@@ -130,6 +130,14 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	proxyOption["delay"] = delay
+	err = configuration.UpdateProxy(proxyId, proxyOption)
+	if err != nil {
+		render.JSON(w, r, render.M{
+			"delay": -1,
+		})
+		return
+	}
 	render.JSON(w, r, render.M{
 		"delay": delay,
 	})
