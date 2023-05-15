@@ -7,7 +7,6 @@ import (
 	"github.com/igoogolx/itun2socks/components/proxy-handler"
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/conn"
-	"github.com/igoogolx/itun2socks/constants"
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/tunnel"
@@ -52,7 +51,7 @@ func New() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	config, err := cfg.New(rawConfig, constants.Path.GeoDataDir())
+	config, err := cfg.New(rawConfig)
 	if err != nil {
 		return nil, err
 	}

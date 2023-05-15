@@ -61,7 +61,7 @@ func main() {
 			return
 		}
 	}
-	hub.Start(port, constants.Path.WebDir())
+	hub.Start(port)
 	defer func() {
 		if p := recover(); p != nil {
 			log.Errorln("internal error: %v", p)

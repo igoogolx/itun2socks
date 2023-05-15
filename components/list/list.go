@@ -2,10 +2,8 @@ package list
 
 import (
 	"bufio"
-	"fmt"
 	"github.com/Dreamacro/clash/log"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -28,22 +26,10 @@ func (l *Lister) Insert(s string) error {
 	return nil
 }
 
-func ParseFile(file string) ([]string, error) {
+func ParseFile(file io.Reader) ([]string, error) {
 	items := make([]string, 0)
-	if len(file) == 0 {
-		return items, nil
-	}
-	f, err := os.Open(file)
-	if err != nil {
-		return items, fmt.Errorf("fail to open file %s: %s", file, err)
-	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			log.Warnln("fail to close file, file: %v, err: %v", file, err)
-		}
-	}(f)
-	scanner := bufio.NewScanner(f)
+	var err error
+	scanner := bufio.NewScanner(file)
 	s := strings.Builder{}
 	for scanner.Scan() {
 		s.Write(scanner.Bytes())

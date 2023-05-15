@@ -12,7 +12,6 @@ import (
 
 func NewDnsDistribution(
 	config configuration.DnsItem,
-	geoDataDir string,
 ) (DnsDistribution, error) {
 	localAddress := config.Local.Address
 	localDnsClient, err := resolver.NewClient(localAddress)
@@ -20,7 +19,7 @@ func NewDnsDistribution(
 		return DnsDistribution{}, err
 	}
 	dd := DnsDistribution{}
-	localGeoSites, err := geo.LoadGeoSites(geoDataDir, config.Local.GeoSites)
+	localGeoSites, err := geo.LoadGeoSites(config.Local.GeoSites)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -36,7 +35,7 @@ func NewDnsDistribution(
 			IsContainsDomain,
 		),
 	}
-	remoteGeoSites, err := geo.LoadGeoSites(geoDataDir, config.Remote.GeoSites)
+	remoteGeoSites, err := geo.LoadGeoSites(config.Remote.GeoSites)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
