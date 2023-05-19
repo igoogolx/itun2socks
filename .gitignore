@@ -2,3 +2,5 @@
 .idea
 core
 dist
+*.tar.gz
+geoData

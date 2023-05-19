@@ -7,27 +7,58 @@ import (
 	"github.com/igoogolx/itun2socks/components/proxy-handler"
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/conn"
-	"github.com/igoogolx/itun2socks/constants"
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/tunnel"
 	sTun "github.com/sagernet/sing-tun"
+	F "github.com/sagernet/sing/common/format"
+	"net"
 	"net/netip"
+	"runtime"
+	"strconv"
+	"strings"
 	"time"
 )
+
+func CalculateInterfaceName(name string) (tunName string) {
+	if runtime.GOOS == "darwin" {
+		tunName = "utun"
+	} else if name != "" {
+		tunName = name
+		return
+	} else {
+		tunName = "tun"
+	}
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return
+	}
+	var tunIndex int
+	for _, netInterface := range interfaces {
+		if strings.HasPrefix(netInterface.Name, tunName) {
+			index, parseErr := strconv.ParseInt(netInterface.Name[len(tunName):], 10, 16)
+			if parseErr == nil {
+				tunIndex = int(index) + 10
+			}
+		}
+	}
+	tunName = F.ToString(tunName, tunIndex)
+	return
+}
 
 func New() (*Client, error) {
 	rawConfig, err := configuration.Read()
 	if err != nil {
 		return nil, err
 	}
-	config, err := cfg.New(rawConfig, constants.Path.GeoDataDir())
+	config, err := cfg.New(rawConfig)
 	if err != nil {
 		return nil, err
 	}
 	tunDevice := config.Device
+	tunInterfaceName := CalculateInterfaceName(tunDevice.Name)
 	tunOptions := sTun.Options{
-		Name:         tunDevice.Name,
+		Name:         tunInterfaceName,
 		MTU:          uint32(tunDevice.Mtu),
 		Inet4Address: []netip.Prefix{netip.MustParsePrefix(tunDevice.Gateway.String())},
 		AutoRoute:    true,
@@ -41,7 +72,7 @@ func New() (*Client, error) {
 		Context:    context.TODO(),
 		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		Tun:        tun,
-		Name:       tunDevice.Name,
+		Name:       tunInterfaceName,
 		MTU:        uint32(tunDevice.Mtu),
 		UDPTimeout: int64(5 * time.Minute),
 	})

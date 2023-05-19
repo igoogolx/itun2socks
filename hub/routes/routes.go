@@ -1,15 +1,17 @@
 package routes
 
 import (
+	"embed"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"io/fs"
 	"net/http"
 	"os"
 )
 
 type RouterHandler func(r chi.Router)
 
-func Start(addr string, webDir string) error {
+func Start(addr string) error {
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -35,19 +37,24 @@ func Start(addr string, webDir string) error {
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
 	})
-	FileServer(r, webDir)
+	FileServer(r)
 	err := http.ListenAndServe(addr, r)
 	return err
 }
 
-func FileServer(router *chi.Mux, webDir string) {
-	fs := http.FileServer(http.Dir(webDir))
+//go:embed dist
+var dashboard embed.FS
+
+func FileServer(router *chi.Mux) {
+	fSys, _ := fs.Sub(dashboard, "dist")
+
+	staticFs := http.FileServer(http.FS(fSys))
 
 	router.Get("/*", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := os.Stat(webDir + r.RequestURI); os.IsNotExist(err) {
-			http.StripPrefix(r.RequestURI, fs).ServeHTTP(w, r)
+		if _, err := fSys.Open(r.RequestURI); os.IsNotExist(err) {
+			http.StripPrefix(r.RequestURI, staticFs).ServeHTTP(w, r)
 		} else {
-			fs.ServeHTTP(w, r)
+			staticFs.ServeHTTP(w, r)
 		}
 	})
 }

@@ -1,20 +1,14 @@
 package geo
 
-import (
-	"github.com/igoogolx/itun2socks/components/list"
-	"path/filepath"
-)
-
-func LoadGeoSites(rootDir string, countries []string) ([]string, error) {
+func LoadGeoSites(countries []string) ([]string, error) {
 	sites := make([]string, 0)
 	if len(countries) == 0 {
 		return sites, nil
 	}
 	for _, country := range countries {
-		path := filepath.Join(rootDir, "site", country)
-		items, err := list.ParseFile(path)
+		items, err := parse("geoData/site/" + country)
 		if err != nil {
-			return sites, nil
+			return nil, err
 		}
 		sites = append(sites, items...)
 	}
