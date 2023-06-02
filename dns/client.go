@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/Dreamacro/clash/log"
-	"github.com/igoogolx/itun2socks/cfg"
+	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/components/resolver"
 	"github.com/igoogolx/itun2socks/conn"
+	"github.com/igoogolx/itun2socks/constants"
 	D "github.com/miekg/dns"
 	"io"
 	"net"
@@ -16,7 +17,7 @@ import (
 )
 
 type Matcher interface {
-	GetDns(question string, isPrimary bool) resolver.Client
+	GetDns(question string, isPrimary bool) (resolver.Client, constants.DnsRule)
 }
 
 var defaultMatcher Matcher
@@ -62,11 +63,11 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	var isPrimary bool
+	var isLocal bool
 	if d.proxyAddr.Type() == conn.ProxyAddrDomain {
-		isPrimary = strings.Contains(question, d.proxyAddr.Addr())
+		isLocal = strings.Contains(question, d.proxyAddr.Addr())
 	}
-	dnsClient := getMatcher().GetDns(question, isPrimary)
+	dnsClient, dnsRule := getMatcher().GetDns(question, isLocal)
 	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, proxy addr: %v, server: %v", err, question, d.proxyAddr, dnsClient.Nameservers())
@@ -79,7 +80,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	for _, resIp := range resIps {
 		if resIp != nil {
 			log.Infoln("[DNS], target:%v, server:%v, result: %v", question, dnsClient.Nameservers(), resIp)
-			cfg.DnsTable.Add(resIp.String(), question)
+			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}
 	d.data <- resData

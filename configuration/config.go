@@ -41,7 +41,6 @@ type IpItem struct {
 	Name         string `json:"name"`
 	DefaultProxy bool   `json:"defaultProxy"`
 	GeoIps       IpRule `json:"geoIps"`
-	GeoSites     IpRule `json:"geoSites"`
 	Subnet       IpRule `json:"subnet"`
 }
 

@@ -2,16 +2,11 @@ package cfg
 
 import (
 	"github.com/Dreamacro/clash/constant"
-	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/cfg/local-server"
 	"github.com/igoogolx/itun2socks/cfg/outbound"
 	"github.com/igoogolx/itun2socks/cfg/tun"
 	db2 "github.com/igoogolx/itun2socks/configuration"
-)
-
-var (
-	DnsTable, _ = lru.New(1000)
 )
 
 type Config struct {
@@ -26,7 +21,7 @@ func New(rawConfig db2.Config) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	rule, err := distribution.New(rawConfig.Dns.Remote, rawConfig.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer, DnsTable)
+	rule, err := distribution.New(rawConfig.Dns.Remote, rawConfig.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer)
 	if err != nil {
 		return Config{}, err
 	}

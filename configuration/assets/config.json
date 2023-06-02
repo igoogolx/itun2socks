@@ -9,11 +9,11 @@
     {
       "id": "proxy_all",
       "dns": {
-        "domains": {
+        "geoSites": {
           "remote": [],
           "local": []
         },
-        "geoSites": {
+        "domain": {
           "remote": [".*"],
           "local": []
         }
@@ -22,10 +22,6 @@
         "defaultProxy": true,
         "geoIps": {
           "bypass": ["PRIVATE"],
-          "proxy": []
-        },
-        "geoSites": {
-          "bypass": [],
           "proxy": []
         },
         "subnet": {
@@ -37,11 +33,11 @@
     {
       "id": "bypass_cn",
       "dns": {
-        "domains": {
+        "geoSites": {
           "remote": [],
           "local": ["CN"]
         },
-        "geoSites": {
+        "domains": {
           "remote": [".*"],
           "local": []
         }
@@ -50,10 +46,6 @@
         "defaultProxy": true,
         "geoIps": {
           "bypass": ["CN", "PRIVATE"],
-          "proxy": []
-        },
-        "geoSites": {
-          "bypass": [],
           "proxy": []
         },
         "subnet": {
@@ -80,10 +72,6 @@
           "bypass": [],
           "proxy": []
         },
-        "geoSites": {
-          "bypass": [],
-          "proxy": ["GFW"]
-        },
         "subnet": {
           "bypass": [],
           "proxy": []
@@ -105,10 +93,6 @@
       "ip": {
         "defaultProxy": false,
         "geoIps": {
-          "bypass": [],
-          "proxy": []
-        },
-        "geoSites": {
           "bypass": [],
           "proxy": []
         },
