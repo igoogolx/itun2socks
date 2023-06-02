@@ -11,15 +11,17 @@ import (
 )
 
 func NewDnsDistribution(
+	remoteDns string,
+	localDns string,
 	config configuration.DnsItem,
 ) (DnsDistribution, error) {
-	localAddress := config.Local.Address
+	localAddress := localDns
 	localDnsClient, err := resolver.NewClient(localAddress)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	dd := DnsDistribution{}
-	localGeoSites, err := geo.LoadGeoSites(config.Local.GeoSites)
+	localGeoSites, err := geo.LoadGeoSites(config.GeoSites.Local)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -27,7 +29,7 @@ func NewDnsDistribution(
 		Address: localAddress,
 		Client:  localDnsClient,
 		Domains: list.New(
-			config.Local.Domains,
+			config.Domains.Local,
 			IsDomainMatchRule,
 		),
 		GeoSites: list.New(
@@ -35,19 +37,19 @@ func NewDnsDistribution(
 			IsContainsDomain,
 		),
 	}
-	remoteGeoSites, err := geo.LoadGeoSites(config.Remote.GeoSites)
+	remoteGeoSites, err := geo.LoadGeoSites(config.GeoSites.Remote)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	remoteDnsClient, err := resolver.NewClient(config.Remote.Address)
+	remoteDnsClient, err := resolver.NewClient(remoteDns)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	dd.Remote = SubDnsDistribution{
 		Client:  remoteDnsClient,
-		Address: config.Remote.Address,
+		Address: remoteDns,
 		Domains: list.New(
-			config.Remote.Domains,
+			config.Domains.Remote,
 			IsDomainMatchRule,
 		),
 		GeoSites: list.New(

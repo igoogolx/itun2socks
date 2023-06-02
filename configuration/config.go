@@ -4,7 +4,11 @@ type Config struct {
 	ClashYamlUrl string                   `json:"clashYamlUrl"`
 	Proxy        []map[string]interface{} `json:"proxy"`
 	Rule         []RuleCfg                `json:"rule"`
-	Selected     struct {
+	Dns          struct {
+		Remote string `json:"remote"`
+		Local  string `json:"local"`
+	}
+	Selected struct {
 		Proxy string `json:"proxy"`
 		Rule  string `json:"rule"`
 	} `json:"selected"`
@@ -19,14 +23,13 @@ type RuleCfg struct {
 }
 
 type dnsRule struct {
-	Address  string   `json:"address"`
-	Domains  []string `json:"domains"`
-	GeoSites []string `json:"geoSites"`
+	Local  []string `json:"local"`
+	Remote []string `json:"remote"`
 }
 
 type DnsItem struct {
-	Local  dnsRule `json:"local"`
-	Remote dnsRule `json:"remote"`
+	Domains  dnsRule `json:"domains"`
+	GeoSites dnsRule `json:"geoSites"`
 }
 
 type IpRule struct {

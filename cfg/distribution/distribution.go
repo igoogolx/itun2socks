@@ -116,11 +116,13 @@ func (c Config) GetDns(domain string, isPrimary bool) resolver.Client {
 }
 
 func New(
+	remoteDns string,
+	localDns string,
 	rule configuration.RuleCfg,
 	trueProxyServer string,
 	dnsTable Cache,
 ) (Config, error) {
-	dns, err := NewDnsDistribution(rule.Dns)
+	dns, err := NewDnsDistribution(remoteDns, localDns, rule.Dns)
 	if err != nil {
 		return Config{}, err
 	}
