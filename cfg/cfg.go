@@ -30,15 +30,9 @@ func New(rawConfig db2.Config) (Config, error) {
 		return Config{}, err
 	}
 	outboundOption := outbound.Option{
-		Mode:    rawConfig.Setting.Outbound.Mode,
-		Proxies: rawConfig.Proxy,
-	}
-	if rawConfig.Setting.Outbound.Mode == "select" {
-		outboundOption.Config = map[string]string{
-			"selected": rawConfig.Selected.Proxy,
-		}
-	} else if rawConfig.Setting.Outbound.Mode == "auto" {
-		outboundOption.Config = rawConfig.Setting.Outbound.Config
+		AutoMode:      rawConfig.Setting.Outbound.AutoMode,
+		Proxies:       rawConfig.Proxy,
+		SelectedProxy: rawConfig.Selected.Proxy,
 	}
 	proxy, err := outbound.New(outboundOption)
 	if err != nil {

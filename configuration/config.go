@@ -59,6 +59,11 @@ type LocalServer struct {
 }
 
 type Outbound struct {
-	Mode   string            `json:"mode"`
-	Config map[string]string `json:"config"`
+	AutoMode `json:"autoMode"`
+}
+
+type AutoMode struct {
+	Enabled bool   `json:"enabled"`
+	Type    string `json:"type"`
+	Url     string `json:"url"`
 }

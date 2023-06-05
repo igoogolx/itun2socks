@@ -117,8 +117,8 @@
       }
     },
     "outbound": {
-      "mode": "auto",
-      "config": {
+      "autoMode": {
+        "enabled": false,
         "type": "url-test",
         "url": "https://google.com"
       }
