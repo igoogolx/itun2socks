@@ -64,7 +64,7 @@ func New() (*Client, error) {
 		AutoRoute:    true,
 		StrictRoute:  true,
 	}
-	tun, err := sTun.Open(tunOptions)
+	tun, err := sTun.New(tunOptions)
 	if err != nil {
 		return nil, err
 	}
