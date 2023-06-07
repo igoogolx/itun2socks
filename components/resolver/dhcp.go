@@ -5,7 +5,7 @@ import (
 	"github.com/Dreamacro/clash/component/dhcp"
 	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/miekg/dns"
-	"net"
+	"net/netip"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func (d dhcpClient) ExchangeContext(ctx context.Context, m *dns.Msg) (*dns.Msg, 
 	return client.ExchangeContext(ctx, m)
 }
 
-func (d dhcpClient) resolveDns() ([]net.IP, error) {
+func (d dhcpClient) resolveDns() ([]netip.Addr, error) {
 	rCtx, cancel := context.WithTimeout(context.Background(), DhcpResolveTimeout)
 	defer cancel()
 	return dhcp.ResolveDNSFromDHCP(rCtx, network_iface.GetDefaultInterfaceName())

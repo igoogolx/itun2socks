@@ -62,11 +62,10 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 	var err error
 	for elm := range sub {
 		buf.Reset()
-		logEvent, ok := elm.(log.Event)
 		if !ok {
 			break
 		}
-		if logEvent.LogLevel < level {
+		if elm.LogLevel < level {
 			continue
 		}
 
@@ -74,8 +73,8 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(buf).Encode(Log{
 			UUID:    uid,
 			Time:    time.Now().UnixNano() / int64(time.Millisecond),
-			Type:    logEvent.Type(),
-			Payload: logEvent.Payload,
+			Type:    elm.Type(),
+			Payload: elm.Payload,
 		}); err != nil {
 			break
 		}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/igoogolx/itun2socks/constants"
 	"github.com/miekg/dns"
-	"net"
+	"net/netip"
 	"sync"
 	"time"
 )
@@ -14,7 +14,7 @@ var (
 )
 
 type Resolver struct {
-	nameservers []net.IP
+	nameservers []netip.Addr
 	addresses   []string
 }
 
@@ -71,7 +71,7 @@ func (r Resolver) Nameservers() []string {
 	return servers
 }
 
-func NewResolver(nameservers []net.IP) Resolver {
+func NewResolver(nameservers []netip.Addr) Resolver {
 	addresses := make([]string, 0, len(nameservers))
 	for _, nameserver := range nameservers {
 		addresses = append(addresses, nameserver.String()+":"+constants.DnsPort)

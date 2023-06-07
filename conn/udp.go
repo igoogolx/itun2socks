@@ -65,7 +65,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Met
 	curProxy := getProxy(constants.DistributionProxy)
 	selectedProxyAddr := curProxy.Addr()
 	if len(selectedProxyAddr) == 0 {
-		selectedProxyAddr = curProxy.Unwrap(&C.Metadata{}).Addr()
+		selectedProxyAddr = curProxy.Unwrap(&C.Metadata{}, false).Addr()
 	}
 	proxyAddr, _, err := net.SplitHostPort(selectedProxyAddr)
 	log.Infoln("proxy addr: %v", proxyAddr)

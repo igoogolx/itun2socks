@@ -8,6 +8,7 @@ import (
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	sTun "github.com/sagernet/sing-tun"
+	"net/netip"
 	"sync"
 )
 
@@ -36,12 +37,12 @@ func (c *Client) RuntimeDetail() (*Detail, error) {
 	if err != nil {
 		return nil, err
 	}
-	addr, err := networkInterface.PickIPv4Addr(nil)
+	addr, err := networkInterface.PickIPv4Addr(netip.Addr{})
 	if err != nil {
 		return nil, err
 	}
 	return &Detail{
-		DirectedInterfaceV4Addr: addr.IP.String(),
+		DirectedInterfaceV4Addr: addr.String(),
 		DirectedInterfaceName:   networkInterface.Name,
 		TunInterfaceName:        c.deviceName,
 		LocalDns:                c.localDns,

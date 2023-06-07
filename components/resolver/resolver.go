@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	D "github.com/miekg/dns"
-	"net"
+	"net/netip"
 	"strings"
 )
 
@@ -20,9 +20,10 @@ func NewClient(namesever string) (Client, error) {
 	} else if strings.HasPrefix(namesever, "https") {
 		return NewDoHClient(namesever), nil
 	}
-	ip := net.ParseIP(namesever)
-	if ip == nil {
+	ip, err := netip.ParseAddr(namesever)
+
+	if err != nil {
 		return nil, fmt.Errorf("invalid dns sever: %v", namesever)
 	}
-	return NewResolver([]net.IP{ip}), nil
+	return NewResolver([]netip.Addr{ip}), nil
 }

@@ -55,7 +55,10 @@ func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metada
 	if err != nil {
 		return err
 	}
-	m := tunnel.CreateTcpMetadata(*local, *remote)
+	m, err := tunnel.CreateTcpMetadata(*local, *remote)
+	if err != nil {
+		return err
+	}
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
@@ -73,7 +76,10 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 	if err != nil {
 		return err
 	}
-	m := tunnel.CreateUdpMetadata(*local, *remote)
+	m, err := tunnel.CreateUdpMetadata(*local, *remote)
+	if err != nil {
+		return err
+	}
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()

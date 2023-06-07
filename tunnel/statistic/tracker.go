@@ -81,7 +81,7 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 	go func() {
 		port, err := strconv.Atoi(t.trackerInfo.Metadata.SrcPort)
 		if err == nil {
-			processName, err := process.FindProcessName(t.trackerInfo.Metadata.NetWork.String(), t.trackerInfo.Metadata.SrcIP, port)
+			_, processName, err := process.FindProcessName(t.trackerInfo.Metadata.NetWork.String(), t.trackerInfo.Metadata.SrcIP, port)
 			if err == nil && len(processName) != 0 {
 				t.Process = processName
 			}
@@ -158,7 +158,7 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 	go func() {
 		port, err := strconv.Atoi(ut.trackerInfo.Metadata.SrcPort)
 		if err == nil {
-			processName, err := process.FindProcessName(ut.trackerInfo.Metadata.NetWork.String(), ut.trackerInfo.Metadata.SrcIP, port)
+			_, processName, err := process.FindProcessName(ut.trackerInfo.Metadata.NetWork.String(), ut.trackerInfo.Metadata.SrcIP, port)
 			if err == nil && len(processName) != 0 {
 				ut.Process = processName
 			}

@@ -32,10 +32,7 @@ func NewDnsDistribution(
 			config.Domains.Local,
 			IsDomainMatchRule,
 		),
-		GeoSites: list.New(
-			localGeoSites,
-			IsContainsDomain,
-		),
+		GeoSites: list.DomainLister{Items: localGeoSites},
 	}
 	remoteGeoSites, err := geo.LoadGeoSites(config.GeoSites.Remote)
 	if err != nil {
@@ -52,10 +49,7 @@ func NewDnsDistribution(
 			config.Domains.Remote,
 			IsDomainMatchRule,
 		),
-		GeoSites: list.New(
-			remoteGeoSites,
-			IsContainsDomain,
-		),
+		GeoSites: list.DomainLister{Items: remoteGeoSites},
 	}
 	dd.Cache, err = lru.New(constants.CacheSize)
 	if err != nil {
