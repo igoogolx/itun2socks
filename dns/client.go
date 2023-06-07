@@ -40,7 +40,6 @@ type Conn struct {
 	written    bool
 	read       bool
 	data       chan []byte
-	proxyAddr  conn.ProxyAddr
 }
 
 func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
@@ -63,14 +62,11 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	var isLocal bool
-	if d.proxyAddr.Type() == conn.ProxyAddrDomain {
-		isLocal = strings.Contains(question, d.proxyAddr.Addr())
-	}
+	var isLocal = conn.GetIsProxyAddr(question)
 	dnsClient, dnsRule := getMatcher().GetDns(question, isLocal)
 	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
-		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, proxy addr: %v, server: %v", err, question, d.proxyAddr, dnsClient.Nameservers())
+		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, proxy addr: %v, server: %v", err, question, dnsClient.Nameservers())
 	}
 	resData, err := res.Pack()
 	if err != nil {
@@ -113,11 +109,10 @@ func (d *Conn) SetReadDeadline(t time.Time) error {
 	return nil
 }
 
-func NewConn(proxyAddr conn.ProxyAddr) *Conn {
+func NewConn() *Conn {
 	return &Conn{
 		data:       make(chan []byte),
 		remoteAddr: make(chan net.Addr),
-		proxyAddr:  proxyAddr,
 	}
 }
 
