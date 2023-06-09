@@ -6,7 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/cfg/local-server"
 	"github.com/igoogolx/itun2socks/cfg/outbound"
 	"github.com/igoogolx/itun2socks/cfg/tun"
-	db2 "github.com/igoogolx/itun2socks/configuration"
+	db "github.com/igoogolx/itun2socks/configuration"
 )
 
 type Config struct {
@@ -16,12 +16,12 @@ type Config struct {
 	LocalServer local_server.Cfg
 }
 
-func New(rawConfig db2.Config) (Config, error) {
-	selectedRule, err := db2.GetSelectedRule()
+func New(rawConfig db.Config) (Config, error) {
+	selectedRule, err := db.GetSelectedRule()
 	if err != nil {
 		return Config{}, err
 	}
-	rule, err := distribution.New(rawConfig.Dns.Remote, rawConfig.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer)
+	rule, err := distribution.New(rawConfig.Dns.Boost, rawConfig.Dns.Remote, rawConfig.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer)
 	if err != nil {
 		return Config{}, err
 	}

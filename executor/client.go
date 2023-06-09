@@ -17,6 +17,7 @@ type Detail struct {
 	TunInterfaceName        string   `json:"tunInterfaceName"`
 	LocalDns                []string `json:"localDns"`
 	RemoteDns               []string `json:"remoteDns"`
+	BoostDns                []string `json:"boostDns"`
 }
 
 type Client struct {
@@ -28,6 +29,7 @@ type Client struct {
 	deviceName              string
 	localDns                []string
 	remoteDns               []string
+	boostDns                []string
 	runtimeDetail           Detail
 }
 
@@ -46,6 +48,7 @@ func (c *Client) RuntimeDetail() (*Detail, error) {
 		TunInterfaceName:        c.deviceName,
 		LocalDns:                c.localDns,
 		RemoteDns:               c.remoteDns,
+		BoostDns:                c.boostDns,
 	}, nil
 }
 

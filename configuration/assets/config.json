@@ -2,8 +2,9 @@
   "clashYamlUrl": "",
   "proxy": [],
   "dns": {
-    "local":  "114.114.114.114",
-    "remote": "8.8.8.8"
+    "boost": "114.114.114.114",
+    "local":  "https://doh.pub/dns-query",
+    "remote": "https://dns.google/dns-query"
   },
   "rule": [
     {

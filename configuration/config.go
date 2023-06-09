@@ -5,6 +5,7 @@ type Config struct {
 	Proxy        []map[string]interface{} `json:"proxy"`
 	Rule         []RuleCfg                `json:"rule"`
 	Dns          struct {
+		Boost  string `json:"boost"`
 		Remote string `json:"remote"`
 		Local  string `json:"local"`
 	}
