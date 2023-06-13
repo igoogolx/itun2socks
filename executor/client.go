@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/iface"
 	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
+	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/tunnel/statistic"
@@ -18,6 +19,7 @@ type Detail struct {
 	LocalDns                []string `json:"localDns"`
 	RemoteDns               []string `json:"remoteDns"`
 	BoostDns                []string `json:"boostDns"`
+	ProxyServer             string   `json:"proxyServer"`
 }
 
 type Client struct {
@@ -49,6 +51,7 @@ func (c *Client) RuntimeDetail() (*Detail, error) {
 		LocalDns:                c.localDns,
 		RemoteDns:               c.remoteDns,
 		BoostDns:                c.boostDns,
+		ProxyServer:             conn.GetProxyAddr(),
 	}, nil
 }
 

@@ -67,6 +67,10 @@ func getProxy(rule constants.IpRule) C.Proxy {
 	return proxies[rule]
 }
 
+func GetProxyAddr() string {
+	return proxyAddr.Load()
+}
+
 func GetIsProxyAddr(addr string) bool {
 	storedAddr := proxyAddr.Load()
 	if len(storedAddr) != 0 {
