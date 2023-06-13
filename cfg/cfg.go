@@ -30,7 +30,7 @@ func New(rawConfig db.Config) (Config, error) {
 		return Config{}, err
 	}
 	outboundOption := outbound.Option{
-		AutoMode:      rawConfig.Setting.Outbound.AutoMode,
+		AutoMode:      rawConfig.Setting.AutoMode,
 		Proxies:       rawConfig.Proxy,
 		SelectedProxy: rawConfig.Selected.Proxy,
 	}

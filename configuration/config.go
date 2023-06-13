@@ -42,10 +42,10 @@ type IpItem struct {
 }
 
 type SettingCfg struct {
-	DefaultInterface string      `json:"defaultInterface"`
-	TrueProxyServer  string      `json:"trueProxyServer"`
-	LocalServer      LocalServer `json:"localServer"`
-	Outbound         Outbound    `json:"outbound"`
+	DefaultInterface string `json:"defaultInterface"`
+	TrueProxyServer  string `json:"trueProxyServer"`
+	LocalServer      `json:"localServer"`
+	AutoMode         `json:"autoMode"`
 	Dns              struct {
 		Boost  string `json:"boost"`
 		Remote string `json:"remote"`
@@ -58,10 +58,6 @@ type LocalServer struct {
 		Port    int  `json:"port"`
 		Enabled bool `json:"enabled"`
 	} `json:"http"`
-}
-
-type Outbound struct {
-	AutoMode `json:"autoMode"`
 }
 
 type AutoMode struct {

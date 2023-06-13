@@ -118,12 +118,10 @@
         "enabled": false
       }
     },
-    "outbound": {
-      "autoMode": {
-        "enabled": false,
-        "type": "url-test",
-        "url": "https://google.com"
-      }
+    "autoMode": {
+      "enabled": false,
+      "type": "url-test",
+      "url": "https://google.com"
     }
   }
 }
