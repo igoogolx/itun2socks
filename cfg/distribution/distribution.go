@@ -45,20 +45,19 @@ type Cache interface {
 	Add(key interface{}, val interface{}) bool
 }
 
-func (c Config) GetRule(ip string) (result constants.IpRule) {
+func (c Config) GetRule(ip string) constants.IpRule {
 	cacheResult, ok := c.Ip.Cache.Get(ip)
 	if ok {
 		return cacheResult.(constants.IpRule)
 	}
-	result = constants.DistributionBypass
-	defer func() {
-		c.Ip.Cache.Add(ip, result)
-	}()
+	result := constants.DistributionBypass
 	//TODO: determine the type of true proxy server: ip or domain
 	cachedDns, ok := GetCachedDnsItem(ip)
 	if slices.Contains(c.Dns.Local.Client.Nameservers(), ip) {
 		result = constants.DistributionBypass
-	} else if slices.Contains(c.Dns.Remote.Client.Nameservers(), ip) {
+	} else if IsDomainsContain(c.Dns.BootClient.Nameservers(), ip) {
+		result = constants.DistributionBypass
+	} else if IsDomainsContain(c.Dns.Remote.Client.Nameservers(), ip) {
 		result = constants.DistributionProxy
 	} else if strings.Contains(c.TrueProxyServer, ip) {
 		result = constants.DistributionBypass
@@ -84,7 +83,7 @@ func (c Config) GetRule(ip string) (result constants.IpRule) {
 				if ok {
 					cacheItem, ok := GetCachedDnsItem(ip)
 					if ok {
-						if cacheItem.Rule == constants.DistributionLocalDns {
+						if cacheItem.Rule == constants.DistributionLocalDns || cacheItem.Rule == constants.DistributionBoostDns {
 							result = constants.DistributionBypass
 						} else {
 							result = constants.DistributionProxy
@@ -99,19 +98,20 @@ func (c Config) GetRule(ip string) (result constants.IpRule) {
 		}
 	}
 
+	c.Ip.Cache.Add(ip, result)
+
 	return result
 }
 
 func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.DnsRule) {
-	if isLocal {
-		return c.Dns.Local.Client, constants.DistributionLocalDns
-	}
 	result := constants.DistributionLocalDns
 	cacheResult, ok := c.Dns.Cache.Get(domain)
 	if ok {
 		result = cacheResult.(constants.DnsRule)
-	} else if IsDomainsContain(c.Dns.Remote.Client.Nameservers(), domain) {
+	} else if isLocal {
 		result = constants.DistributionLocalDns
+	} else if IsDomainsContain(c.Dns.Remote.Client.Nameservers(), domain) || IsDomainsContain(c.Dns.Local.Client.Nameservers(), domain) {
+		result = constants.DistributionBoostDns
 	} else if strings.Contains(c.TrueProxyServer, domain) {
 		result = constants.DistributionLocalDns
 	} else {
@@ -132,17 +132,20 @@ func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.
 	c.Dns.Cache.Add(domain, result)
 	if result == constants.DistributionLocalDns {
 		return c.Dns.Local.Client, constants.DistributionLocalDns
+	} else if result == constants.DistributionBoostDns {
+		return c.Dns.BootClient, constants.DistributionBoostDns
 	}
 	return c.Dns.Remote.Client, constants.DistributionRemoteDns
 }
 
 func New(
+	boostDns string,
 	remoteDns string,
 	localDns string,
 	rule configuration.RuleCfg,
 	trueProxyServer string,
 ) (Config, error) {
-	dns, err := NewDnsDistribution(remoteDns, localDns, rule.Dns)
+	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns)
 	if err != nil {
 		return Config{}, err
 	}

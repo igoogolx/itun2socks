@@ -97,9 +97,10 @@ func New() (*Client, error) {
 		tun:                     tun,
 		localserver:             newLocalServer,
 		defaultInterfaceHandler: *interfaceHandler,
-		deviceName:              config.Device.Name,
+		deviceName:              tunInterfaceName,
 		localDns:                config.Rule.Dns.Local.Client.Nameservers(),
 		remoteDns:               config.Rule.Dns.Remote.Client.Nameservers(),
+		boostDns:                config.Rule.Dns.BootClient.Nameservers(),
 	}, nil
 }
 

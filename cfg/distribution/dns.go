@@ -11,6 +11,7 @@ import (
 )
 
 func NewDnsDistribution(
+	bootDns string,
 	remoteDns string,
 	localDns string,
 	config configuration.DnsItem,
@@ -57,6 +58,13 @@ func NewDnsDistribution(
 			IsContainsDomain,
 		),
 	}
+
+	boostDnsClient, err := resolver.NewClient(bootDns)
+	if err != nil {
+		return DnsDistribution{}, err
+	}
+	dd.BootClient = boostDnsClient
+
 	dd.Cache, err = lru.New(constants.CacheSize)
 	if err != nil {
 		return DnsDistribution{}, fmt.Errorf("fail to init dns cache,err:%v", err)
@@ -72,7 +80,8 @@ type SubDnsDistribution struct {
 }
 
 type DnsDistribution struct {
-	Local  SubDnsDistribution
-	Remote SubDnsDistribution
-	Cache  Cache
+	BootClient resolver.Client
+	Local      SubDnsDistribution
+	Remote     SubDnsDistribution
+	Cache      Cache
 }

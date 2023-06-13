@@ -1,10 +1,7 @@
 {
   "clashYamlUrl": "",
   "proxy": [],
-  "dns": {
-    "local":  "114.114.114.114",
-    "remote": "8.8.8.8"
-  },
+
   "rule": [
     {
       "id": "proxy_all",
@@ -108,6 +105,11 @@
     "rule": "proxy_all"
   },
   "setting": {
+    "dns": {
+      "boost": "114.114.114.114",
+      "local":  "https://doh.pub/dns-query",
+      "remote": "https://dns.google/dns-query"
+    },
     "trueProxyServer": "",
     "defaultInterface": "",
     "localServer": {
@@ -116,12 +118,10 @@
         "enabled": false
       }
     },
-    "outbound": {
-      "autoMode": {
-        "enabled": false,
-        "type": "url-test",
-        "url": "https://google.com"
-      }
+    "autoMode": {
+      "enabled": false,
+      "type": "url-test",
+      "url": "https://google.com"
     }
   }
 }
