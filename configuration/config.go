@@ -4,11 +4,7 @@ type Config struct {
 	ClashYamlUrl string                   `json:"clashYamlUrl"`
 	Proxy        []map[string]interface{} `json:"proxy"`
 	Rule         []RuleCfg                `json:"rule"`
-	Dns          struct {
-		Boost  string `json:"boost"`
-		Remote string `json:"remote"`
-		Local  string `json:"local"`
-	}
+
 	Selected struct {
 		Proxy string `json:"proxy"`
 		Rule  string `json:"rule"`
@@ -50,6 +46,11 @@ type SettingCfg struct {
 	TrueProxyServer  string      `json:"trueProxyServer"`
 	LocalServer      LocalServer `json:"localServer"`
 	Outbound         Outbound    `json:"outbound"`
+	Dns              struct {
+		Boost  string `json:"boost"`
+		Remote string `json:"remote"`
+		Local  string `json:"local"`
+	} `json:"dns"`
 }
 
 type LocalServer struct {

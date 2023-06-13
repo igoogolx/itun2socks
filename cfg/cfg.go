@@ -21,7 +21,7 @@ func New(rawConfig db.Config) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	rule, err := distribution.New(rawConfig.Dns.Boost, rawConfig.Dns.Remote, rawConfig.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer)
+	rule, err := distribution.New(rawConfig.Setting.Dns.Boost, rawConfig.Setting.Dns.Remote, rawConfig.Setting.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer)
 	if err != nil {
 		return Config{}, err
 	}

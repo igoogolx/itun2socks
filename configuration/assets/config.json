@@ -1,11 +1,7 @@
 {
   "clashYamlUrl": "",
   "proxy": [],
-  "dns": {
-    "boost": "114.114.114.114",
-    "local":  "https://doh.pub/dns-query",
-    "remote": "https://dns.google/dns-query"
-  },
+
   "rule": [
     {
       "id": "proxy_all",
@@ -109,6 +105,11 @@
     "rule": "proxy_all"
   },
   "setting": {
+    "dns": {
+      "boost": "114.114.114.114",
+      "local":  "https://doh.pub/dns-query",
+      "remote": "https://dns.google/dns-query"
+    },
     "trueProxyServer": "",
     "defaultInterface": "",
     "localServer": {
