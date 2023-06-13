@@ -4,14 +4,18 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/Dreamacro/clash/adapter/outbound"
 	C "github.com/Dreamacro/clash/constant"
+	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/constants"
-	"net/netip"
+	"go.uber.org/atomic"
+	"net"
+	"strings"
 	"sync"
 )
 
 var (
-	proxies map[constants.IpRule]C.Proxy
-	mux     sync.RWMutex
+	proxies   map[constants.IpRule]C.Proxy
+	mux       sync.RWMutex
+	proxyAddr atomic.String
 )
 
 const (
@@ -24,17 +28,6 @@ type ProxyAddrType int
 type ProxyAddr struct {
 	addr     string
 	addrType ProxyAddrType
-}
-
-func NewProxyAddr(addr string) ProxyAddr {
-	_, err := netip.ParseAddr(addr)
-	var addrType ProxyAddrType
-	if err == nil {
-		addrType = ProxyAddrIp
-	} else {
-		addrType = ProxyAddrDomain
-	}
-	return ProxyAddr{addr, addrType}
 }
 
 func (p ProxyAddr) Addr() string {
@@ -56,5 +49,32 @@ func UpdateProxy(remoteProxy C.Proxy) {
 func getProxy(rule constants.IpRule) C.Proxy {
 	mux.RLock()
 	defer mux.RUnlock()
+
+	if rule == constants.DistributionProxy {
+		var remoteProxy = proxies[rule]
+		selectedProxyAddr := remoteProxy.Addr()
+		if len(selectedProxyAddr) == 0 {
+			selectedProxyAddr = remoteProxy.Unwrap(&C.Metadata{}).Addr()
+		}
+		addr, _, err := net.SplitHostPort(selectedProxyAddr)
+		if err == nil {
+			proxyAddr.Store(addr)
+		} else {
+			log.Errorln("invalid proxy addr: %v", addr)
+		}
+	}
+
 	return proxies[rule]
+}
+
+func GetProxyAddr() string {
+	return proxyAddr.Load()
+}
+
+func GetIsProxyAddr(addr string) bool {
+	storedAddr := proxyAddr.Load()
+	if len(storedAddr) != 0 {
+		return strings.Contains(addr, storedAddr)
+	}
+	return false
 }

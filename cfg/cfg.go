@@ -2,16 +2,11 @@ package cfg
 
 import (
 	"github.com/Dreamacro/clash/constant"
-	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/cfg/local-server"
 	"github.com/igoogolx/itun2socks/cfg/outbound"
 	"github.com/igoogolx/itun2socks/cfg/tun"
-	db2 "github.com/igoogolx/itun2socks/configuration"
-)
-
-var (
-	DnsTable, _ = lru.New(1000)
+	db "github.com/igoogolx/itun2socks/configuration"
 )
 
 type Config struct {
@@ -21,12 +16,12 @@ type Config struct {
 	LocalServer local_server.Cfg
 }
 
-func New(rawConfig db2.Config) (Config, error) {
-	selectedRule, err := db2.GetSelectedRule()
+func New(rawConfig db.Config) (Config, error) {
+	selectedRule, err := db.GetSelectedRule()
 	if err != nil {
 		return Config{}, err
 	}
-	rule, err := distribution.New(selectedRule, rawConfig.Setting.TrueProxyServer, DnsTable)
+	rule, err := distribution.New(rawConfig.Setting.Dns.Boost, rawConfig.Setting.Dns.Remote, rawConfig.Setting.Dns.Local, selectedRule, rawConfig.Setting.TrueProxyServer)
 	if err != nil {
 		return Config{}, err
 	}
@@ -35,15 +30,9 @@ func New(rawConfig db2.Config) (Config, error) {
 		return Config{}, err
 	}
 	outboundOption := outbound.Option{
-		Mode:    rawConfig.Setting.Outbound.Mode,
-		Proxies: rawConfig.Proxy,
-	}
-	if rawConfig.Setting.Outbound.Mode == "select" {
-		outboundOption.Config = map[string]string{
-			"selected": rawConfig.Selected.Proxy,
-		}
-	} else if rawConfig.Setting.Outbound.Mode == "auto" {
-		outboundOption.Config = rawConfig.Setting.Outbound.Config
+		AutoMode:      rawConfig.Setting.AutoMode,
+		Proxies:       rawConfig.Proxy,
+		SelectedProxy: rawConfig.Selected.Proxy,
 	}
 	proxy, err := outbound.New(outboundOption)
 	if err != nil {

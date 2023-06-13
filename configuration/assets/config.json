@@ -1,29 +1,24 @@
 {
   "clashYamlUrl": "",
   "proxy": [],
+
   "rule": [
     {
       "id": "proxy_all",
       "dns": {
-        "local": {
-          "address": "114.114.114.114",
-          "domains": [],
-          "geoSites": []
+        "geoSites": {
+          "remote": [],
+          "local": []
         },
-        "remote": {
-          "address": "8.8.8.8",
-          "domains": [".*"],
-          "geoSites": []
+        "domains": {
+          "remote": [".*"],
+          "local": []
         }
       },
       "ip": {
         "defaultProxy": true,
         "geoIps": {
           "bypass": ["PRIVATE"],
-          "proxy": []
-        },
-        "geoSites": {
-          "bypass": [],
           "proxy": []
         },
         "subnet": {
@@ -35,25 +30,19 @@
     {
       "id": "bypass_cn",
       "dns": {
-        "local": {
-          "address": "114.114.114.114",
-          "domains": [],
-          "geoSites": ["CN"]
+        "geoSites": {
+          "remote": [],
+          "local": ["CN"]
         },
-        "remote": {
-          "address": "8.8.8.8",
-          "domains": [".*"],
-          "geoSites": []
+        "domains": {
+          "remote": [".*"],
+          "local": []
         }
       },
       "ip": {
         "defaultProxy": true,
         "geoIps": {
           "bypass": ["CN", "PRIVATE"],
-          "proxy": []
-        },
-        "geoSites": {
-          "bypass": [],
           "proxy": []
         },
         "subnet": {
@@ -65,15 +54,13 @@
     {
       "id": "proxy_gfw",
       "dns": {
-        "local": {
-          "address": "114.114.114.114",
-          "domains": [],
-          "geoSites": []
+        "domains": {
+          "remote": [],
+          "local": []
         },
-        "remote": {
-          "address": "8.8.8.8",
-          "domains": [],
-          "geoSites": ["GFW"]
+        "geoSites": {
+          "local": [],
+          "remote": ["GFW"]
         }
       },
       "ip": {
@@ -81,10 +68,6 @@
         "geoIps": {
           "bypass": [],
           "proxy": []
-        },
-        "geoSites": {
-          "bypass": [],
-          "proxy": ["GFW"]
         },
         "subnet": {
           "bypass": [],
@@ -95,24 +78,18 @@
     {
       "id": "bypass_all",
       "dns": {
-        "local": {
-          "address": "114.114.114.114",
-          "domains": [".*"],
-          "geoSites": []
+        "domains": {
+          "local": [".*"],
+          "remote": []
         },
-        "remote": {
-          "address": "8.8.8.8",
-          "domains": [],
-          "geoSites": []
+        "geoSites": {
+          "local": [],
+          "remote": []
         }
       },
       "ip": {
         "defaultProxy": false,
         "geoIps": {
-          "bypass": [],
-          "proxy": []
-        },
-        "geoSites": {
           "bypass": [],
           "proxy": []
         },
@@ -128,6 +105,11 @@
     "rule": "proxy_all"
   },
   "setting": {
+    "dns": {
+      "boost": "114.114.114.114",
+      "local":  "https://doh.pub/dns-query",
+      "remote": "https://dns.google/dns-query"
+    },
     "trueProxyServer": "",
     "defaultInterface": "",
     "localServer": {
@@ -136,12 +118,10 @@
         "enabled": false
       }
     },
-    "outbound": {
-      "mode": "auto",
-      "config": {
-        "type": "url-test",
-        "url": "https://google.com"
-      }
+    "autoMode": {
+      "enabled": false,
+      "type": "url-test",
+      "url": "https://google.com"
     }
   }
 }

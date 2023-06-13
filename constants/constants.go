@@ -10,9 +10,12 @@ const (
 	DistributionNotFound IpRule = 2
 )
 
+type DnsRule string
+
 const (
-	DistributionPrimaryDns   = iota
-	DistributionSecondaryDns = iota
+	DistributionLocalDns  DnsRule = "local"
+	DistributionRemoteDns DnsRule = "remote"
+	DistributionBoostDns  DnsRule = "boost"
 )
 
 const CacheSize = 1000

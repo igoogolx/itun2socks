@@ -6,12 +6,13 @@ import (
 	"github.com/Dreamacro/clash/adapter/outboundgroup"
 	"github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/constant/provider"
+	"github.com/igoogolx/itun2socks/configuration"
 )
 
 type Option struct {
-	Mode    string
-	Proxies []map[string]interface{}
-	Config  map[string]string
+	AutoMode      configuration.AutoMode
+	Proxies       []map[string]interface{}
+	SelectedProxy string
 }
 
 func New(option Option) (constant.Proxy, error) {
@@ -20,26 +21,8 @@ func New(option Option) (constant.Proxy, error) {
 	var err error
 	var ids = []string{}
 
-	switch option.Mode {
-	case "select":
-		{
-			var selectedProxy map[string]interface{}
-			for _, v := range option.Proxies {
-				if v["id"] == option.Config["selected"] {
-					selectedProxy = v
-					break
-				}
-			}
-			if selectedProxy == nil {
-				return nil, fmt.Errorf("error getting seleted proxyConfig, id:%v", option.Config["selected"])
-			}
-			proxy, err = adapter.ParseProxy(selectedProxy)
-			if err != nil {
-				return nil, err
-			}
-			break
-		}
-	case "auto":
+	if option.AutoMode.Enabled {
+
 		{
 			proxyMap := map[string]constant.Proxy{}
 			for _, v := range option.Proxies {
@@ -54,8 +37,8 @@ func New(option Option) (constant.Proxy, error) {
 				"name":     "auto",
 				"proxies":  ids,
 				"interval": 300,
-				"url":      option.Config["url"],
-				"type":     option.Config["type"],
+				"url":      option.AutoMode.Url,
+				"type":     option.AutoMode.Type,
 			}
 
 			proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{})
@@ -63,12 +46,22 @@ func New(option Option) (constant.Proxy, error) {
 				return nil, fmt.Errorf("fail to parse proxy group: %v", err)
 			}
 			proxy = adapter.NewProxy(proxyGroup)
-			break
 		}
-
-	default:
-		return nil, fmt.Errorf("unsupported outbound Mode: %v", option.Mode)
-
+	} else {
+		var selectedProxy map[string]interface{}
+		for _, v := range option.Proxies {
+			if v["id"] == option.SelectedProxy {
+				selectedProxy = v
+				break
+			}
+		}
+		if selectedProxy == nil {
+			return nil, fmt.Errorf("error getting seleted proxyConfig, id:%v", option.SelectedProxy)
+		}
+		proxy, err = adapter.ParseProxy(selectedProxy)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return proxy, nil

@@ -127,16 +127,16 @@ func fileExists(filename string) bool {
 }
 
 func write(data []byte) error {
-	f, err := os.OpenFile(configFilePath.Load(), os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	f, err := os.Create(configFilePath.Load())
+	if err != nil {
+		return fmt.Errorf("fail to open file:%v, err:%v", configFilePath.Load(), err)
+	}
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
 			log.Warnln("fail to close file: %v, err: %v", configFilePath.Load(), err)
 		}
 	}(f)
-	if err != nil {
-		return fmt.Errorf("fail to open file:%v, err:%v", configFilePath.Load(), err)
-	}
 	_, err = f.Write(data)
 	if err != nil {
 		return fmt.Errorf("fail to write file:%v, err:%v", configFilePath.Load(), err)

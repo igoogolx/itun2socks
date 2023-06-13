@@ -64,7 +64,7 @@ func New() (*Client, error) {
 		AutoRoute:    true,
 		StrictRoute:  true,
 	}
-	tun, err := sTun.Open(tunOptions)
+	tun, err := sTun.New(tunOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -97,9 +97,10 @@ func New() (*Client, error) {
 		tun:                     tun,
 		localserver:             newLocalServer,
 		defaultInterfaceHandler: *interfaceHandler,
-		deviceName:              config.Device.Name,
+		deviceName:              tunInterfaceName,
 		localDns:                config.Rule.Dns.Local.Client.Nameservers(),
 		remoteDns:               config.Rule.Dns.Remote.Client.Nameservers(),
+		boostDns:                config.Rule.Dns.BootClient.Nameservers(),
 	}, nil
 }
 

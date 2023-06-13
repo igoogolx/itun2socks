@@ -4,7 +4,8 @@ type Config struct {
 	ClashYamlUrl string                   `json:"clashYamlUrl"`
 	Proxy        []map[string]interface{} `json:"proxy"`
 	Rule         []RuleCfg                `json:"rule"`
-	Selected     struct {
+
+	Selected struct {
 		Proxy string `json:"proxy"`
 		Rule  string `json:"rule"`
 	} `json:"selected"`
@@ -19,14 +20,13 @@ type RuleCfg struct {
 }
 
 type dnsRule struct {
-	Address  string   `json:"address"`
-	Domains  []string `json:"domains"`
-	GeoSites []string `json:"geoSites"`
+	Local  []string `json:"local"`
+	Remote []string `json:"remote"`
 }
 
 type DnsItem struct {
-	Local  dnsRule `json:"local"`
-	Remote dnsRule `json:"remote"`
+	Domains  dnsRule `json:"domains"`
+	GeoSites dnsRule `json:"geoSites"`
 }
 
 type IpRule struct {
@@ -38,15 +38,19 @@ type IpItem struct {
 	Name         string `json:"name"`
 	DefaultProxy bool   `json:"defaultProxy"`
 	GeoIps       IpRule `json:"geoIps"`
-	GeoSites     IpRule `json:"geoSites"`
 	Subnet       IpRule `json:"subnet"`
 }
 
 type SettingCfg struct {
-	DefaultInterface string      `json:"defaultInterface"`
-	TrueProxyServer  string      `json:"trueProxyServer"`
-	LocalServer      LocalServer `json:"localServer"`
-	Outbound         Outbound    `json:"outbound"`
+	DefaultInterface string `json:"defaultInterface"`
+	TrueProxyServer  string `json:"trueProxyServer"`
+	LocalServer      `json:"localServer"`
+	AutoMode         `json:"autoMode"`
+	Dns              struct {
+		Boost  string `json:"boost"`
+		Remote string `json:"remote"`
+		Local  string `json:"local"`
+	} `json:"dns"`
 }
 
 type LocalServer struct {
@@ -56,7 +60,8 @@ type LocalServer struct {
 	} `json:"http"`
 }
 
-type Outbound struct {
-	Mode   string            `json:"mode"`
-	Config map[string]string `json:"config"`
+type AutoMode struct {
+	Enabled bool   `json:"enabled"`
+	Type    string `json:"type"`
+	Url     string `json:"url"`
 }

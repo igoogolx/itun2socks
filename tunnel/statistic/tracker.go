@@ -3,7 +3,7 @@ package statistic
 import (
 	"github.com/Dreamacro/clash/component/process"
 	"github.com/Dreamacro/clash/log"
-	"github.com/igoogolx/itun2socks/cfg"
+	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/constants"
 	"net"
 	"strconv"
@@ -88,8 +88,10 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 		}
 		manager.Join(t)
 	}()
-	if domain, ok := cfg.DnsTable.Get(metadata.DstIP.String()); ok {
-		t.trackerInfo.Domain = domain.(string)
+	if cachedItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
+		if ok {
+			t.trackerInfo.Domain = cachedItem.Domain
+		}
 	} else {
 		t.trackerInfo.Domain = "unknown"
 	}
@@ -145,8 +147,8 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 		},
 	}
 
-	if domain, ok := cfg.DnsTable.Get(metadata.DstIP.String()); ok {
-		ut.trackerInfo.Domain = domain.(string)
+	if cacheItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
+		ut.trackerInfo.Domain = cacheItem.Domain
 	} else {
 		ut.trackerInfo.Domain = "unknown"
 	}
