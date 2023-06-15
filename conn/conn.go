@@ -58,6 +58,7 @@ func getProxy(rule constants.IpRule) C.Proxy {
 		}
 		addr, _, err := net.SplitHostPort(selectedProxyAddr)
 		if err == nil {
+			log.Debugln("update proxy addr: %v", addr)
 			proxyAddr.Store(addr)
 		} else {
 			log.Errorln("invalid proxy addr: %v", addr)

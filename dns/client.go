@@ -66,7 +66,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	dnsClient, dnsRule := getMatcher().GetDns(question, isLocal)
 	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
-		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, proxy addr: %v, server: %v", err, question, dnsClient.Nameservers())
+		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, server: %v", err, question, dnsClient.Nameservers())
 	}
 	resData, err := res.Pack()
 	if err != nil {

@@ -5,7 +5,9 @@ import (
 	"context"
 	"github.com/Dreamacro/clash/log"
 	"io"
+	"net"
 	"net/http"
+	"time"
 
 	D "github.com/miekg/dns"
 )
@@ -16,7 +18,9 @@ const (
 )
 
 type DohClient struct {
-	url string
+	url             string
+	boostNameserver string
+	cb              func(dohRemoteIp string)
 }
 
 func (dc *DohClient) Exchange(m *D.Msg) (msg *D.Msg, err error) {
@@ -59,7 +63,46 @@ func (dc *DohClient) newRequest(m *D.Msg) (*http.Request, error) {
 }
 
 func (dc *DohClient) doRequest(req *http.Request) (msg *D.Msg, err error) {
-	client := &http.Client{}
+
+	var (
+		dnsResolverIP    = dc.boostNameserver + ":53" // Google DNS resolver.
+		dnsResolverProto = "tcp"                      // Protocol to use for the DNS resolver
+	)
+
+	dialer := &net.Dialer{
+		Resolver: &net.Resolver{
+			PreferGo: true,
+			Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+				d := net.Dialer{
+					Timeout: DhcpResolveTimeout,
+				}
+				return d.DialContext(ctx, dnsResolverProto, dnsResolverIP)
+			},
+		},
+	}
+
+	dialContext := func(ctx context.Context, network, addr string) (net.Conn, error) {
+		conn, err := dialer.DialContext(ctx, network, addr)
+		if err != nil {
+			return nil, err
+		}
+		host, _, err := net.SplitHostPort(conn.RemoteAddr().String())
+		if err == nil {
+			dc.cb(host)
+		}
+		return conn, nil
+	}
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			DialContext:           dialContext,
+			ForceAttemptHTTP2:     true,
+			MaxIdleConns:          100,
+			IdleConnTimeout:       90 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+		},
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -83,8 +126,10 @@ func (dc *DohClient) Nameservers() []string {
 	return []string{dc.url}
 }
 
-func NewDoHClient(url string) *DohClient {
+func NewDoHClient(url string, boostNameserver string, cb func(dohRemoteIp string)) *DohClient {
 	return &DohClient{
-		url: url,
+		url:             url,
+		boostNameserver: boostNameserver,
+		cb:              cb,
 	}
 }

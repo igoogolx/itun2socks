@@ -14,11 +14,11 @@ type Client interface {
 	Nameservers() []string
 }
 
-func NewClient(namesever string) (Client, error) {
+func NewClient(namesever string, boostNameserver string, dohCb func(dohRemoteIp string)) (Client, error) {
 	if strings.HasPrefix(namesever, "dhcp") {
 		return newDhcpClient(), nil
 	} else if strings.HasPrefix(namesever, "https") {
-		return NewDoHClient(namesever), nil
+		return NewDoHClient(namesever, boostNameserver, dohCb), nil
 	}
 	ip := net.ParseIP(namesever)
 	if ip == nil {

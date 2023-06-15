@@ -31,7 +31,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		}
 	}()
 	if err != nil {
-		log.Warnln("failed to get tcp conn, err: %v", err)
+		log.Warnln("failed to get tcp conn, err: %v, rule: %v, remote ip: %v", err, ct.Rule(), ct.Metadata().DstIP)
 		return
 	}
 	remoteConn = statistic.NewTCPTracker(remoteConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
