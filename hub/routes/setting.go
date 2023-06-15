@@ -6,12 +6,14 @@ import (
 	"github.com/igoogolx/itun2socks/configuration"
 	"net"
 	"net/http"
+	"path/filepath"
 )
 
 func settingRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getSetting)
 	r.Get("/interfaces", getInterfaces)
+	r.Get("/config-file-dir-path", getConfigDirPath)
 	r.Put("/", setSetting)
 	return r
 }
@@ -54,4 +56,17 @@ func setSetting(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.NoContent(w, r)
+}
+
+func getConfigDirPath(w http.ResponseWriter, r *http.Request) {
+	configFilePath, err := configuration.GetConfigFilePath()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	dirPath := filepath.Dir(configFilePath)
+	render.JSON(w, r, render.M{
+		"path": dirPath,
+	})
 }
