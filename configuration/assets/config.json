@@ -107,8 +107,8 @@
   "setting": {
     "dns": {
       "boost": "114.114.114.114",
-      "local":  "https://doh.pub/dns-query",
-      "remote": "https://dns.google/dns-query"
+      "local":  "119.29.29.29",
+      "remote": "8.8.8.8"
     },
     "trueProxyServer": "",
     "defaultInterface": "",
