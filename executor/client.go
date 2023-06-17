@@ -18,7 +18,7 @@ type Detail struct {
 	TunInterfaceName        string   `json:"tunInterfaceName"`
 	LocalDns                []string `json:"localDns"`
 	RemoteDns               []string `json:"remoteDns"`
-	BoostDns                []string `json:"boostDns"`
+	BoostDns                string   `json:"boostDns"`
 	ProxyServer             string   `json:"proxyServer"`
 }
 
@@ -31,7 +31,7 @@ type Client struct {
 	deviceName              string
 	localDns                []string
 	remoteDns               []string
-	boostDns                []string
+	boostDns                string
 	runtimeDetail           Detail
 }
 

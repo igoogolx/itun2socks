@@ -17,7 +17,9 @@ func NewDnsDistribution(
 	config configuration.DnsItem,
 ) (DnsDistribution, error) {
 	localAddress := localDns
-	localDnsClient, err := resolver.NewClient(localAddress)
+	localDnsClient, err := resolver.NewClient(localAddress, bootDns, func(dohRemoteIp string) {
+		AddCachedDnsItem(dohRemoteIp, localAddress, constants.DistributionLocalDns)
+	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -42,7 +44,9 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	remoteDnsClient, err := resolver.NewClient(remoteDns)
+	remoteDnsClient, err := resolver.NewClient(remoteDns, bootDns, func(dohRemoteIp string) {
+		AddCachedDnsItem(dohRemoteIp, remoteDns, constants.DistributionRemoteDns)
+	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -59,16 +63,11 @@ func NewDnsDistribution(
 		),
 	}
 
-	boostDnsClient, err := resolver.NewClient(bootDns)
-	if err != nil {
-		return DnsDistribution{}, err
-	}
-	dd.BootClient = boostDnsClient
-
 	dd.Cache, err = lru.New(constants.CacheSize)
 	if err != nil {
 		return DnsDistribution{}, fmt.Errorf("fail to init dns cache,err:%v", err)
 	}
+	dd.BoostNameserver = bootDns
 	return dd, nil
 }
 
@@ -80,8 +79,8 @@ type SubDnsDistribution struct {
 }
 
 type DnsDistribution struct {
-	BootClient resolver.Client
-	Local      SubDnsDistribution
-	Remote     SubDnsDistribution
-	Cache      Cache
+	Local           SubDnsDistribution
+	Remote          SubDnsDistribution
+	BoostNameserver string
+	Cache           Cache
 }

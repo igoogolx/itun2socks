@@ -15,7 +15,6 @@ type DnsRule string
 const (
 	DistributionLocalDns  DnsRule = "local"
 	DistributionRemoteDns DnsRule = "remote"
-	DistributionBoostDns  DnsRule = "boost"
 )
 
 const CacheSize = 1000

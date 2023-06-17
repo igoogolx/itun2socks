@@ -100,7 +100,7 @@ func New() (*Client, error) {
 		deviceName:              tunInterfaceName,
 		localDns:                config.Rule.Dns.Local.Client.Nameservers(),
 		remoteDns:               config.Rule.Dns.Remote.Client.Nameservers(),
-		boostDns:                config.Rule.Dns.BootClient.Nameservers(),
+		boostDns:                config.Rule.Dns.BoostNameserver,
 	}, nil
 }
 
