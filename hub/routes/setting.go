@@ -15,6 +15,7 @@ func settingRouter() http.Handler {
 	r.Get("/", getSetting)
 	r.Get("/interfaces", getInterfaces)
 	r.Get("/config-file-dir-path", getConfigDirPath)
+	r.Get("/open-config-file-dir", openConfigDir)
 	r.Put("/", setSetting)
 	return r
 }
@@ -70,4 +71,22 @@ func getConfigDirPath(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, render.M{
 		"path": dirPath,
 	})
+}
+
+func openConfigDir(w http.ResponseWriter, r *http.Request) {
+	configFilePath, err := configuration.GetConfigFilePath()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+
+	dirPath := filepath.Dir(configFilePath)
+	err = open.Run(dirPath)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.JSON(w, r, render.M{})
 }
