@@ -2,7 +2,6 @@ package statistic
 
 import (
 	"github.com/Dreamacro/clash/component/process"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/constants"
 	"net"
@@ -95,7 +94,6 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 	} else {
 		t.trackerInfo.Domain = "unknown"
 	}
-	log.Infoln("[TCP], ip:%v, domain:%v, rule:%v", t.Metadata.RemoteAddress(), t.Domain, getRuleStr(t.trackerInfo.Rule))
 	return t
 }
 
@@ -153,8 +151,6 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 		ut.trackerInfo.Domain = "unknown"
 	}
 
-	log.Infoln("[UDP],ip:%v, domain:%v, rule:%v", ut.Metadata.RemoteAddress(), ut.Domain, getRuleStr(ut.trackerInfo.Rule))
-
 	go func() {
 		port, err := strconv.Atoi(ut.trackerInfo.Metadata.SrcPort)
 		if err == nil {
@@ -166,11 +162,4 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 		manager.Join(ut)
 	}()
 	return ut
-}
-
-func getRuleStr(rule constants.IpRule) string {
-	if rule == constants.DistributionBypass {
-		return "direct"
-	}
-	return "proxy"
 }

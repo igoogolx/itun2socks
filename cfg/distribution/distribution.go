@@ -12,6 +12,13 @@ import (
 
 var dnsCache, _ = lru.New(1000)
 
+func getRuleStr(rule constants.IpRule) string {
+	if rule == constants.DistributionBypass {
+		return "direct"
+	}
+	return "proxy"
+}
+
 func GetCachedDnsItem(ip string) (CacheItem, bool) {
 	cacheItem, ok := dnsCache.Get(ip)
 	if ok {
@@ -90,6 +97,18 @@ func (c Config) GetDnsRule(ip string) constants.IpRule {
 func (c Config) GetRule(ip string) constants.IpRule {
 
 	rule := constants.DistributionBypass
+
+	defer func(latestIp string) {
+		domain := "unknown"
+		dnsRule := "unknown"
+		cacheItem, ok := GetCachedDnsItem(latestIp)
+		if ok {
+			domain = cacheItem.Domain
+			dnsRule = string(cacheItem.Rule)
+		}
+
+		log.Infoln("[Matching ip]: ip:%v, rule:%v; domain:%v, rule:%v", latestIp, getRuleStr(rule), domain, dnsRule)
+	}(ip)
 
 	//dns server
 	rule = c.GetDnsServerRule(ip)
