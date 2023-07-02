@@ -3,12 +3,12 @@ package tunnel
 import (
 	"fmt"
 	"github.com/Dreamacro/clash/log"
-	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
+	"github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/components/pool"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/constants"
 	"github.com/igoogolx/itun2socks/dns"
-	statistic2 "github.com/igoogolx/itun2socks/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	"io"
 	"net"
 	"sync"
@@ -67,7 +67,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 			log.Warnln("fail to get udp conn, err: %v, target: %v", err, ct.Metadata().DstIP.String())
 			return
 		}
-		lc = statistic2.NewUDPTracker(localConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule())
+		lc = statistic.NewUDPTracker(localConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
 	}
 
 	defer func() {

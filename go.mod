@@ -17,6 +17,7 @@ require (
 	github.com/sagernet/sing v0.2.4
 	github.com/sagernet/sing-tun v0.1.4
 	github.com/sirupsen/logrus v1.9.0
+	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	go.uber.org/atomic v1.10.0
 	golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7
 	golang.org/x/sys v0.7.0
