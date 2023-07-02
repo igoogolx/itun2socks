@@ -63,6 +63,9 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 		return 0, fmt.Errorf("invalid dns question, err: %v", err)
 	}
 	var isLocal = conn.GetIsProxyAddr(question)
+	if isLocal {
+		log.Debugln("isLocal: %v", question)
+	}
 	dnsClient, dnsRule := getMatcher().GetDns(question, isLocal)
 	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
 	if err != nil {

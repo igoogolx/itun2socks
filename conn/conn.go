@@ -18,11 +18,6 @@ var (
 	proxyAddr atomic.String
 )
 
-const (
-	ProxyAddrDomain ProxyAddrType = 0
-	ProxyAddrIp     ProxyAddrType = 1
-)
-
 type ProxyAddrType int
 
 type ProxyAddr struct {
@@ -75,7 +70,7 @@ func GetProxyAddr() string {
 func GetIsProxyAddr(addr string) bool {
 	storedAddr := proxyAddr.Load()
 	if len(storedAddr) != 0 {
-		return strings.Contains(addr, storedAddr)
+		return strings.Contains(storedAddr, addr)
 	}
 	return false
 }

@@ -1,8 +1,6 @@
 package distribution
 
 import (
-	"fmt"
-	"github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/components/geo"
 	"github.com/igoogolx/itun2socks/components/list"
 	"github.com/igoogolx/itun2socks/components/resolver"
@@ -63,10 +61,6 @@ func NewDnsDistribution(
 		),
 	}
 
-	dd.Cache, err = lru.New(constants.CacheSize)
-	if err != nil {
-		return DnsDistribution{}, fmt.Errorf("fail to init dns cache,err:%v", err)
-	}
 	dd.BoostNameserver = bootDns
 	return dd, nil
 }
@@ -82,5 +76,4 @@ type DnsDistribution struct {
 	Local           SubDnsDistribution
 	Remote          SubDnsDistribution
 	BoostNameserver string
-	Cache           Cache
 }

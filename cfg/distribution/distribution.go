@@ -45,77 +45,98 @@ type Cache interface {
 	Add(key interface{}, val interface{}) bool
 }
 
-func (c Config) GetRule(ip string) constants.IpRule {
-	cacheResult, ok := c.Ip.Cache.Get(ip)
-	if ok {
-		return cacheResult.(constants.IpRule)
-	}
-	result := constants.DistributionBypass
-	//TODO: determine the type of true proxy server: ip or domain
-	cachedDns, ok := GetCachedDnsItem(ip)
+func (c Config) GetDnsServerRule(ip string) constants.IpRule {
+	result := constants.DistributionNotFound
 	if slices.Contains(c.Dns.Local.Client.Nameservers(), ip) {
-		log.Debugln("[Matching ip]: %v is from local dns name servers", ip)
 		result = constants.DistributionBypass
 	} else if strings.Contains(c.Dns.BoostNameserver, ip) {
-		log.Debugln("[Matching ip]: %v is from boost dns name servers", ip)
 		result = constants.DistributionBypass
 	} else if IsDomainsContain(c.Dns.Remote.Client.Nameservers(), ip) {
-		log.Debugln("[Matching ip]: %v is from remote dns name servers", ip)
 		result = constants.DistributionProxy
-	} else if strings.Contains(c.TrueProxyServer, ip) {
-		log.Debugln("[Matching ip]: %v is from true proxy server", ip)
+	}
+	return result
+}
+
+func (c Config) GetTrueProxyServerRule(ip string) constants.IpRule {
+	result := constants.DistributionNotFound
+	cachedDns, ok := GetCachedDnsItem(ip)
+	if strings.Contains(c.TrueProxyServer, ip) || (ok && strings.Contains(c.TrueProxyServer, cachedDns.Domain)) {
 		result = constants.DistributionBypass
-	} else if ok && strings.Contains(c.TrueProxyServer, cachedDns.Domain) {
-		log.Debugln("[Matching ip]: %v is from true proxy server and cached domain", ip)
-		result = constants.DistributionBypass
-	} else {
-		switch c.Ip.Subnet.LookUp(ip) {
-		case constants.DistributionProxy:
-			result = constants.DistributionProxy
-			break
-		case constants.DistributionBypass:
+	}
+	return result
+}
+
+func (c Config) GetSubnetRule(ip string) constants.IpRule {
+	return c.Ip.Subnet.LookUp(ip)
+}
+
+func (c Config) GetGeoRule(ip string) constants.IpRule {
+	return c.Ip.GeoIps.LookUp(ip)
+}
+
+func (c Config) GetDnsRule(ip string) constants.IpRule {
+	result := constants.DistributionNotFound
+	cacheItem, ok := GetCachedDnsItem(ip)
+	if ok {
+		if cacheItem.Rule == constants.DistributionLocalDns {
 			result = constants.DistributionBypass
-			break
-		case constants.DistributionNotFound:
-			switch c.Ip.GeoIps.LookUp(ip) {
-			case constants.DistributionProxy:
-				result = constants.DistributionProxy
-				break
-			case constants.DistributionBypass:
-				result = constants.DistributionBypass
-				break
-			case constants.DistributionNotFound:
-				if ok {
-					cacheItem, ok := GetCachedDnsItem(ip)
-					if ok {
-						if cacheItem.Rule == constants.DistributionLocalDns {
-							result = constants.DistributionBypass
-						} else {
-							result = constants.DistributionProxy
-						}
-					}
-				} else {
-					if c.Ip.DefaultProxy {
-						result = constants.DistributionProxy
-					}
-				}
-			}
+		} else {
+			result = constants.DistributionProxy
 		}
 	}
-
-	c.Ip.Cache.Add(ip, result)
-
 	return result
+}
+
+func (c Config) GetRule(ip string) constants.IpRule {
+
+	rule := constants.DistributionBypass
+
+	//dns server
+	rule = c.GetDnsServerRule(ip)
+	if rule != constants.DistributionNotFound {
+		return rule
+	}
+
+	//true proxy server
+	rule = c.GetTrueProxyServerRule(ip)
+	if rule != constants.DistributionNotFound {
+		return rule
+	}
+
+	//subnet rule
+	rule = c.GetTrueProxyServerRule(ip)
+	if rule != constants.DistributionNotFound {
+		return rule
+	}
+
+	//geo rule
+	rule = c.GetTrueProxyServerRule(ip)
+	if rule != constants.DistributionNotFound {
+		return rule
+	}
+
+	//dns rule
+	rule = c.GetDnsRule(ip)
+	if rule != constants.DistributionNotFound {
+		return rule
+	}
+
+	//default rule
+	if c.Ip.DefaultProxy {
+		rule = constants.DistributionProxy
+	}
+
+	return rule
+
 }
 
 func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.DnsRule) {
 	result := constants.DistributionLocalDns
-	cacheResult, ok := c.Dns.Cache.Get(domain)
-	if ok {
-		result = cacheResult.(constants.DnsRule)
-	} else if isLocal {
+	if isLocal {
+		log.Debugln("[Matching domain]: %v is from local", domain)
 		result = constants.DistributionLocalDns
 	} else if strings.Contains(c.TrueProxyServer, domain) {
+		log.Debugln("[Matching domain]: %v is from true proxy server", domain)
 		result = constants.DistributionLocalDns
 	} else {
 		if c.Dns.Local.Domains.Has(domain) {
@@ -132,7 +153,6 @@ func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.
 			log.Debugln("[Matching domain]: %v is from remote geo sites", domain)
 		}
 	}
-	c.Dns.Cache.Add(domain, result)
 	if result == constants.DistributionLocalDns {
 		return c.Dns.Local.Client, constants.DistributionLocalDns
 	}
