@@ -46,7 +46,7 @@ func Start(addr string) error {
 var dashboard embed.FS
 
 func FileServer(router *chi.Mux) {
-	fSys, _ := fs.Sub(dashboard, "dist")
+	fSys, _ := fs.Sub(dashboard, "dist-ui")
 
 	staticFs := http.FileServer(http.FS(fSys))
 
