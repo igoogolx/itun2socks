@@ -42,7 +42,7 @@ func Start(addr string) error {
 	return err
 }
 
-//go:embed dist
+//go:embed dist-ui
 var dashboard embed.FS
 
 func FileServer(router *chi.Mux) {
