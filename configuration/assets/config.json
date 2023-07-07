@@ -2,7 +2,7 @@
   "clashYamlUrl": "",
   "proxy": [],
 
-  "rule": [
+  "rules": [
     {
       "id": "proxy_all",
       "dns": {

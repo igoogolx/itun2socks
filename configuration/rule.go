@@ -10,7 +10,7 @@ func GetSelectedRule() (RuleCfg, error) {
 	if err != nil {
 		return RuleCfg{}, err
 	}
-	for _, v := range c.Rule {
+	for _, v := range c.Rules {
 		if v.Id == c.Selected.Rule {
 			return v, nil
 		}
@@ -24,7 +24,7 @@ func GetRules() ([]RuleCfg, error) {
 	if err != nil {
 		return nil, err
 	}
-	return c.Rule, nil
+	return c.Rules, nil
 }
 
 func DeleteRule(id string) error {
@@ -33,12 +33,12 @@ func DeleteRule(id string) error {
 		return err
 	}
 	rules := make([]RuleCfg, 0)
-	for _, v := range c.Rule {
+	for _, v := range c.Rules {
 		if v.Id != id {
 			rules = append(rules, v)
 		}
 	}
-	c.Rule = rules
+	c.Rules = rules
 	err = Write(c)
 	if err != nil {
 		return err
@@ -51,9 +51,9 @@ func UpdateRule(id string, rule RuleCfg) error {
 	if err != nil {
 		return err
 	}
-	for i, v := range c.Rule {
+	for i, v := range c.Rules {
 		if v.Id == id {
-			c.Rule[i] = rule
+			c.Rules[i] = rule
 			break
 		}
 	}
@@ -74,7 +74,7 @@ func AddRule(rule RuleCfg) (string, error) {
 		return "", err
 	}
 	rule.Id = id.String()
-	c.Rule = append(c.Rule, rule)
+	c.Rules = append(c.Rules, rule)
 	err = Write(c)
 	if err != nil {
 		return "", err
