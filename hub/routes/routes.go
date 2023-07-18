@@ -39,7 +39,7 @@ func Start(addr string) error {
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
 	})
-	FileServer(r)
+	go FileServer(r)
 	err := http.ListenAndServe(addr, r)
 	return err
 }
