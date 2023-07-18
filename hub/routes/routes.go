@@ -3,6 +3,7 @@ package routes
 import (
 	"embed"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"io/fs"
 	"net/http"
@@ -23,6 +24,8 @@ func Start(addr string) error {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+	r.Use(middleware.Heartbeat("/ping"))
+	r.Mount("/debug", middleware.Profiler())
 	r.Group(func(r chi.Router) {
 		r.Mount("/traffic", trafficRouter())
 		r.Mount("/proxies", proxyRouter())
@@ -33,7 +36,6 @@ func Start(addr string) error {
 		r.Mount("/setting", settingRouter())
 		r.Mount("/version", versionRouter())
 		r.Mount("/runtime-detail", runtimeDetailRouter())
-		r.Mount("/ping", pingRouter())
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
 	})
