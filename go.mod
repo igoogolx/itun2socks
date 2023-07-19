@@ -2,8 +2,6 @@ module github.com/igoogolx/itun2socks
 
 go 1.20
 
-replace github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61 => github.com/igoogolx/go-tun2socks v1.16.12-0.20221207142718-53883f8ae3df
-
 require (
 	github.com/Dreamacro/clash v1.13.0
 	github.com/elazarl/goproxy v0.0.0-20220115173737-adb46da277ac
@@ -26,8 +24,6 @@ require (
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/djherbis/buffer v1.2.0 // indirect
-	github.com/djherbis/nio v2.0.3+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
