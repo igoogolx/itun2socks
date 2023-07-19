@@ -90,7 +90,7 @@
       "ip": {
         "defaultProxy": false,
         "geoIps": {
-          "bypass": ["PRIVATE"],
+          "bypass": [],
           "proxy": []
         },
         "subnet": {
