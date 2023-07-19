@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Dreamacro/clash/log"
-	_ "github.com/igoogolx/itun2socks/components/debug"
 	"github.com/igoogolx/itun2socks/components/is-elevated"
 	_ "github.com/igoogolx/itun2socks/components/log"
 	"github.com/igoogolx/itun2socks/configuration"
