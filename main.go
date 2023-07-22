@@ -20,35 +20,20 @@ var (
 	homeDir       string
 	version       bool
 	port          int
-	configFile    string
 	checkElevated bool
 )
 
 func main() {
-	flag.StringVar(&homeDir, "home-dir", "", "Config dir, default: current dir")
 	flag.BoolVar(&version, "version", false, "Print version")
 	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default:9000")
-	flag.StringVar(&configFile, "configFile", "", "Config file path, default: configFile.json")
 	flag.BoolVar(&checkElevated, "check_elevated", true, "Check whether it's run as the admin, default: true")
 	flag.Parse()
 
-	if homeDir != "" {
-		if !filepath.IsAbs(homeDir) {
-			currentDir, _ := os.Getwd()
-			homeDir = filepath.Join(currentDir, homeDir)
-		}
-		constants.Path.SetHomeDir(homeDir)
-	}
+	currentDir, _ := os.Getwd()
+	homeDir = filepath.Join(currentDir)
 
-	if configFile != "" {
-		if !filepath.IsAbs(configFile) {
-			currentDir, _ := os.Getwd()
-			configFile = filepath.Join(currentDir, configFile)
-		}
-		configuration.SetConfigFilePath(configFile)
-	} else {
-		configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
-	}
+	constants.Path.SetHomeDir(homeDir)
+	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
 
 	if version {
 		fmt.Printf("version: %v, build on: %v", constants.Version, constants.BuildTime)
