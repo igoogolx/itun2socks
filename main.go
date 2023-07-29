@@ -24,7 +24,7 @@ var (
 func main() {
 	flag.BoolVar(&version, "version", false, "Print version")
 	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default:9000")
-	flag.StringVar(&homeDir, "home-dir", "", "Config dir, default: current dir")
+	flag.StringVar(&homeDir, "home_dir", "", "Config dir, default: current dir")
 	flag.Parse()
 
 	if homeDir != "" {
