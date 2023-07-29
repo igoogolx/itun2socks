@@ -6,6 +6,9 @@ before:
     - go mod tidy
     # you may remove this if you don't need go generate
     - go run cmd/generate.go
+universal_binaries:
+  - replace: false
+
 builds:
   - env:
       - CGO_ENABLED=0
