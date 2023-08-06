@@ -32,14 +32,15 @@ func main() {
 			configDir, _ := os.UserConfigDir()
 			homeDir = filepath.Join(configDir, "itun2socks", homeDir)
 		}
-		constants.Path.SetHomeDir(homeDir)
+	} else {
+		currentDir, _ := os.Getwd()
+		homeDir = filepath.Join(currentDir)
 	}
+	constants.Path.SetHomeDir(homeDir)
+
+	fmt.Printf(constants.Path.ConfigFilePath())
 
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
-
-	currentDir, _ := os.Getwd()
-	homeDir = filepath.Join(currentDir)
-	constants.Path.SetHomeDir(homeDir)
 
 	if version {
 		fmt.Printf("version: %v, build on: %v", constants.Version, constants.BuildTime)

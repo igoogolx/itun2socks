@@ -7,7 +7,6 @@ import (
 	"github.com/Dreamacro/clash/log"
 	"go.uber.org/atomic"
 	"os"
-	"path/filepath"
 	"reflect"
 	"sync"
 )
@@ -85,14 +84,7 @@ func SetConfigFilePath(path string) {
 }
 
 func GetConfigFilePath() (string, error) {
-	curDir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	if filepath.IsAbs(configFilePath.Load()) {
-		return configFilePath.Load(), nil
-	}
-	return filepath.Clean(filepath.Join(curDir, configFilePath.Load())), nil
+	return configFilePath.Load(), nil
 }
 
 //go:embed assets/config.json
