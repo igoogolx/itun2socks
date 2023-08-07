@@ -36,6 +36,7 @@ func main() {
 		currentDir, _ := os.Getwd()
 		homeDir = filepath.Join(currentDir)
 	}
+	_ = os.MkdirAll(homeDir, os.ModePerm)
 	constants.Path.SetHomeDir(homeDir)
 
 	fmt.Printf(constants.Path.ConfigFilePath())
