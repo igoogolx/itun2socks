@@ -5,3 +5,4 @@ dist
 dist-ui
 *.tar.gz
 geoData
+./config.json
