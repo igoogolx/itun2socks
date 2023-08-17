@@ -46,10 +46,15 @@ type SettingCfg struct {
 	LocalServer      `json:"localServer"`
 	AutoMode         `json:"autoMode"`
 	Dns              struct {
-		Boost  string `json:"boost"`
-		Remote string `json:"remote"`
-		Local  string `json:"local"`
+		Boost  DnsServer `json:"boost"`
+		Remote DnsServer `json:"remote"`
+		Local  DnsServer `json:"local"`
 	} `json:"dns"`
+}
+
+type DnsServer struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }
 
 type LocalServer struct {
