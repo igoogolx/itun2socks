@@ -68,6 +68,13 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("fail to exchange dns message, err: %v, question: %v, server: %v", err, question, dnsClient.Nameservers())
 	}
+	if isLocal {
+		if err == nil {
+			log.Infoln("Look up proxy addr: %v successfully!", question)
+		} else {
+			log.Errorln("Failed to Look up proxy addr: %v", question)
+		}
+	}
 	resData, err := res.Pack()
 	if err != nil {
 		return 0, fmt.Errorf("fail to pack dns responsed, err: %v", err)
