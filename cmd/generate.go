@@ -12,7 +12,7 @@ import (
 
 func main() {
 	download("https://github.com/igoogolx/lux-geo-data/releases/download/v0.0.5/geoData.tar.gz", filepath.Join("components", "geo", "geoData.tar.gz"))
-	download("https://github.com/igoogolx/lux-client/releases/download/v0.3.9/dist-ui.tar.gz", filepath.Join("hub", "routes", "dist.tar.gz"))
+	download("https://github.com/igoogolx/lux-client/releases/download/v0.4.1/dist-ui.tar.gz", filepath.Join("hub", "routes", "dist.tar.gz"))
 }
 
 func download(url string, outputPath string) {
