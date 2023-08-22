@@ -20,7 +20,6 @@ builds:
     tags:
       - with_gvisor
     goos:
-      - linux
       - windows
       - darwin
 
