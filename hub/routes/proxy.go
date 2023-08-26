@@ -123,7 +123,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), defaultDelayTimeout)
 	defer cancel()
-	delay, err := p.URLTest(ctx, url)
+	delay, _, err := p.URLTest(ctx, url)
 	if err != nil {
 		render.JSON(w, r, render.M{
 			"delay": -1,

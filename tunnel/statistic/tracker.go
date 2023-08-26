@@ -5,7 +5,7 @@ import (
 	"github.com/igoogolx/itun2socks/cfg/distribution"
 	"github.com/igoogolx/itun2socks/constants"
 	"net"
-	"strconv"
+	"net/netip"
 	"time"
 
 	C "github.com/Dreamacro/clash/constant"
@@ -78,14 +78,15 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 		},
 	}
 	go func() {
-		port, err := strconv.Atoi(t.trackerInfo.Metadata.SrcPort)
-		if err == nil {
-			processName, err := process.FindProcessName(t.trackerInfo.Metadata.NetWork.String(), t.trackerInfo.Metadata.SrcIP, port)
+		srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
+		if ok {
+			processName, err := process.FindProcessPath(t.trackerInfo.Metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
 			if err == nil && len(processName) != 0 {
 				t.Process = processName
 			}
+			manager.Join(t)
 		}
-		manager.Join(t)
+
 	}()
 	if cachedItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		if ok {
@@ -152,14 +153,14 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 	}
 
 	go func() {
-		port, err := strconv.Atoi(ut.trackerInfo.Metadata.SrcPort)
-		if err == nil {
-			processName, err := process.FindProcessName(ut.trackerInfo.Metadata.NetWork.String(), ut.trackerInfo.Metadata.SrcIP, port)
+		srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
+		if ok {
+			processName, err := process.FindProcessPath(ut.trackerInfo.Metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
 			if err == nil && len(processName) != 0 {
 				ut.Process = processName
 			}
+			manager.Join(ut)
 		}
-		manager.Join(ut)
 	}()
 	return ut
 }

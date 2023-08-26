@@ -10,9 +10,9 @@ import (
 func CreateUdpMetadata(srcAddr, destAddr net.UDPAddr) constant.Metadata {
 	metadata := constant.Metadata{
 		SrcIP:   srcAddr.IP,
-		SrcPort: strconv.Itoa(srcAddr.Port),
+		SrcPort: constant.Port(srcAddr.Port),
 		DstIP:   destAddr.IP,
-		DstPort: strconv.Itoa(destAddr.Port),
+		DstPort: constant.Port(destAddr.Port),
 		NetWork: constant.UDP,
 	}
 	return metadata
@@ -21,9 +21,9 @@ func CreateUdpMetadata(srcAddr, destAddr net.UDPAddr) constant.Metadata {
 func CreateTcpMetadata(srcAddr, destAddr net.TCPAddr) constant.Metadata {
 	metadata := constant.Metadata{
 		SrcIP:   srcAddr.IP,
-		SrcPort: strconv.Itoa(srcAddr.Port),
+		SrcPort: constant.Port(srcAddr.Port),
 		DstIP:   destAddr.IP,
-		DstPort: strconv.Itoa(destAddr.Port),
+		DstPort: constant.Port(destAddr.Port),
 		NetWork: constant.TCP,
 	}
 	return metadata
@@ -50,11 +50,20 @@ func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*consta
 	if destIp == nil {
 		return nil, errors.New("fail to parse dest host")
 	}
+	metaSrcPort, err := strconv.Atoi(srcPort)
+	if err != nil {
+		return nil, err
+	}
+	metaDestPort, err := strconv.Atoi(destPort)
+
+	if err != nil {
+		return nil, err
+	}
 	metadata := &constant.Metadata{
 		SrcIP:   srcIp,
-		SrcPort: srcPort,
+		SrcPort: constant.Port(metaSrcPort),
 		DstIP:   destIp,
-		DstPort: destPort,
+		DstPort: constant.Port(metaDestPort),
 		NetWork: network,
 	}
 	return metadata, nil

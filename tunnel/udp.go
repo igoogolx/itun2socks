@@ -59,7 +59,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	}()
 	var lc conn.UdpConn
 	var err error
-	if ct.Metadata().DstPort == constants.DnsPort {
+	if ct.Metadata().DstPort.String() == constants.DnsPort {
 		lc = dns.NewConn()
 	} else {
 		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
