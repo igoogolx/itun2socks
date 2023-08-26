@@ -78,9 +78,12 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 		},
 	}
 	go func() {
-		srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
-		if ok {
-			processName, err := process.FindProcessPath(t.trackerInfo.Metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
+		srcIP, srcOk := netip.AddrFromSlice(metadata.SrcIP)
+		destIp, destOk := netip.AddrFromSlice(metadata.DstIP)
+		if srcOk && destOk {
+			srcIP = srcIP.Unmap()
+			destIp = destIp.Unmap()
+			processName, err := process.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), netip.AddrPortFrom(destIp, uint16(metadata.DstPort)))
 			if err == nil && len(processName) != 0 {
 				t.Process = processName
 			}
@@ -153,9 +156,12 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 	}
 
 	go func() {
-		srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
-		if ok {
-			processName, err := process.FindProcessPath(ut.trackerInfo.Metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
+		srcIP, srcOk := netip.AddrFromSlice(metadata.SrcIP)
+		destIp, destOk := netip.AddrFromSlice(metadata.DstIP)
+		if srcOk && destOk {
+			srcIP = srcIP.Unmap()
+			destIp = destIp.Unmap()
+			processName, err := process.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), netip.AddrPortFrom(destIp, uint16(metadata.DstPort)))
 			if err == nil && len(processName) != 0 {
 				ut.Process = processName
 			}
