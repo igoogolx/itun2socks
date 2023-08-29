@@ -1,11 +1,11 @@
 package distribution
 
 import (
-	"github.com/igoogolx/itun2socks/components/geo"
-	"github.com/igoogolx/itun2socks/components/list"
-	"github.com/igoogolx/itun2socks/components/resolver"
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/constants"
+	"github.com/igoogolx/itun2socks/pkg/geo"
+	"github.com/igoogolx/itun2socks/pkg/list"
+	"github.com/igoogolx/itun2socks/pkg/resolver"
 )
 
 func NewDnsDistribution(

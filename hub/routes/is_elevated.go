@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/igoogolx/itun2socks/components/is-elevated"
+	"github.com/igoogolx/itun2socks/pkg/is-elevated"
 	"net/http"
 )
 

@@ -2,9 +2,9 @@ package tunnel
 
 import (
 	"github.com/Dreamacro/clash/log"
-	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
-	"github.com/igoogolx/itun2socks/components/pool"
 	"github.com/igoogolx/itun2socks/conn"
+	network_iface "github.com/igoogolx/itun2socks/pkg/network-iface"
+	"github.com/igoogolx/itun2socks/pkg/pool"
 	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	"io"
 	"net"

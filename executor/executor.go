@@ -3,11 +3,11 @@ package executor
 import (
 	"context"
 	"github.com/igoogolx/itun2socks/cfg"
-	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
-	"github.com/igoogolx/itun2socks/components/proxy-handler"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
+	network_iface "github.com/igoogolx/itun2socks/pkg/network-iface"
+	"github.com/igoogolx/itun2socks/pkg/proxy-handler"
 	"github.com/igoogolx/itun2socks/tunnel"
 	sTun "github.com/sagernet/sing-tun"
 	F "github.com/sagernet/sing/common/format"

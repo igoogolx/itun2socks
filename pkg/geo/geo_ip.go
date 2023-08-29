@@ -2,7 +2,7 @@ package geo
 
 import (
 	"embed"
-	"github.com/igoogolx/itun2socks/components/list"
+	"github.com/igoogolx/itun2socks/pkg/list"
 	log "github.com/sirupsen/logrus"
 	"io/fs"
 )

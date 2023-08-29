@@ -3,9 +3,9 @@ package executor
 import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/iface"
-	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/conn"
 	localserver "github.com/igoogolx/itun2socks/local-server"
+	network_iface "github.com/igoogolx/itun2socks/pkg/network-iface"
 	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	sTun "github.com/sagernet/sing-tun"
 	"sync"

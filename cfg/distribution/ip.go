@@ -2,10 +2,10 @@ package distribution
 
 import (
 	"fmt"
-	geo2 "github.com/igoogolx/itun2socks/components/geo"
-	"github.com/igoogolx/itun2socks/components/list"
 	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/constants"
+	geo2 "github.com/igoogolx/itun2socks/pkg/geo"
+	"github.com/igoogolx/itun2socks/pkg/list"
 )
 
 type IpMatcher struct {
