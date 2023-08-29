@@ -5,7 +5,7 @@ import (
 	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/Dreamacro/clash/constant"
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
 	"sync"

@@ -3,7 +3,7 @@ package configuration
 import (
 	"fmt"
 	"github.com/Dreamacro/clash/adapter"
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {
