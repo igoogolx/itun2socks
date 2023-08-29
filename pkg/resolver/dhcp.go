@@ -3,7 +3,7 @@ package resolver
 import (
 	"context"
 	"github.com/Dreamacro/clash/component/dhcp"
-	network_iface "github.com/igoogolx/itun2socks/pkg/network-iface"
+	network_iface "github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/miekg/dns"
 	"net"
 	"time"

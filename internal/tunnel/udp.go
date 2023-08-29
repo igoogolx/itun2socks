@@ -7,7 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	statistic2 "github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	"github.com/igoogolx/itun2socks/pkg/network-iface"
+	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	"io"
 	"net"

@@ -4,7 +4,7 @@ import (
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	statistic2 "github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	network_iface "github.com/igoogolx/itun2socks/pkg/network-iface"
+	network_iface "github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	"io"
 	"net"
