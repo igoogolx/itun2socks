@@ -2,6 +2,7 @@ package local_server
 
 import (
 	"context"
+	"errors"
 	"github.com/Dreamacro/clash/log"
 	"github.com/elazarl/goproxy"
 	"net/http"
@@ -16,7 +17,7 @@ func startHttp(addr string) {
 		server = &http.Server{Addr: addr, Handler: proxy}
 		err := server.ListenAndServe()
 		if err != nil {
-			if err != http.ErrServerClosed {
+			if !errors.Is(err, http.ErrServerClosed) {
 				log.Errorln("fail to start http local server: %v", err)
 			}
 		}
