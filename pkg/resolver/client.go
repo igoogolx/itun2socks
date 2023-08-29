@@ -2,7 +2,7 @@ package resolver
 
 import (
 	"context"
-	"github.com/igoogolx/itun2socks/constants"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/miekg/dns"
 	"net"
 	"sync"

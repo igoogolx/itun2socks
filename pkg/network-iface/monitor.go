@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/Dreamacro/clash/log"
-	"github.com/igoogolx/itun2socks/configuration"
+	"github.com/igoogolx/itun2socks/internal/configuration"
 	tun "github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
 	"go.uber.org/atomic"
