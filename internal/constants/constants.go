@@ -1,7 +1,5 @@
 package constants
 
-import "path/filepath"
-
 type IpRule int
 
 const (
@@ -39,5 +37,3 @@ var (
 	Version   = "undefined"
 	BuildTime = "undefined"
 )
-
-var LogFile = filepath.Join("logs", "lux.log")
