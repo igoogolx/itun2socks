@@ -40,7 +40,12 @@ func ParseProxiesFromClashUrl(url string) ([]map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Warnln("Parsing clash url: fail to close body")
+		}
+	}(res.Body)
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
