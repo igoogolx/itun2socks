@@ -5,7 +5,7 @@ before:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
-    - go run cmd/generate.go
+    - go run scripts/generate.go
 universal_binaries:
   - replace: false
 
