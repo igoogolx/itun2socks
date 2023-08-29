@@ -5,7 +5,6 @@ import (
 	"github.com/Dreamacro/clash/component/iface"
 	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/conn"
-	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
 	"github.com/igoogolx/itun2socks/tunnel/statistic"
 	sTun "github.com/sagernet/sing-tun"
@@ -59,9 +58,6 @@ func (c *Client) Start() error {
 	var err error
 	if err = c.stack.Start(); err != nil {
 		return fmt.Errorf("fail to start stack: %v", err)
-	}
-	if err = dns.FlushSysCaches(); err != nil {
-		return fmt.Errorf("fail to flush dns cache: %v", err)
 	}
 	c.localserver.Start()
 	return nil
