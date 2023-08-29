@@ -38,9 +38,7 @@ func main() {
 	}
 	_ = os.MkdirAll(homeDir, os.ModePerm)
 	constants.Path.SetHomeDir(homeDir)
-
-	fmt.Printf(constants.Path.ConfigFilePath())
-
+	log.Infoln("using config: %v", constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
 
 	if version {
