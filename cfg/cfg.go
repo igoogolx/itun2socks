@@ -16,7 +16,11 @@ type Config struct {
 	LocalServer local_server.Cfg
 }
 
-func New(rawConfig db.Config) (Config, error) {
+func New() (Config, error) {
+	rawConfig, err := db.Read()
+	if err != nil {
+		return Config{}, err
+	}
 	selectedRule, err := db.GetSelectedRule()
 	if err != nil {
 		return Config{}, err

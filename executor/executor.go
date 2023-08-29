@@ -5,7 +5,6 @@ import (
 	"github.com/igoogolx/itun2socks/cfg"
 	network_iface "github.com/igoogolx/itun2socks/components/network-iface"
 	"github.com/igoogolx/itun2socks/components/proxy-handler"
-	"github.com/igoogolx/itun2socks/configuration"
 	"github.com/igoogolx/itun2socks/conn"
 	"github.com/igoogolx/itun2socks/dns"
 	localserver "github.com/igoogolx/itun2socks/local-server"
@@ -47,11 +46,7 @@ func CalculateInterfaceName(name string) (tunName string) {
 }
 
 func New() (*Client, error) {
-	rawConfig, err := configuration.Read()
-	if err != nil {
-		return nil, err
-	}
-	config, err := cfg.New(rawConfig)
+	config, err := cfg.New()
 	if err != nil {
 		return nil, err
 	}
