@@ -17,8 +17,6 @@ const (
 	DistributionRemoteDns DnsRule = "remote"
 )
 
-const CacheSize = 1000
-
 const DnsPort = "53"
 
 const (
