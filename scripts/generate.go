@@ -37,14 +37,24 @@ func downloadFile(url string, filePath string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Printf("fail to close file: %v\n", filePath)
+		}
+	}(file)
 
 	// Download the archive
 	response, err := http.Get(url)
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Printf("fail to close body: %v\n", filePath)
+		}
+	}(response.Body)
 
 	// Write the archive to the file
 	_, err = io.Copy(file, response.Body)
@@ -61,14 +71,28 @@ func unarchiveFile(archiveFilePath string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Printf("fail to close file: %v\n", archiveFilePath)
+		}
+		err = os.Remove(archiveFilePath)
+		if err != nil {
+			fmt.Printf("fail to remove file: %v\n", archiveFilePath)
+		}
+	}(file)
 
 	// Create a gzip reader to read the compressed data
 	gzipReader, err := gzip.NewReader(file)
 	if err != nil {
 		return err
 	}
-	defer gzipReader.Close()
+	defer func(gzipReader *gzip.Reader) {
+		err := gzipReader.Close()
+		if err != nil {
+			fmt.Printf("fail to close gzip reader: %v\n", archiveFilePath)
+		}
+	}(gzipReader)
 
 	// Create a tar reader to read the contents of the archive
 	tarReader := tar.NewReader(gzipReader)
@@ -85,26 +109,33 @@ func unarchiveFile(archiveFilePath string) error {
 		if err != nil {
 			return err
 		}
-
 		outputPath := filepath.Join(parentDir, header.Name)
+		err = os.RemoveAll(outputPath)
+		if err != nil {
+			fmt.Printf("fail to remove path: %s", outputPath)
+		}
+
 		switch header.Typeflag {
 		case tar.TypeDir:
 			if err := os.Mkdir(outputPath, 0755); err != nil {
-				fmt.Errorf("ExtractTarGz: Mkdir() failed: %s", err.Error())
+				fmt.Printf("ExtractTarGz: Mkdir() failed: %s", err.Error())
 			}
 		case tar.TypeReg:
 			outFile, err := os.Create(outputPath)
 			if err != nil {
-				fmt.Errorf("ExtractTarGz: Create() failed: %s", err.Error())
+				fmt.Printf("ExtractTarGz: Create() failed: %s", err.Error())
 			}
 			if _, err := io.Copy(outFile, tarReader); err != nil {
-				fmt.Errorf("ExtractTarGz: Copy() failed: %s", err.Error())
+				fmt.Printf("ExtractTarGz: Copy() failed: %s", err.Error())
 			}
-			outFile.Close()
+			err = outFile.Close()
+			if err != nil {
+				fmt.Printf("fail to close file: %v\n", outputPath)
+			}
 
 		default:
-			fmt.Errorf(
-				"ExtractTarGz: uknown type: %s in %s",
+			fmt.Printf(
+				"ExtractTarGz: uknown type: %v in %s",
 				header.Typeflag,
 				header.Name)
 		}
