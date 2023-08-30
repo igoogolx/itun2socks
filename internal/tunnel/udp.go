@@ -1,6 +1,7 @@
 package tunnel
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/conn"
@@ -9,7 +10,6 @@ import (
 	statistic2 "github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
-	"io"
 	"net"
 	"sync"
 	"time"
@@ -32,13 +32,10 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 			return fmt.Errorf("fail to set udp conn deadline: %v", err)
 		}
 		n, addr, err := rc.ReadFrom(receivedBuf)
-		if ne, ok := err.(net.Error); ok && ne.Timeout() {
+		var ne net.Error
+		if errors.As(err, &ne) && ne.Timeout() {
 			log.Debugln("udp read io timeout")
 			return nil /* ignore I/O timeout */
-		} else if err == io.EOF {
-			return nil
-		} else if err != nil {
-			return fmt.Errorf("fail to read udp data from local: %v", err)
 		}
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
 		if err != nil {
