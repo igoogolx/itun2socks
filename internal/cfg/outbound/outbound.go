@@ -19,7 +19,7 @@ func New(option Option) (constant.Proxy, error) {
 
 	var proxy constant.Proxy
 	var err error
-	var ids = []string{}
+	var ids []string
 
 	if option.AutoMode.Enabled {
 

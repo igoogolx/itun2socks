@@ -6,7 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/conn"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	network_iface "github.com/igoogolx/itun2socks/pkg/network_iface"
+	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
 	"sync"
 )

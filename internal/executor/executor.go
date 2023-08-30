@@ -8,7 +8,7 @@ import (
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	tunnel2 "github.com/igoogolx/itun2socks/internal/tunnel"
-	network_iface "github.com/igoogolx/itun2socks/pkg/network_iface"
+	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
 	F "github.com/sagernet/sing/common/format"
 	"net"
