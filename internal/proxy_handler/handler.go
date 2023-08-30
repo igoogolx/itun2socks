@@ -3,7 +3,7 @@ package proxy_handler
 import (
 	"context"
 	"github.com/Dreamacro/clash/log"
-	conn2 "github.com/igoogolx/itun2socks/internal/conn"
+	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/sagernet/sing/common/buf"
 	M "github.com/sagernet/sing/common/metadata"
@@ -42,8 +42,8 @@ func (uc udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
 }
 
 type ConnHandler struct {
-	tcpIn chan conn2.TcpConnContext
-	udpIn chan conn2.UdpConnContext
+	tcpIn chan conn.TcpConnContext
+	udpIn chan conn.UdpConnContext
 }
 
 func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metadata M.Metadata) error {
@@ -59,7 +59,7 @@ func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metada
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct := conn2.NewTcpConnContext(ctx, netConn, &m, &wg)
+	ct := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
 	c.tcpIn <- *ct
 	return nil
 }
@@ -77,7 +77,7 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct, err := conn2.NewUdpConnContext(ctx, udpConn{packetConn}, &m, &wg)
+	ct, err := conn.NewUdpConnContext(ctx, udpConn{packetConn}, &m, &wg)
 	if err != nil {
 		return err
 	}
@@ -85,11 +85,11 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 	return nil
 }
 
-func (c ConnHandler) NewError(ctx context.Context, err error) {
+func (c ConnHandler) NewError(_ context.Context, err error) {
 	log.Errorln("proxy handler, err: %v", err)
 }
-func New(tcpIn chan conn2.TcpConnContext,
-	udpIn chan conn2.UdpConnContext) *ConnHandler {
+func New(tcpIn chan conn.TcpConnContext,
+	udpIn chan conn.UdpConnContext) *ConnHandler {
 	return &ConnHandler{
 		tcpIn,
 		udpIn,
