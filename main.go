@@ -8,7 +8,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
-	_ "github.com/igoogolx/itun2socks/pkg/log"
+	pLog "github.com/igoogolx/itun2socks/pkg/log"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -38,6 +38,7 @@ func main() {
 	}
 	_ = os.MkdirAll(homeDir, os.ModePerm)
 	constants.Path.SetHomeDir(homeDir)
+	pLog.InitLog()
 	log.Infoln("using config: %v", constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
 

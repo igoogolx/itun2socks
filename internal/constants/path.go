@@ -22,4 +22,6 @@ func (p *path) ConfigFilePath() string {
 	return filepath.Join(Path.HomeDir(), DbFileName)
 }
 
-var LogFile = filepath.Join(Path.homeDir, "log.txt")
+func (p *path) LogFilePath() string {
+	return filepath.Join(Path.HomeDir(), "core.log")
+}
