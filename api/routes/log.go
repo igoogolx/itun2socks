@@ -10,8 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -94,15 +92,7 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLogsDir(w http.ResponseWriter, r *http.Request) {
-	ex, err := os.Executable()
-	if err != nil {
-		log.Errorln("fail to get executable path,error:%v", err)
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-	exPath := filepath.Dir(filepath.Join(filepath.Dir(ex), constants.LogFile))
 	render.JSON(w, r, render.M{
-		"path": exPath,
+		"path": constants.Path.LogFilePath(),
 	})
 }
