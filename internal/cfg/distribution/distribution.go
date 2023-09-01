@@ -123,13 +123,13 @@ func (c Config) GetRule(ip string) constants.IpRule {
 	}
 
 	//subnet rule
-	rule = c.GetTrueProxyServerRule(ip)
+	rule = c.GetSubnetRule(ip)
 	if rule != constants.DistributionNotFound {
 		return rule
 	}
 
 	//geo rule
-	rule = c.GetTrueProxyServerRule(ip)
+	rule = c.GetGeoRule(ip)
 	if rule != constants.DistributionNotFound {
 		return rule
 	}
