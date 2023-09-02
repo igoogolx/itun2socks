@@ -10,6 +10,7 @@ import (
 	statistic2 "github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
+	"io"
 	"net"
 	"sync"
 	"time"
@@ -37,9 +38,16 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 			log.Debugln("udp read io timeout")
 			return nil /* ignore I/O timeout */
 		}
+		if errors.Is(err, io.EOF) {
+			log.Debugln("udp read eof: %v", err)
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("fail to read udp from rc:%v", err)
+		}
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
 		if err != nil {
-			return fmt.Errorf("fail to write udp to remote:%v", err)
+			return fmt.Errorf("fail to write udp to lc:%v", err)
 		}
 	}
 
