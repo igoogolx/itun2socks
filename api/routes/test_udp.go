@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/miekg/dns"
-	log "github.com/sirupsen/logrus"
 	"net"
 	"time"
 )
@@ -24,41 +24,35 @@ func CheckDnsMsg(data []byte) bool {
 	return true
 }
 
-func UdpTest(pc net.PacketConn, target string) bool {
+func UdpTest(pc net.PacketConn, target string) (bool, error) {
 	defer func(pc net.PacketConn) {
 		err := pc.Close()
 		if err != nil {
-			log.Warnln("fail to close pc, err: %v\n", err)
+			log.Debugln(log.FormatLog(log.HubPrefix, "fail to close conn in udp test, err: %v"), err)
 		}
 	}(pc)
 	addr, err := net.ResolveUDPAddr("udp", target)
 	if err != nil {
-		log.Warnln("fail to resolve udp, err: %v\n", err)
-		return false
+		return false, err
 	}
 	msg, err := MakeDnsMsg(DnsMsg)
 	if err != nil {
-		log.Warnln("fail to make msg, err: %v\n", err)
-		return false
+		return false, err
 	}
 	_, err = pc.WriteTo(msg, addr)
 	if err != nil {
-		log.Warnln("fail to write to target, err: %v\n", err)
-		return false
+		return false, err
 	}
 	err = pc.SetDeadline(time.Now().Add(5 * time.Second))
 	if err != nil {
-		log.Warnln("fail to set deadline for pc, err: %v\n", err)
-		return false
+		return false, err
 	}
 	for {
 		buf := make([]byte, 1024)
 		n, _, err := pc.ReadFrom(buf)
 		if err != nil {
-			log.Warnln("fail to read data, err: %v\n", err)
-			return false
+			return false, err
 		}
-		log.Infoln("length of dns: %v", n)
-		return CheckDnsMsg(buf[:n])
+		return CheckDnsMsg(buf[:n]), nil
 	}
 }

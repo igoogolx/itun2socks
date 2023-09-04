@@ -3,11 +3,11 @@ package tunnel
 import (
 	"errors"
 	"fmt"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
-	statistic2 "github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	"io"
@@ -35,11 +35,11 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 		n, addr, err := rc.ReadFrom(receivedBuf)
 		var ne net.Error
 		if errors.As(err, &ne) && ne.Timeout() {
-			log.Debugln("udp read io timeout")
+			log.Debugln(log.FormatLog(log.UdpPrefix, "udp read io timeout"))
 			return nil /* ignore I/O timeout */
 		}
 		if errors.Is(err, io.EOF) {
-			log.Debugln("udp read eof: %v", err)
+			log.Debugln(log.FormatLog(log.UdpPrefix, "udp read EOF"))
 			return nil
 		}
 		if err != nil {
@@ -54,12 +54,12 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 }
 
 func handleUdpConn(ct conn.UdpConnContext) {
-	log.Debugln("handle udp conn, dst ip: %v, dst port: %v", ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
+	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, dst ip: %v, dst port: %v"), ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
 	defer func() {
 		ct.Wg().Done()
 		err := closeConn(ct.Conn())
 		if err != nil {
-			log.Debugln("fail to close remote udp conn,err: %v", err)
+			log.Debugln(log.FormatLog(log.UdpPrefix, "fail to close remote udp conn,err: %v"), err)
 		}
 	}()
 	var lc conn.UdpConn
@@ -69,16 +69,16 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	} else {
 		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 		if err != nil {
-			log.Warnln("fail to get udp conn, err: %v, target: %v", err, ct.Metadata().DstIP.String())
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to get udp conn, err: %v, target: %v"), err, ct.Metadata().DstIP.String())
 			return
 		}
-		lc = statistic2.NewUDPTracker(localConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule())
+		lc = statistic.NewUDPTracker(localConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
 	}
 
 	defer func() {
 		err = closeConn(lc)
 		if err != nil {
-			log.Warnln("fail to close remote local conn,err: %v", err)
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote local conn,err: %v"), err)
 		}
 	}()
 
@@ -89,14 +89,14 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		defer wg.Done()
 		err := copyUdpPacket(lc, ct.Conn())
 		if err != nil {
-			log.Warnln("fail to handle udp output, err: %v", err)
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle output ,err: %v"), err)
 		}
 	}()
 	go func() {
 		defer wg.Done()
 		err := copyUdpPacket(ct.Conn(), lc)
 		if err != nil {
-			log.Warnln("fail to handle udp input, err: %v", err)
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle input ,err: %v"), err)
 		}
 	}()
 

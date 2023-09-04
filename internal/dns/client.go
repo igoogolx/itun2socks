@@ -3,10 +3,10 @@ package dns
 import (
 	"context"
 	"fmt"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/resolver"
 	D "github.com/miekg/dns"
 	"io"
@@ -57,7 +57,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	question, err := getDnsQuestion(dnsMessage)
 	defer func() {
 		elapsed := time.Since(start).Milliseconds()
-		log.Debugln("[DNS], it took %v ms to handle dns, question: %v", elapsed, question)
+		log.Debugln(log.FormatLog(log.DnsPrefix, "it took %v ms to handle dns, question: %v"), elapsed, question)
 	}()
 	if err != nil {
 		return 0, fmt.Errorf("invalid dns question, err: %v", err)
@@ -70,9 +70,9 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	}
 	if isLocal {
 		if err == nil {
-			log.Infoln("Look up proxy addr: %v successfully!", question)
+			log.Infoln(log.FormatLog(log.DnsPrefix, "look up proxy addr: %v successfully"), question)
 		} else {
-			log.Errorln("Failed to Look up proxy addr: %v", question)
+			log.Infoln(log.FormatLog(log.DnsPrefix, "fail to Look up proxy addr: %v"), question)
 		}
 	}
 	resData, err := res.Pack()
@@ -82,7 +82,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
-			log.Infoln("[DNS], rule: %v, target: %v, server: %v, result: %v", dnsRule, question, dnsClient.Nameservers(), resIp)
+			log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, server: %v, result: %v"), dnsRule, question, dnsClient.Nameservers(), resIp)
 			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}
@@ -102,17 +102,14 @@ func (d *Conn) ReadFrom(data []byte) (int, net.Addr, error) {
 }
 
 func (d *Conn) Close() error {
-
 	return nil
 }
 
-func (d *Conn) SetDeadline(t time.Time) error {
-
+func (d *Conn) SetDeadline(_ time.Time) error {
 	return nil
 }
 
-func (d *Conn) SetReadDeadline(t time.Time) error {
-
+func (d *Conn) SetReadDeadline(_ time.Time) error {
 	return nil
 }
 

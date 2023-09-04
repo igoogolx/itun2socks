@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/Dreamacro/clash/log"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"go.uber.org/atomic"
 	"os"
 	"reflect"
@@ -70,7 +70,7 @@ func Write(c Config) error {
 	go func() {
 		err := writeFile(copiedConfig)
 		if err != nil {
-			log.Errorln("fail to write file: %v", err)
+			log.Errorln(log.FormatLog(log.ConfigurationPrefix, "fail to write file: %v"), err)
 		}
 	}()
 	return nil
@@ -98,7 +98,7 @@ func readFile() (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Infoln("Created the default config file")
+		log.Infoln(log.FormatLog(log.ConfigurationPrefix, "created the default config file"))
 	}
 	c := &Config{}
 	data, err := os.ReadFile(configFilePath.Load())
@@ -138,7 +138,7 @@ func write(data []byte) error {
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			log.Warnln("fail to close file: %v, err: %v", configFilePath.Load(), err)
+			log.Warnln(log.FormatLog(log.ConfigurationPrefix, "fail to close file: %v, err: %v"), configFilePath.Load(), err)
 		}
 	}(f)
 	_, err = f.Write(data)

@@ -36,10 +36,14 @@ type Prefix int64
 
 const (
 	InitPrefix Prefix = iota
+	ConfigurationPrefix
+	HubPrefix
 	ExecutorPrefix
 	DnsPrefix
-	ConfigurationPrefix
 	RulePrefix
+	TcpPrefix
+	TunPrefix
+	UdpPrefix
 )
 
 func FormatLog(prefix Prefix, content string) string {

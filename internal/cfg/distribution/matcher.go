@@ -1,7 +1,7 @@
 package distribution
 
 import (
-	"github.com/Dreamacro/clash/log"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/netip"
 	"regexp"
 	"strings"
@@ -26,7 +26,7 @@ func IsSubnetContainsIp(s string, i string) bool {
 func IsDomainMatchRule(pattern string, domain string) bool {
 	matched, err := regexp.MatchString(pattern, domain)
 	if err != nil {
-		log.Warnln("error matching domain %s with pattern %s: %s", domain, pattern, err)
+		log.Warnln(log.FormatLog(log.RulePrefix, "matching domain %s with pattern %s: %s"), domain, pattern, err)
 	}
 	return matched
 }

@@ -1,7 +1,6 @@
 package tun
 
 import (
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
 )
@@ -20,7 +19,6 @@ func New() (Config, error) {
 		constants.TunGateway,
 	)
 	if err != nil {
-		log.Errorln("fail to parse address: %v", err)
 		return Config{}, err
 	}
 	return Config{

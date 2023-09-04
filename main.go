@@ -3,12 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/api"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
-	pLog "github.com/igoogolx/itun2socks/pkg/log"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -38,8 +37,8 @@ func main() {
 	}
 	_ = os.MkdirAll(homeDir, os.ModePerm)
 	constants.Path.SetHomeDir(homeDir)
-	pLog.InitLog()
-	log.Infoln("using config: %v", constants.Path.ConfigFilePath())
+	log.InitLog()
+	log.Infoln(log.FormatLog(log.InitPrefix, "using config: %v"), constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
 
 	if version {
@@ -49,11 +48,11 @@ func main() {
 	api.Start(port)
 	defer func() {
 		if p := recover(); p != nil {
-			log.Errorln("internal error: %v", p)
+			log.Errorln(log.FormatLog(log.InitPrefix, "internal error: %v"), p)
 		}
 		err := manager.Close()
 		if err != nil {
-			log.Errorln("fail to close executor:%v", err)
+			log.Errorln(log.FormatLog(log.InitPrefix, "fail to close client:%v"), err)
 		}
 	}()
 	osSignals := make(chan os.Signal, 1)

@@ -2,7 +2,6 @@ package list
 
 import (
 	"bufio"
-	"github.com/Dreamacro/clash/log"
 	"io"
 	"strings"
 )
@@ -43,7 +42,6 @@ func ParseFile(file io.Reader) ([]string, error) {
 			items = append(items, line)
 		}
 		if line == "" && err == io.EOF {
-			log.Debugln("Reading file %s reached EOF", file)
 			break
 		}
 	}

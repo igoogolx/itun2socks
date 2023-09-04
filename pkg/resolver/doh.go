@@ -3,7 +3,7 @@ package resolver
 import (
 	"bytes"
 	"context"
-	"github.com/Dreamacro/clash/log"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"io"
 	"net"
 	"net/http"
@@ -110,7 +110,7 @@ func (dc *DohClient) doRequest(req *http.Request) (msg *D.Msg, err error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Warnln("fail to close http client body, err: %v", err)
+			log.Warnln(log.FormatLog(log.DnsPrefix, "fail to close http in doh, err: %v"), err)
 		}
 	}(resp.Body)
 	buf, err := io.ReadAll(resp.Body)

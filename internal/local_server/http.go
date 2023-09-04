@@ -3,8 +3,8 @@ package local_server
 import (
 	"context"
 	"errors"
-	"github.com/Dreamacro/clash/log"
 	"github.com/elazarl/goproxy"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func startHttp(addr string) {
 		err := server.ListenAndServe()
 		if err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
-				log.Errorln("fail to start http local server: %v", err)
+				log.Errorln(log.FormatLog(log.HubPrefix, "fail to start http local server: %v"), err)
 			}
 		}
 	}()

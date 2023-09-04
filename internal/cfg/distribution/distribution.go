@@ -1,10 +1,10 @@
 package distribution
 
 import (
-	"github.com/Dreamacro/clash/log"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/resolver"
 	"golang.org/x/exp/slices"
 	"strings"
@@ -106,8 +106,7 @@ func (c Config) GetRule(ip string) constants.IpRule {
 			domain = cacheItem.Domain
 			dnsRule = string(cacheItem.Rule)
 		}
-
-		log.Infoln("[Matching ip]: ip:%v, rule:%v; domain:%v, rule:%v", latestIp, getRuleStr(rule), domain, dnsRule)
+		log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), latestIp, getRuleStr(rule), domain, dnsRule)
 	}(ip)
 
 	//dns server
@@ -152,24 +151,24 @@ func (c Config) GetRule(ip string) constants.IpRule {
 func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.DnsRule) {
 	result := constants.DistributionLocalDns
 	if isLocal {
-		log.Debugln("[Matching domain]: %v is from local", domain)
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local"), domain)
 		result = constants.DistributionLocalDns
 	} else if strings.Contains(c.TrueProxyServer, domain) {
-		log.Debugln("[Matching domain]: %v is from true proxy server", domain)
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from true proxy server"), domain)
 		result = constants.DistributionLocalDns
 	} else {
 		if c.Dns.Local.Domains.Has(domain) {
 			result = constants.DistributionLocalDns
-			log.Debugln("[Matching domain]: %v is from local domains", domain)
+			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local domains"), domain)
 		} else if c.Dns.Local.GeoSites.Has(domain) {
 			result = constants.DistributionLocalDns
-			log.Debugln("[Matching domain]: %v is from local geo sites", domain)
+			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local geo sites"), domain)
 		} else if c.Dns.Remote.Domains.Has(domain) {
 			result = constants.DistributionRemoteDns
-			log.Debugln("[Matching domain]: %v is from remote domains", domain)
+			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote domains"), domain)
 		} else if c.Dns.Remote.GeoSites.Has(domain) {
 			result = constants.DistributionRemoteDns
-			log.Debugln("[Matching domain]: %v is from remote geo sites", domain)
+			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote geo sites"), domain)
 		}
 	}
 	if result == constants.DistributionLocalDns {

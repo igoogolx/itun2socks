@@ -3,8 +3,8 @@ package network_iface
 import (
 	"context"
 	"github.com/Dreamacro/clash/component/dialer"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	tun "github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
 	"go.uber.org/atomic"
@@ -20,8 +20,8 @@ func GetDefaultInterfaceName() string {
 type ErrorHandler struct {
 }
 
-func (e ErrorHandler) NewError(ctx context.Context, err error) {
-	log.Errorln("network interface monitor: %v", err)
+func (e ErrorHandler) NewError(_ context.Context, err error) {
+	log.Errorln(log.FormatLog(log.ExecutorPrefix, "network interface monitor: %v"), err)
 }
 
 type Handler struct {

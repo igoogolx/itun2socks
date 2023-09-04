@@ -5,11 +5,11 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"io"
 	"net/http"
 	"time"
@@ -43,7 +43,7 @@ func ParseProxiesFromClashUrl(url string) ([]map[string]any, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Warnln("Parsing clash url: fail to close body")
+			log.Debugln(log.FormatLog(log.HubPrefix, "parse clash url: fail to close body"))
 		}
 	}(res.Body)
 	body, err := io.ReadAll(res.Body)
@@ -72,7 +72,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 	if url == "" {
 		url = defaultDelayTestUrl
 	}
-	proxyOption, err := configuration2.GetProxy(proxyId)
+	proxyOption, err := configuration.GetProxy(proxyId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -96,7 +96,11 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	res := UdpTest(pc, "8.8.8.8:53")
+	res, err := UdpTest(pc, "8.8.8.8:53")
+	if err != nil {
+		log.Warnln(log.FormatLog(log.HubPrefix, "fail to test udp, err: %v"), err)
+		res = false
+	}
 
 	render.JSON(w, r, render.M{
 		"result": res,
@@ -114,7 +118,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	if url == "" {
 		url = defaultDelayTestUrl
 	}
-	proxyOption, err := configuration2.GetProxy(proxyId)
+	proxyOption, err := configuration.GetProxy(proxyId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -136,7 +140,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	proxyOption["delay"] = delay
-	err = configuration2.UpdateProxy(proxyId, proxyOption)
+	err = configuration.UpdateProxy(proxyId, proxyOption)
 	if err != nil {
 		render.JSON(w, r, render.M{
 			"delay": -1,
@@ -149,13 +153,13 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProxies(w http.ResponseWriter, r *http.Request) {
-	proxiesMap, err := configuration2.GetProxies()
+	proxiesMap, err := configuration.GetProxies()
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	selectedId, err := configuration2.GetSelectedId("proxy")
+	selectedId, err := configuration.GetSelectedId("proxy")
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -178,9 +182,9 @@ func addProxy(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	id, err := configuration2.AddProxy(req)
+	id, err := configuration.AddProxy(req)
 	if err != nil {
-		log.Warnln("failed to add proxy: %v", err)
+		log.Warnln(log.FormatLog(log.HubPrefix, "fail to add proxy: %v"), err)
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
@@ -190,7 +194,7 @@ func addProxy(w http.ResponseWriter, r *http.Request) {
 
 func deleteProxy(w http.ResponseWriter, r *http.Request) {
 	proxyId := chi.URLParam(r, "proxyId")
-	err := configuration2.DeleteProxy(proxyId)
+	err := configuration.DeleteProxy(proxyId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -200,7 +204,7 @@ func deleteProxy(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
-	err := configuration2.DeleteAllProxies()
+	err := configuration.DeleteAllProxies()
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -223,7 +227,7 @@ func addProxiesFromClashUrl(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	newProxies, err := configuration2.AddProxies(proxies)
+	newProxies, err := configuration.AddProxies(proxies)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -240,7 +244,7 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	if err := configuration2.UpdateProxy(proxyId, req.(map[string]interface{})); err != nil {
+	if err := configuration.UpdateProxy(proxyId, req.(map[string]interface{})); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
@@ -256,7 +260,7 @@ func updateClashYamlUrl(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-	err := configuration2.SetClasYamlUrl(req["url"])
+	err := configuration.SetClasYamlUrl(req["url"])
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -266,7 +270,7 @@ func updateClashYamlUrl(w http.ResponseWriter, r *http.Request) {
 }
 
 func getClashYamlUrl(w http.ResponseWriter, r *http.Request) {
-	url, err := configuration2.GetClasYamlUrl()
+	url, err := configuration.GetClasYamlUrl()
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))

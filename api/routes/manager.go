@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/internal/manager"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func managerRouter() http.Handler {
 func start(w http.ResponseWriter, r *http.Request) {
 	err := manager.Start()
 	if err != nil {
-		log.Errorln("fail to start the client,error:%v", err)
+		log.Errorln(log.FormatLog(log.HubPrefix, "fail to start the client, err:%v"), err)
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
@@ -30,7 +30,7 @@ func start(w http.ResponseWriter, r *http.Request) {
 func stop(w http.ResponseWriter, r *http.Request) {
 	err := manager.Close()
 	if err != nil {
-		log.Errorln("fail to stop the client,error:%v", err)
+		log.Errorln(log.FormatLog(log.HubPrefix, "fail to stop the client, err:%v"), err)
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return

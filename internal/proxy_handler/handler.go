@@ -2,9 +2,9 @@ package proxy_handler
 
 import (
 	"context"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/sagernet/sing/common/buf"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
@@ -86,7 +86,7 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 }
 
 func (c ConnHandler) NewError(_ context.Context, err error) {
-	log.Errorln("proxy handler, err: %v", err)
+	log.Errorln(log.FormatLog(log.TunPrefix, "err: %v"), err)
 }
 func New(tcpIn chan conn.TcpConnContext,
 	udpIn chan conn.UdpConnContext) *ConnHandler {

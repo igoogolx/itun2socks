@@ -4,8 +4,8 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/Dreamacro/clash/adapter/outbound"
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"go.uber.org/atomic"
 	"net"
 	"strings"
@@ -53,10 +53,10 @@ func getProxy(rule constants.IpRule) C.Proxy {
 		}
 		addr, _, err := net.SplitHostPort(selectedProxyAddr)
 		if err == nil {
-			log.Debugln("update proxy addr: %v", addr)
+			log.Debugln(log.FormatLog(log.RulePrefix, "update proxy addr: %v"), addr)
 			proxyAddr.Store(addr)
 		} else {
-			log.Errorln("invalid proxy addr: %v", addr)
+			log.Errorln(log.FormatLog(log.RulePrefix, "invalid proxy addr: %v"), addr)
 		}
 	}
 

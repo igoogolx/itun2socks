@@ -2,8 +2,8 @@ package manager
 
 import (
 	"errors"
-	"github.com/Dreamacro/clash/log"
 	executor2 "github.com/igoogolx/itun2socks/internal/executor"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"runtime/debug"
 	"sync"
 )
@@ -26,15 +26,15 @@ func Start() error {
 	}
 	err = client.Start()
 	if err != nil {
-		log.Errorln("fail to start the client: %v", err)
+		log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to start the client: %v"), err)
 		err := client.Close()
 		if err != nil {
-			log.Errorln("fail to close the client: %v, when there is error of starting", err)
+			log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to close the client: %v"), err)
 		}
 		client = nil
 		return err
 	}
-	log.Infoln("Started the client")
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Started the client successfully"))
 	return nil
 }
 
@@ -50,7 +50,7 @@ func Close() error {
 		}
 		client = nil
 	}
-	log.Infoln("Stopped the client")
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Stopped the client successfully"))
 	return nil
 }
 

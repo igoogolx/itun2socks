@@ -1,8 +1,8 @@
 package statistic
 
 import (
-	"github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"sync"
 	"time"
 
@@ -108,7 +108,7 @@ func (m *Manager) CloseAllConnections() {
 	for _, c := range connections {
 		err := c.Close()
 		if err != nil {
-			log.Warnln("fail to close connection, err: %v", err)
+			log.Debugln(log.FormatLog(log.ExecutorPrefix, "fail to close connection, err: %v"), err)
 		}
 	}
 }

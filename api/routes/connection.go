@@ -3,9 +3,9 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 	"strconv"
 	"time"
@@ -78,7 +78,7 @@ func closeConnection(w http.ResponseWriter, r *http.Request) {
 		if id == c.ID() {
 			err := c.Close()
 			if err != nil {
-				log.Debugln("fail to close connection, err: %v", err)
+				log.Debugln(log.FormatLog(log.HubPrefix, "fail to close connection, err: %v"), err)
 			}
 			break
 		}
