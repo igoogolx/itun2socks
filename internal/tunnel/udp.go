@@ -46,6 +46,14 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 			return fmt.Errorf("fail to read udp from rc:%v", err)
 		}
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
+		if errors.As(err, &ne) && ne.Timeout() {
+			log.Debugln(log.FormatLog(log.UdpPrefix, "udp write io timeout"))
+			return nil /* ignore I/O timeout */
+		}
+		if errors.Is(err, io.EOF) {
+			log.Debugln(log.FormatLog(log.UdpPrefix, "udp write EOF"))
+			return nil
+		}
 		if err != nil {
 			return fmt.Errorf("fail to write udp to lc:%v", err)
 		}
