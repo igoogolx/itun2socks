@@ -72,7 +72,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 		if err == nil {
 			log.Infoln(log.FormatLog(log.DnsPrefix, "look up proxy addr: %v successfully"), question)
 		} else {
-			log.Infoln(log.FormatLog(log.DnsPrefix, "fail to Look up proxy addr: %v"), question)
+			log.Infoln(log.FormatLog(log.DnsPrefix, "fail to look up proxy addr: %v"), question)
 		}
 	}
 	resData, err := res.Pack()
@@ -82,10 +82,10 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
-			log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, server: %v, result: %v"), question, dnsClient.Nameservers(), resIp)
 			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}
+	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, server: %v, result: %v"), question, dnsClient.Nameservers(), resIps)
 	d.data <- resData
 	d.remoteAddr <- addr
 	d.written = true
