@@ -82,7 +82,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
-			log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, server: %v, result: %v"), dnsRule, question, dnsClient.Nameservers(), resIp)
+			log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, server: %v, result: %v"), question, dnsClient.Nameservers(), resIp)
 			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}

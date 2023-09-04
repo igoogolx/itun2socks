@@ -50,34 +50,42 @@ func FormatLog(prefix Prefix, content string) string {
 	switch prefix {
 	case InitPrefix:
 		return "[INIT], " + content
+	case ConfigurationPrefix:
+		return "[Configuration], " + content
+	case HubPrefix:
+		return "[Hub], " + content
 	case ExecutorPrefix:
 		return "[EXECUTOR], " + content
 	case DnsPrefix:
 		return "[DNS], " + content
-	case ConfigurationPrefix:
-		return "[CONFIGURATION], " + content
 	case RulePrefix:
 		return "[RULE], " + content
+	case TcpPrefix:
+		return "[TCP], " + content
+	case TunPrefix:
+		return "[TUN], " + content
+	case UdpPrefix:
+		return "[UDP], " + content
 	}
 	return "[UNKNOWN]"
 }
 
 func Infoln(format string, v ...any) {
-	cLog.Infoln(format, v)
+	cLog.Infoln(format, v...)
 }
 
 func Warnln(format string, v ...any) {
-	cLog.Warnln(format, v)
+	cLog.Warnln(format, v...)
 }
 
 func Errorln(format string, v ...any) {
-	cLog.Errorln(format, v)
+	cLog.Errorln(format, v...)
 }
 
 func Debugln(format string, v ...any) {
-	cLog.Debugln(format, v)
+	cLog.Debugln(format, v...)
 }
 
 func Fatalln(format string, v ...any) {
-	cLog.Fatalln(format, v)
+	cLog.Fatalln(format, v...)
 }
