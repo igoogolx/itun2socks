@@ -41,10 +41,9 @@ type CacheItem struct {
 }
 
 type Config struct {
-	Dns             DnsDistribution
-	Ip              IpDistribution
-	TrueProxyServer string
-	dnsTable        Cache
+	Dns      DnsDistribution
+	Ip       IpDistribution
+	dnsTable Cache
 }
 
 type Cache interface {
@@ -60,15 +59,6 @@ func (c Config) GetDnsServerRule(ip string) constants.IpRule {
 		result = constants.DistributionBypass
 	} else if IsDomainsContain(c.Dns.Remote.Client.Nameservers(), ip) {
 		result = constants.DistributionProxy
-	}
-	return result
-}
-
-func (c Config) GetTrueProxyServerRule(ip string) constants.IpRule {
-	result := constants.DistributionNotFound
-	cachedDns, ok := GetCachedDnsItem(ip)
-	if strings.Contains(c.TrueProxyServer, ip) || (ok && strings.Contains(c.TrueProxyServer, cachedDns.Domain)) {
-		result = constants.DistributionBypass
 	}
 	return result
 }
@@ -115,12 +105,6 @@ func (c Config) GetRule(ip string) constants.IpRule {
 		return rule
 	}
 
-	//true proxy server
-	rule = c.GetTrueProxyServerRule(ip)
-	if rule != constants.DistributionNotFound {
-		return rule
-	}
-
 	//subnet rule
 	rule = c.GetSubnetRule(ip)
 	if rule != constants.DistributionNotFound {
@@ -153,9 +137,6 @@ func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.
 	if isLocal {
 		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local"), domain)
 		result = constants.DistributionLocalDns
-	} else if strings.Contains(c.TrueProxyServer, domain) {
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from true proxy server"), domain)
-		result = constants.DistributionLocalDns
 	} else {
 		if c.Dns.Local.Domains.Has(domain) {
 			result = constants.DistributionLocalDns
@@ -182,7 +163,6 @@ func New(
 	remoteDns string,
 	localDns string,
 	rule configuration.RuleCfg,
-	trueProxyServer string,
 ) (Config, error) {
 	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns)
 	if err != nil {
@@ -193,6 +173,6 @@ func New(
 		return Config{}, err
 	}
 	return Config{
-		Dns: dns, Ip: ip, TrueProxyServer: trueProxyServer, dnsTable: dnsCache,
+		Dns: dns, Ip: ip, dnsTable: dnsCache,
 	}, nil
 }

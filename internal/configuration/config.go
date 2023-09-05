@@ -42,7 +42,6 @@ type IpItem struct {
 
 type SettingCfg struct {
 	DefaultInterface string `json:"defaultInterface"`
-	TrueProxyServer  string `json:"trueProxyServer"`
 	LocalServer      `json:"localServer"`
 	AutoMode         `json:"autoMode"`
 	Dns              struct {
