@@ -6,6 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/pkg/geo"
 	"github.com/igoogolx/itun2socks/pkg/list"
+	"strings"
 )
 
 func NewDnsDistribution(
@@ -15,9 +16,13 @@ func NewDnsDistribution(
 	config configuration.DnsItem,
 	tunDeviceName string,
 ) (DnsDistribution, error) {
+	localDnsNet := "tcp"
+	if strings.Contains(remoteDns, "https") {
+		localDnsNet = "https"
+	}
 	localDnsClient := dns.NewResolver(dns.Config{
 		Main: []dns.NameServer{{
-			Net:  "tcp",
+			Net:  localDnsNet,
 			Addr: localDns,
 		}},
 		Default: []dns.NameServer{
@@ -52,9 +57,13 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
+	remoteDnsNet := "tcp"
+	if strings.Contains(remoteDns, "https") {
+		remoteDnsNet = "https"
+	}
 	remoteDnsClient := dns.NewResolver(dns.Config{
 		Main: []dns.NameServer{{
-			Net:       "tcp",
+			Net:       remoteDnsNet,
 			Addr:      remoteDns,
 			Interface: tunDeviceName,
 		}},
