@@ -15,16 +15,15 @@ func NewDnsDistribution(
 	config configuration.DnsItem,
 	tunDeviceName string,
 ) (DnsDistribution, error) {
-	localAddress := localDns
 	localDnsClient := dns.NewResolver(dns.Config{
 		Main: []dns.NameServer{{
 			Net:  "tcp",
-			Addr: "114.114.114.114:53",
+			Addr: localDns,
 		}},
 		Default: []dns.NameServer{
 			{
 				Net:  "tcp",
-				Addr: "114.114.114.114:53",
+				Addr: bootDns,
 			},
 		},
 	})
@@ -38,7 +37,7 @@ func NewDnsDistribution(
 		return DnsDistribution{}, err
 	}
 	dd.Local = SubDnsDistribution{
-		Address: localAddress,
+		Address: localDns,
 		Client:  localDnsClient,
 		Domains: list.New(
 			config.Domains.Local,
@@ -56,13 +55,13 @@ func NewDnsDistribution(
 	remoteDnsClient := dns.NewResolver(dns.Config{
 		Main: []dns.NameServer{{
 			Net:       "tcp",
-			Addr:      "8.8.8.8:53",
+			Addr:      remoteDns,
 			Interface: tunDeviceName,
 		}},
 		Default: []dns.NameServer{
 			{
 				Net:  "tcp",
-				Addr: "114.114.114.114:53",
+				Addr: bootDns,
 			},
 		},
 	})
