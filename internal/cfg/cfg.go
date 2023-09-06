@@ -25,11 +25,11 @@ func New() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	rule, err := distribution.New(rawConfig.Setting.Dns.Boost.Value, rawConfig.Setting.Dns.Remote.Value, rawConfig.Setting.Dns.Local.Value, selectedRule)
+	device, err := tun.New()
 	if err != nil {
 		return Config{}, err
 	}
-	device, err := tun.New()
+	rule, err := distribution.New(rawConfig.Setting.Dns.Boost.Value, rawConfig.Setting.Dns.Remote.Value, rawConfig.Setting.Dns.Local.Value, selectedRule, device.Name)
 	if err != nil {
 		return Config{}, err
 	}

@@ -1,11 +1,11 @@
 package distribution
 
 import (
+	"github.com/Dreamacro/clash/component/resolver"
+	"github.com/Dreamacro/clash/dns"
 	"github.com/igoogolx/itun2socks/internal/configuration"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/geo"
 	"github.com/igoogolx/itun2socks/pkg/list"
-	"github.com/igoogolx/itun2socks/pkg/resolver"
 )
 
 func NewDnsDistribution(
@@ -13,11 +13,22 @@ func NewDnsDistribution(
 	remoteDns string,
 	localDns string,
 	config configuration.DnsItem,
+	tunDeviceName string,
 ) (DnsDistribution, error) {
 	localAddress := localDns
-	localDnsClient, err := resolver.NewClient(localAddress, bootDns, func(dohRemoteIp string) {
-		AddCachedDnsItem(dohRemoteIp, localAddress, constants.DistributionLocalDns)
+	localDnsClient := dns.NewResolver(dns.Config{
+		Main: []dns.NameServer{{
+			Net:  "tcp",
+			Addr: "114.114.114.114:53",
+		}},
+		Default: []dns.NameServer{
+			{
+				Net:  "tcp",
+				Addr: "114.114.114.114:53",
+			},
+		},
 	})
+	var err error
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -42,12 +53,19 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	remoteDnsClient, err := resolver.NewClient(remoteDns, bootDns, func(dohRemoteIp string) {
-		AddCachedDnsItem(dohRemoteIp, remoteDns, constants.DistributionRemoteDns)
+	remoteDnsClient := dns.NewResolver(dns.Config{
+		Main: []dns.NameServer{{
+			Net:       "tcp",
+			Addr:      "8.8.8.8:53",
+			Interface: tunDeviceName,
+		}},
+		Default: []dns.NameServer{
+			{
+				Net:  "tcp",
+				Addr: "114.114.114.114:53",
+			},
+		},
 	})
-	if err != nil {
-		return DnsDistribution{}, err
-	}
 	dd.Remote = SubDnsDistribution{
 		Client:  remoteDnsClient,
 		Address: remoteDns,
@@ -69,7 +87,7 @@ type SubDnsDistribution struct {
 	Domains  MatcherList
 	GeoSites MatcherList
 	Address  string
-	Client   resolver.Client
+	Client   resolver.Resolver
 }
 
 type DnsDistribution struct {

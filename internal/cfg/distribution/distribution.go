@@ -1,12 +1,11 @@
 package distribution
 
 import (
+	"github.com/Dreamacro/clash/component/resolver"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"github.com/igoogolx/itun2socks/pkg/resolver"
-	"golang.org/x/exp/slices"
 	"strings"
 )
 
@@ -53,11 +52,7 @@ type Cache interface {
 
 func (c Config) GetDnsServerRule(ip string) constants.IpRule {
 	result := constants.DistributionNotFound
-	if slices.Contains(c.Dns.Local.Client.Nameservers(), ip) {
-		result = constants.DistributionBypass
-	} else if strings.Contains(c.Dns.BoostNameserver, ip) {
-		result = constants.DistributionBypass
-	} else if IsDomainsContain(c.Dns.Remote.Client.Nameservers(), ip) {
+	if strings.Contains(c.Dns.Remote.Address, ip) {
 		result = constants.DistributionProxy
 	}
 	return result
@@ -132,25 +127,20 @@ func (c Config) GetRule(ip string) constants.IpRule {
 
 }
 
-func (c Config) GetDns(domain string, isLocal bool) (resolver.Client, constants.DnsRule) {
+func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsRule) {
 	result := constants.DistributionLocalDns
-	if isLocal {
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local"), domain)
+	if c.Dns.Local.Domains.Has(domain) {
 		result = constants.DistributionLocalDns
-	} else {
-		if c.Dns.Local.Domains.Has(domain) {
-			result = constants.DistributionLocalDns
-			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local domains"), domain)
-		} else if c.Dns.Local.GeoSites.Has(domain) {
-			result = constants.DistributionLocalDns
-			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local geo sites"), domain)
-		} else if c.Dns.Remote.Domains.Has(domain) {
-			result = constants.DistributionRemoteDns
-			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote domains"), domain)
-		} else if c.Dns.Remote.GeoSites.Has(domain) {
-			result = constants.DistributionRemoteDns
-			log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote geo sites"), domain)
-		}
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local domains"), domain)
+	} else if c.Dns.Local.GeoSites.Has(domain) {
+		result = constants.DistributionLocalDns
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local geo sites"), domain)
+	} else if c.Dns.Remote.Domains.Has(domain) {
+		result = constants.DistributionRemoteDns
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote domains"), domain)
+	} else if c.Dns.Remote.GeoSites.Has(domain) {
+		result = constants.DistributionRemoteDns
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote geo sites"), domain)
 	}
 	if result == constants.DistributionLocalDns {
 		return c.Dns.Local.Client, constants.DistributionLocalDns
@@ -163,11 +153,13 @@ func New(
 	remoteDns string,
 	localDns string,
 	rule configuration.RuleCfg,
+	tunDeviceName string,
 ) (Config, error) {
-	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns)
+	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns, tunDeviceName)
 	if err != nil {
 		return Config{}, err
 	}
+	resolver.DefaultResolver = dns.Local.Client
 	ip, err := NewIpDistribution(rule.Ip)
 	if err != nil {
 		return Config{}, err

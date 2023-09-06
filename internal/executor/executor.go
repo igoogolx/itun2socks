@@ -10,40 +10,9 @@ import (
 	tunnel2 "github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
-	F "github.com/sagernet/sing/common/format"
-	"net"
 	"net/netip"
-	"runtime"
-	"strconv"
-	"strings"
 	"time"
 )
-
-func CalculateInterfaceName(name string) (tunName string) {
-	if runtime.GOOS == "darwin" {
-		tunName = "utun"
-	} else if name != "" {
-		tunName = name
-		return
-	} else {
-		tunName = "tun"
-	}
-	interfaces, err := net.Interfaces()
-	if err != nil {
-		return
-	}
-	var tunIndex int
-	for _, netInterface := range interfaces {
-		if strings.HasPrefix(netInterface.Name, tunName) {
-			index, parseErr := strconv.ParseInt(netInterface.Name[len(tunName):], 10, 16)
-			if parseErr == nil {
-				tunIndex = int(index) + 10
-			}
-		}
-	}
-	tunName = F.ToString(tunName, tunIndex)
-	return
-}
 
 func New() (*Client, error) {
 	config, err := cfg.New()
@@ -51,9 +20,8 @@ func New() (*Client, error) {
 		return nil, err
 	}
 	tunDevice := config.Device
-	tunInterfaceName := CalculateInterfaceName(tunDevice.Name)
 	tunOptions := sTun.Options{
-		Name:         tunInterfaceName,
+		Name:         tunDevice.Name,
 		MTU:          uint32(tunDevice.Mtu),
 		Inet4Address: []netip.Prefix{netip.MustParsePrefix(tunDevice.Gateway.String())},
 		AutoRoute:    true,
@@ -67,7 +35,7 @@ func New() (*Client, error) {
 		Context:    context.TODO(),
 		Handler:    proxy_handler.New(tunnel2.TcpQueue(), tunnel2.UdpQueue()),
 		Tun:        tun,
-		Name:       tunInterfaceName,
+		Name:       tunDevice.Name,
 		MTU:        uint32(tunDevice.Mtu),
 		UDPTimeout: int64(5 * time.Minute),
 	})
@@ -92,9 +60,9 @@ func New() (*Client, error) {
 		tun:                     tun,
 		localserver:             newLocalServer,
 		defaultInterfaceHandler: *interfaceHandler,
-		deviceName:              tunInterfaceName,
-		localDns:                config.Rule.Dns.Local.Client.Nameservers(),
-		remoteDns:               config.Rule.Dns.Remote.Client.Nameservers(),
+		deviceName:              tunDevice.Name,
+		localDns:                []string{config.Rule.Dns.Local.Address},
+		remoteDns:               []string{config.Rule.Dns.Remote.Address},
 		boostDns:                config.Rule.Dns.BoostNameserver,
 	}, nil
 }
