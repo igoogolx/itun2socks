@@ -45,10 +45,10 @@ func Close() error {
 	debug.FreeOSMemory()
 	if client != nil {
 		err := client.Close()
+		client = nil
 		if err != nil {
 			return err
 		}
-		client = nil
 	}
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Stopped the client successfully"))
 	return nil

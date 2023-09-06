@@ -10,6 +10,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"io"
@@ -179,22 +180,33 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCurProxy(w http.ResponseWriter, r *http.Request) {
-	curProxy := conn.GetProxy(constants.DistributionProxy)
+	name := ""
 	addr := ""
 
-	if curProxy != nil {
-		if curProxy.Type() == C.URLTest || curProxy.Type() == C.Fallback {
-			curProxy = curProxy.Unwrap(&C.Metadata{})
+	if manager.GetIsStarted() {
+		curAutoProxy := conn.GetProxy(constants.DistributionProxy)
+		if curAutoProxy != nil {
+			if curAutoProxy.Type() == C.URLTest || curAutoProxy.Type() == C.Fallback {
+				curAutoProxy = curAutoProxy.Unwrap(&C.Metadata{})
+			}
+		}
+		if curAutoProxy != nil {
+			name = curAutoProxy.Name()
+			addr = curAutoProxy.Addr()
+		}
+	} else {
+		curSelectedProxy, err := configuration.GetSelectedProxy()
+		if err == nil && curSelectedProxy != nil {
+			name = curSelectedProxy["name"].(string)
+			paredProxy, err := adapter.ParseProxy(curSelectedProxy)
+			if err == nil {
+				addr = paredProxy.Addr()
+			}
 		}
 	}
-
-	if curProxy != nil {
-		addr = curProxy.Addr()
-	}
-
 	render.JSON(w, r, render.M{
-		"proxy": curProxy,
-		"addr":  addr,
+		"name": name,
+		"addr": addr,
 	})
 }
 
