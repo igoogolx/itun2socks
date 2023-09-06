@@ -68,5 +68,5 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Met
 }
 
 func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule constants.IpRule, defaultInterface string) (net.PacketConn, error) {
-	return getProxy(rule).ListenPacketContext(ctx, metadata, dialer.WithInterface(defaultInterface))
+	return GetProxy(rule).ListenPacketContext(ctx, metadata, dialer.WithInterface(defaultInterface))
 }

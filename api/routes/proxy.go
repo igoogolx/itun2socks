@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/conn"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"io"
@@ -23,6 +25,7 @@ var (
 func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
+	r.Get("/cur-proxy", getCurProxy)
 	r.Put("/", addProxy)
 	r.Put("/clash-url", addProxiesFromClashUrl)
 	r.Delete("/", deleteAllProxies)
@@ -172,6 +175,20 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, render.M{
 		"proxies":    proxies,
 		"selectedId": selectedId,
+	})
+}
+
+func getCurProxy(w http.ResponseWriter, r *http.Request) {
+	curProxy := conn.GetProxy(constants.DistributionProxy)
+
+	if curProxy == nil {
+		render.JSON(w, r, render.M{
+			"proxy": nil,
+		})
+		return
+	}
+	render.JSON(w, r, render.M{
+		"proxies": curProxy,
 	})
 }
 

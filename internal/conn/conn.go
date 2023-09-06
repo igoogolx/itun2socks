@@ -41,22 +41,24 @@ func UpdateProxy(remoteProxy C.Proxy) {
 	proxies[constants.DistributionBypass] = adapter.NewProxy(outbound.NewDirect())
 }
 
-func getProxy(rule constants.IpRule) C.Proxy {
+func GetProxy(rule constants.IpRule) C.Proxy {
 	mux.RLock()
 	defer mux.RUnlock()
 
 	if rule == constants.DistributionProxy {
 		var remoteProxy = proxies[rule]
-		selectedProxyAddr := remoteProxy.Addr()
-		if len(selectedProxyAddr) == 0 {
-			selectedProxyAddr = remoteProxy.Unwrap(&C.Metadata{}).Addr()
-		}
-		addr, _, err := net.SplitHostPort(selectedProxyAddr)
-		if err == nil {
-			log.Debugln(log.FormatLog(log.RulePrefix, "update proxy addr: %v"), addr)
-			proxyAddr.Store(addr)
-		} else {
-			log.Errorln(log.FormatLog(log.RulePrefix, "invalid proxy addr: %v"), addr)
+		if remoteProxy != nil {
+			selectedProxyAddr := remoteProxy.Addr()
+			if len(selectedProxyAddr) == 0 {
+				selectedProxyAddr = remoteProxy.Unwrap(&C.Metadata{}).Addr()
+			}
+			addr, _, err := net.SplitHostPort(selectedProxyAddr)
+			if err == nil {
+				log.Debugln(log.FormatLog(log.RulePrefix, "update proxy addr: %v"), addr)
+				proxyAddr.Store(addr)
+			} else {
+				log.Errorln(log.FormatLog(log.RulePrefix, "invalid proxy addr: %v"), addr)
+			}
 		}
 	}
 
