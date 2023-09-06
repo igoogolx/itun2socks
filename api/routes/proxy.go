@@ -180,15 +180,21 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 
 func getCurProxy(w http.ResponseWriter, r *http.Request) {
 	curProxy := conn.GetProxy(constants.DistributionProxy)
+	addr := ""
 
-	if curProxy == nil {
-		render.JSON(w, r, render.M{
-			"proxy": nil,
-		})
-		return
+	if curProxy != nil {
+		if curProxy.Type() == C.URLTest || curProxy.Type() == C.Fallback {
+			curProxy = curProxy.Unwrap(&C.Metadata{})
+		}
 	}
+
+	if curProxy != nil {
+		addr = curProxy.Addr()
+	}
+
 	render.JSON(w, r, render.M{
-		"proxies": curProxy,
+		"proxy": curProxy,
+		"addr":  addr,
 	})
 }
 
