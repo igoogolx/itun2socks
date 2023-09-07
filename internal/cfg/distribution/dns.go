@@ -16,6 +16,13 @@ func NewDnsDistribution(
 	config configuration.DnsItem,
 	tunDeviceName string,
 ) (DnsDistribution, error) {
+	boostNameResolver := []dns.NameServer{{
+		Net:  "tcp",
+		Addr: bootDns,
+	}}
+	boostDnsClient := dns.NewResolver(dns.Config{
+		Main: boostNameResolver,
+	})
 	localDnsNet := "tcp"
 	if strings.Contains(remoteDns, "https") {
 		localDnsNet = "https"
@@ -25,12 +32,7 @@ func NewDnsDistribution(
 			Net:  localDnsNet,
 			Addr: localDns,
 		}},
-		Default: []dns.NameServer{
-			{
-				Net:  "tcp",
-				Addr: bootDns,
-			},
-		},
+		Default: boostNameResolver,
 	})
 	var err error
 	if err != nil {
@@ -67,12 +69,7 @@ func NewDnsDistribution(
 			Addr:      remoteDns,
 			Interface: tunDeviceName,
 		}},
-		Default: []dns.NameServer{
-			{
-				Net:  "tcp",
-				Addr: bootDns,
-			},
-		},
+		Default: boostNameResolver,
 	})
 	dd.Remote = SubDnsDistribution{
 		Client:  remoteDnsClient,
@@ -88,6 +85,8 @@ func NewDnsDistribution(
 	}
 
 	dd.BoostNameserver = bootDns
+
+	resolver.DefaultResolver = boostDnsClient
 	return dd, nil
 }
 

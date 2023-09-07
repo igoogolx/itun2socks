@@ -159,7 +159,6 @@ func New(
 	if err != nil {
 		return Config{}, err
 	}
-	resolver.DefaultResolver = dns.Local.Client
 	ip, err := NewIpDistribution(rule.Ip)
 	if err != nil {
 		return Config{}, err

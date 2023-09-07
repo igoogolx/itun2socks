@@ -73,6 +73,7 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
+			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule)
 			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}
