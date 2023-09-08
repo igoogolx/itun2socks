@@ -3,11 +3,11 @@ package executor
 import (
 	"context"
 	"github.com/igoogolx/itun2socks/internal/cfg"
-	conn2 "github.com/igoogolx/itun2socks/internal/conn"
+	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
-	tunnel2 "github.com/igoogolx/itun2socks/internal/tunnel"
+	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
 	"net/netip"
@@ -19,11 +19,10 @@ func New() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	tunDevice := config.Device
 	tunOptions := sTun.Options{
-		Name:         tunDevice.Name,
-		MTU:          uint32(tunDevice.Mtu),
-		Inet4Address: []netip.Prefix{netip.MustParsePrefix(tunDevice.Gateway.String())},
+		Name:         config.Device.Name,
+		MTU:          uint32(config.Device.Mtu),
+		Inet4Address: []netip.Prefix{netip.MustParsePrefix(config.Device.Gateway.String())},
 		AutoRoute:    true,
 		StrictRoute:  true,
 	}
@@ -33,10 +32,10 @@ func New() (*Client, error) {
 	}
 	stack, err := sTun.NewStack("gvisor", sTun.StackOptions{
 		Context:    context.TODO(),
-		Handler:    proxy_handler.New(tunnel2.TcpQueue(), tunnel2.UdpQueue()),
+		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		Tun:        tun,
-		Name:       tunDevice.Name,
-		MTU:        uint32(tunDevice.Mtu),
+		Name:       config.Device.Name,
+		MTU:        uint32(config.Device.Mtu),
 		UDPTimeout: int64(5 * time.Minute),
 	})
 	if err != nil {
@@ -60,7 +59,7 @@ func New() (*Client, error) {
 		tun:                     tun,
 		localserver:             newLocalServer,
 		defaultInterfaceHandler: *interfaceHandler,
-		deviceName:              tunDevice.Name,
+		deviceName:              config.Device.Name,
 		localDns:                []string{config.Rule.Dns.Local.Address},
 		remoteDns:               []string{config.Rule.Dns.Remote.Address},
 		boostDns:                config.Rule.Dns.Boost.Address,
@@ -75,7 +74,7 @@ func updateCfg(config cfg.Config) error {
 }
 
 func updateMatcher(c cfg.Config) {
-	conn2.UpdateMatcher(c.Rule)
+	conn.UpdateMatcher(c.Rule)
 }
 
 func updateDns(c cfg.Config) {
@@ -83,5 +82,5 @@ func updateDns(c cfg.Config) {
 }
 
 func updateConn(c cfg.Config) {
-	conn2.UpdateProxy(c.Proxy)
+	conn.UpdateProxy(c.Proxy)
 }
