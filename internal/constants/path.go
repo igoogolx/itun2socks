@@ -23,5 +23,5 @@ func (p *path) ConfigFilePath() string {
 }
 
 func (p *path) LogFilePath() string {
-	return filepath.Join(Path.HomeDir(), "core.log")
+	return filepath.Join(Path.HomeDir(), "logs", "core.log")
 }
