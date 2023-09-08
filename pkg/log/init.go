@@ -5,7 +5,7 @@ package log
 
 import cLog "github.com/Dreamacro/clash/log"
 
-func main() {
+func init() {
 
 	cLog.SetLevel(cLog.DEBUG)
 
