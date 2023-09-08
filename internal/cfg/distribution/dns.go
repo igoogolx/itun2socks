@@ -69,7 +69,12 @@ func NewDnsDistribution(
 			Addr:      remoteDns,
 			Interface: tunDeviceName,
 		}},
-		Default: boostNameResolver,
+		//It doesn't matter whatever boostDns addr is. The point is Net and Interface.
+		Default: []dns.NameServer{{
+			Net:       "udp",
+			Addr:      bootDns,
+			Interface: tunDeviceName,
+		}},
 	})
 	dd.Remote = SubDnsDistribution{
 		Client:  remoteDnsClient,
@@ -84,7 +89,18 @@ func NewDnsDistribution(
 		),
 	}
 
-	dd.BoostNameserver = bootDns
+	dd.Boost = SubDnsDistribution{
+		Client:  boostDnsClient,
+		Address: bootDns,
+		Domains: list.New(
+			[]string{remoteDns},
+			strings.Contains,
+		),
+		GeoSites: list.New(
+			[]string{},
+			IsContainsDomain,
+		),
+	}
 
 	resolver.DefaultResolver = boostDnsClient
 	return dd, nil
@@ -98,7 +114,7 @@ type SubDnsDistribution struct {
 }
 
 type DnsDistribution struct {
-	Local           SubDnsDistribution
-	Remote          SubDnsDistribution
-	BoostNameserver string
+	Local  SubDnsDistribution
+	Remote SubDnsDistribution
+	Boost  SubDnsDistribution
 }

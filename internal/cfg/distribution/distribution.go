@@ -129,7 +129,10 @@ func (c Config) GetRule(ip string) constants.IpRule {
 
 func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsRule) {
 	result := constants.DistributionLocalDns
-	if c.Dns.Local.Domains.Has(domain) {
+	if c.Dns.Boost.Domains.Has(domain) {
+		result = constants.DistributionBoostDns
+		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from boost domains"), domain)
+	} else if c.Dns.Local.Domains.Has(domain) {
 		result = constants.DistributionLocalDns
 		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local domains"), domain)
 	} else if c.Dns.Local.GeoSites.Has(domain) {
@@ -144,6 +147,9 @@ func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsRule) {
 	}
 	if result == constants.DistributionLocalDns {
 		return c.Dns.Local.Client, constants.DistributionLocalDns
+	}
+	if result == constants.DistributionBoostDns {
+		return c.Dns.Boost.Client, constants.DistributionBoostDns
 	}
 	return c.Dns.Remote.Client, constants.DistributionRemoteDns
 }

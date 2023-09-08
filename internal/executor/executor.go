@@ -63,7 +63,7 @@ func New() (*Client, error) {
 		deviceName:              tunDevice.Name,
 		localDns:                []string{config.Rule.Dns.Local.Address},
 		remoteDns:               []string{config.Rule.Dns.Remote.Address},
-		boostDns:                config.Rule.Dns.BoostNameserver,
+		boostDns:                config.Rule.Dns.Boost.Address,
 	}, nil
 }
 
