@@ -108,15 +108,15 @@
     "dns": {
       "boost": {
         "type": "builtIn",
-        "value": "114.114.114.114:53"
+        "value": "tcp://114.114.114.114:53"
       },
       "local": {
         "type": "builtIn",
-        "value": "114.114.114.114:53"
+        "value": "tpc://114.114.114.114:53"
       },
       "remote": {
         "type": "builtIn",
-        "value": "8.8.8.8:53"
+        "value": "tcp://8.8.8.8:53"
       }
     },
     "defaultInterface": "",
