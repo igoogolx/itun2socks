@@ -1,9 +1,9 @@
 package distribution
 
 import (
-	"github.com/Dreamacro/clash/component/resolver"
-	"github.com/Dreamacro/clash/dns"
+	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/resolver"
 	"github.com/igoogolx/itun2socks/pkg/geo"
 	"github.com/igoogolx/itun2socks/pkg/list"
 	"strings"
@@ -16,25 +16,12 @@ func NewDnsDistribution(
 	config configuration.DnsItem,
 	tunDeviceName string,
 ) (DnsDistribution, error) {
-	boostNameResolver := []dns.NameServer{{
-		Net:  "tcp",
-		Addr: bootDns,
-	}}
-	boostDnsClient := dns.NewResolver(dns.Config{
-		Main: boostNameResolver,
-	})
-	localDnsNet := "tcp"
-	if strings.Contains(remoteDns, "https") {
-		localDnsNet = "https"
-	}
-	localDnsClient := dns.NewResolver(dns.Config{
-		Main: []dns.NameServer{{
-			Net:  localDnsNet,
-			Addr: localDns,
-		}},
-		Default: boostNameResolver,
-	})
 	var err error
+	boostDnsClient, err := resolver.New([]string{bootDns}, []string{})
+	if err != nil {
+		return DnsDistribution{}, err
+	}
+	localDnsClient, err := resolver.New([]string{localDns}, []string{bootDns})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -59,23 +46,11 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	remoteDnsNet := "tcp"
-	if strings.Contains(remoteDns, "https") {
-		remoteDnsNet = "https"
+	remoteDns = remoteDns + "#" + tunDeviceName
+	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunDeviceName})
+	if err != nil {
+		return DnsDistribution{}, err
 	}
-	remoteDnsClient := dns.NewResolver(dns.Config{
-		Main: []dns.NameServer{{
-			Net:       remoteDnsNet,
-			Addr:      remoteDns,
-			Interface: tunDeviceName,
-		}},
-		//It doesn't matter whatever boostDns addr is. The point is Net and Interface.
-		Default: []dns.NameServer{{
-			Net:       "udp",
-			Addr:      bootDns,
-			Interface: tunDeviceName,
-		}},
-	})
 	dd.Remote = SubDnsDistribution{
 		Client:  remoteDnsClient,
 		Address: remoteDns,
@@ -102,7 +77,7 @@ func NewDnsDistribution(
 		),
 	}
 
-	resolver.DefaultResolver = boostDnsClient
+	cResolver.DefaultResolver = boostDnsClient
 	return dd, nil
 }
 
@@ -110,7 +85,7 @@ type SubDnsDistribution struct {
 	Domains  MatcherList
 	GeoSites MatcherList
 	Address  string
-	Client   resolver.Resolver
+	Client   cResolver.Resolver
 }
 
 type DnsDistribution struct {

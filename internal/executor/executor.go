@@ -15,6 +15,14 @@ import (
 )
 
 func New() (*Client, error) {
+	interfaceHandler, err := network_iface.New()
+	if err != nil {
+		return nil, err
+	}
+	err = interfaceHandler.Monitor.Start()
+	if err != nil {
+		return nil, err
+	}
 	config, err := cfg.New()
 	if err != nil {
 		return nil, err
@@ -43,14 +51,7 @@ func New() (*Client, error) {
 	}
 
 	newLocalServer := localserver.New(config.LocalServer.HttpAddr)
-	interfaceHandler, err := network_iface.New()
-	if err != nil {
-		return nil, err
-	}
-	err = interfaceHandler.Monitor.Start()
-	if err != nil {
-		return nil, err
-	}
+
 	if err = updateCfg(config); err != nil {
 		return nil, err
 	}

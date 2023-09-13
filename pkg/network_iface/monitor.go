@@ -46,12 +46,16 @@ func New() (*Handler, error) {
 		return nil, err
 	}
 	defaultInterfaceMonitor.RegisterCallback(func(event int) error {
-		return Update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+		return update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
 	})
+	err = update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+	if err != nil {
+		return nil, err
+	}
 	return &Handler{defaultInterfaceMonitor}, nil
 }
 
-func Update(name string) error {
+func update(name string) error {
 	setting, err := configuration.GetSetting()
 	if err != nil {
 		return err
@@ -62,5 +66,6 @@ func Update(name string) error {
 	}
 	defaultInterfaceName.Store(nextName)
 	dialer.DefaultInterface.Store(nextName)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update default interface: %v"), name)
 	return nil
 }
