@@ -112,7 +112,7 @@
       },
       "local": {
         "type": "builtIn",
-        "value": "tpc://114.114.114.114:53"
+        "value": "tcp://114.114.114.114:53"
       },
       "remote": {
         "type": "builtIn",
