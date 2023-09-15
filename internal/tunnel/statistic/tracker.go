@@ -1,11 +1,9 @@
 package statistic
 
 import (
-	"github.com/Dreamacro/clash/component/process"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
-	"net/netip"
 	"time"
 
 	C "github.com/Dreamacro/clash/constant"
@@ -77,20 +75,6 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 			Process:       "unknown",
 		},
 	}
-	go func() {
-		srcIP, srcOk := netip.AddrFromSlice(metadata.SrcIP)
-		destIp, destOk := netip.AddrFromSlice(metadata.DstIP)
-		if srcOk && destOk {
-			srcIP = srcIP.Unmap()
-			destIp = destIp.Unmap()
-			processName, err := process.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), netip.AddrPortFrom(destIp, uint16(metadata.DstPort)))
-			if err == nil && len(processName) != 0 {
-				t.Process = processName
-			}
-			manager.Join(t)
-		}
-
-	}()
 	if cachedItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		if ok {
 			t.trackerInfo.Domain = cachedItem.Domain
@@ -98,6 +82,7 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 	} else {
 		t.trackerInfo.Domain = "unknown"
 	}
+	manager.Join(t)
 	return t
 }
 
@@ -155,18 +140,6 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 		ut.trackerInfo.Domain = "unknown"
 	}
 
-	go func() {
-		srcIP, srcOk := netip.AddrFromSlice(metadata.SrcIP)
-		destIp, destOk := netip.AddrFromSlice(metadata.DstIP)
-		if srcOk && destOk {
-			srcIP = srcIP.Unmap()
-			destIp = destIp.Unmap()
-			processName, err := process.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), netip.AddrPortFrom(destIp, uint16(metadata.DstPort)))
-			if err == nil && len(processName) != 0 {
-				ut.Process = processName
-			}
-			manager.Join(ut)
-		}
-	}()
+	manager.Join(ut)
 	return ut
 }
