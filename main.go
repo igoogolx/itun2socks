@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime/debug"
 	"syscall"
 )
 
@@ -21,6 +22,7 @@ var (
 )
 
 func main() {
+	debug.SetMemoryLimit(32 * 1024 * 1024)
 	flag.BoolVar(&version, "version", false, "Print version")
 	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default:9000")
 	flag.StringVar(&homeDir, "home_dir", "", "Config dir, default: current dir")

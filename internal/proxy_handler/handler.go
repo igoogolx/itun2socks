@@ -32,8 +32,8 @@ func (uc udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
 
 func (uc udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	newBuf := buf.NewPacket()
-	_, err := newBuf.Write(data)
 	defer newBuf.Release()
+	_, err := newBuf.Write(data)
 	if err != nil {
 		return 0, err
 	}
