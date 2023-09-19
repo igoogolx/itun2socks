@@ -3,10 +3,12 @@ package executor
 import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/iface"
+	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
+	"runtime"
 	"sync"
 )
 
@@ -56,6 +58,9 @@ func (c *Client) Start() error {
 	if err = c.stack.Start(); err != nil {
 		return fmt.Errorf("fail to start stack: %v", err)
 	}
+	if runtime.GOOS == "darwin" {
+		dns.Hijack()
+	}
 	c.localserver.Start()
 	return nil
 }
@@ -69,6 +74,9 @@ func (c *Client) Close() error {
 	err = c.defaultInterfaceHandler.Monitor.Close()
 	if err != nil {
 		return err
+	}
+	if runtime.GOOS == "darwin" {
+		dns.Resume()
 	}
 	if err = c.localserver.Stop(); err != nil {
 		return err

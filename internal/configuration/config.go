@@ -44,6 +44,7 @@ type SettingCfg struct {
 	DefaultInterface string `json:"defaultInterface"`
 	LocalServer      `json:"localServer"`
 	AutoMode         `json:"autoMode"`
+	HijackDns        `json:"hijackDns"`
 	Dns              struct {
 		Boost  DnsServer `json:"boost"`
 		Remote DnsServer `json:"remote"`
@@ -67,4 +68,9 @@ type AutoMode struct {
 	Enabled bool   `json:"enabled"`
 	Type    string `json:"type"`
 	Url     string `json:"url"`
+}
+
+type HijackDns struct {
+	Enabled        bool   `json:"enabled"`
+	NetworkService string `json:"networkService"`
 }

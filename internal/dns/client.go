@@ -20,7 +20,20 @@ type Matcher interface {
 }
 
 var defaultMatcher Matcher
+var defaultNetworkService = "Wi-Fi"
 var mux sync.RWMutex
+
+func UpdateNetworkService(service string) {
+	mux.Lock()
+	defer mux.Unlock()
+	defaultNetworkService = service
+}
+
+func getNetworkService() string {
+	mux.RLock()
+	defer mux.RUnlock()
+	return defaultNetworkService
+}
 
 func UpdateMatcher(m Matcher) {
 	mux.Lock()
