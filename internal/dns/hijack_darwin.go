@@ -11,9 +11,9 @@ import (
 
 var originalDnsServers []string
 
-func getOriginalDnsServers() ([]string, error) {
+func getOriginalDnsServers(networkService string) ([]string, error) {
 	var dnsServers []string
-	cmd := exec.Command("networksetup", "-getdnsservers", getNetworkService())
+	cmd := exec.Command("networksetup", "-getdnsservers", networkService)
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve original DNS servers: %v", err)
@@ -28,14 +28,14 @@ func getOriginalDnsServers() ([]string, error) {
 	return dnsServers, nil
 }
 
-func Hijack() error {
+func Hijack(networkService string) error {
 	var err error
-	originalDnsServers, err = getOriginalDnsServers()
+	originalDnsServers, err = getOriginalDnsServers(networkService)
 	if err != nil {
 		return err
 	}
 	dnsServer := "8.8.8.8"
-	cmd := exec.Command("networksetup", "-setdnsservers", getNetworkService(), dnsServer)
+	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
 	_, err = cmd.Output()
 	if err != nil {
 		return fmt.Errorf("failed to hajack DNS servers: %v", err)
@@ -43,7 +43,7 @@ func Hijack() error {
 	return nil
 }
 
-func Resume() error {
+func Resume(networkService string) error {
 	var err error
 	defer func() {
 		originalDnsServers = []string{}
@@ -52,7 +52,7 @@ func Resume() error {
 	if len(originalDnsServers) != 0 {
 		dnsServer = strings.Join(originalDnsServers, " ")
 	}
-	cmd := exec.Command("networksetup", "-setdnsservers", getNetworkService(), dnsServer)
+	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
 	_, err = cmd.Output()
 	if err != nil {
 		return fmt.Errorf("failed to resume DNS servers: %v", err)

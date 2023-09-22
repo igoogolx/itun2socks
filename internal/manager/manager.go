@@ -2,14 +2,14 @@ package manager
 
 import (
 	"errors"
-	executor2 "github.com/igoogolx/itun2socks/internal/executor"
+	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"runtime/debug"
 	"sync"
 )
 
 var (
-	client *executor2.Client
+	client *executor.Client
 	mux    sync.Mutex
 )
 
@@ -20,7 +20,7 @@ func Start() error {
 	if GetIsStarted() {
 		return errors.New("the client has started")
 	}
-	client, err = executor2.New()
+	client, err = executor.New()
 	if err != nil {
 		return err
 	}
@@ -58,6 +58,6 @@ func GetIsStarted() bool {
 	return client != nil
 }
 
-func RuntimeDetail() (*executor2.Detail, error) {
+func RuntimeDetail() (*executor.Detail, error) {
 	return client.RuntimeDetail()
 }
