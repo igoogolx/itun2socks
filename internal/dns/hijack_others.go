@@ -2,10 +2,10 @@
 
 package dns
 
-func Hijack() error {
-
+func Hijack(_ string) error {
+	return nil
 }
 
-func Resume() error {
-
+func Resume(_ string) error {
+	return nil
 }
