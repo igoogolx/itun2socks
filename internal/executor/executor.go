@@ -60,10 +60,7 @@ func New() (*Client, error) {
 		tun:                     tun,
 		localserver:             newLocalServer,
 		defaultInterfaceHandler: *interfaceHandler,
-		deviceName:              config.Device.Name,
-		localDns:                []string{config.Rule.Dns.Local.Address},
-		remoteDns:               []string{config.Rule.Dns.Remote.Address},
-		boostDns:                config.Rule.Dns.Boost.Address,
+		config:                  config,
 	}, nil
 }
 

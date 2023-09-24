@@ -130,6 +130,10 @@
       "enabled": false,
       "type": "url-test",
       "url": "https://google.com"
+    },
+     "hijackDns": {
+      "enabled": true,
+      "NetworkService": "Wi-Fi"
     }
   }
 }

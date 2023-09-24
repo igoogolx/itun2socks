@@ -14,6 +14,7 @@ type Config struct {
 	Proxy       constant.Proxy
 	Device      tun.Config
 	LocalServer local_server.Cfg
+	HijackDns   configuration.HijackDns
 }
 
 func New() (Config, error) {
@@ -48,5 +49,6 @@ func New() (Config, error) {
 		proxy,
 		device,
 		newLocalServer,
+		rawConfig.Setting.HijackDns,
 	}, nil
 }
