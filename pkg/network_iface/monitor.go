@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	tun "github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sirupsen/logrus"
 	"go.uber.org/atomic"
 	"net/netip"
 )
@@ -29,7 +30,7 @@ type Handler struct {
 }
 
 func New() (*Handler, error) {
-	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(ErrorHandler{})
+	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(logrus.New())
 	if err != nil {
 		err = E.Cause(err, "create NetworkUpdateMonitor")
 		return nil, err
@@ -40,13 +41,13 @@ func New() (*Handler, error) {
 		return nil, err
 	}
 
-	defaultInterfaceMonitor, err := tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
+	defaultInterfaceMonitor, err := tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, logrus.New(), tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
 	if err != nil {
 		err = E.Cause(err, "create DefaultInterfaceMonitor")
 		return nil, err
 	}
-	defaultInterfaceMonitor.RegisterCallback(func(event int) error {
-		return update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+	defaultInterfaceMonitor.RegisterCallback(func(event int) {
+		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
 	})
 	err = update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
 	if err != nil {
