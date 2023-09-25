@@ -57,7 +57,10 @@ func (c *Client) Start() error {
 	}
 	if c.config.HijackDns.Enabled {
 		if runtime.GOOS == "darwin" {
-			dns.Hijack(c.config.HijackDns.NetworkService)
+			err := dns.Hijack(c.config.HijackDns.NetworkService)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	c.localserver.Start()
@@ -76,7 +79,10 @@ func (c *Client) Close() error {
 	}
 	if c.config.HijackDns.Enabled {
 		if runtime.GOOS == "darwin" {
-			dns.Resume(c.config.HijackDns.NetworkService)
+			err := dns.Resume(c.config.HijackDns.NetworkService)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = c.localserver.Stop(); err != nil {
