@@ -194,15 +194,6 @@ func getCurProxy(w http.ResponseWriter, r *http.Request) {
 			name = curAutoProxy.Name()
 			addr = curAutoProxy.Addr()
 		}
-	} else {
-		curSelectedProxy, err := configuration.GetSelectedProxy()
-		if err == nil && curSelectedProxy != nil {
-			name = curSelectedProxy["name"].(string)
-			paredProxy, err := adapter.ParseProxy(curSelectedProxy)
-			if err == nil {
-				addr = paredProxy.Addr()
-			}
-		}
 	}
 	render.JSON(w, r, render.M{
 		"name": name,
