@@ -3,6 +3,7 @@ package statistic
 import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
 	"time"
 
@@ -76,9 +77,8 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 		},
 	}
 	if cachedItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
-		if ok {
-			t.trackerInfo.Domain = cachedItem.Domain
-		}
+		log.Debugln("cached item: %v, %v", cachedItem.Domain, metadata.DstIP.String())
+		t.trackerInfo.Domain = cachedItem.Domain
 	} else {
 		t.trackerInfo.Domain = "unknown"
 	}
