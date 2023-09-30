@@ -1,10 +1,13 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 	"github.com/Dreamacro/clash/component/resolver"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"io"
@@ -132,4 +135,32 @@ func getResponseIp(msg *D.Msg) []net.IP {
 		}
 	}
 	return ips
+}
+
+func handle(dnsMessage *D.Msg) (*D.Msg, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	start := time.Now()
+	question, err := getDnsQuestion(dnsMessage)
+	defer func() {
+		elapsed := time.Since(start).Milliseconds()
+		log.Debugln(log.FormatLog(log.DnsPrefix, "it took %v ms to handle dns, question: %v"), elapsed, question)
+	}()
+	if err != nil {
+		return nil, fmt.Errorf("invalid dns question, err: %v", err)
+	}
+	dnsClient, dnsRule := getMatcher().GetDns(question)
+	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
+	if err != nil {
+		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
+	}
+	resIps := getResponseIp(res)
+	for _, resIp := range resIps {
+		if resIp != nil {
+			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule)
+			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
+		}
+	}
+	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, result: %v"), question, resIps)
+	return res, err
 }
