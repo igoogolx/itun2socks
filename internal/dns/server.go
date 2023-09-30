@@ -33,11 +33,14 @@ func handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
 	m, err := handle(r)
 	if err != nil {
 		log.Errorln("Failed to handle DNS: %v\n", err)
+		return
 	}
 	err = w.WriteMsg(m)
 	if err != nil {
-		log.Errorln("Failed to start DNS server: %v\n", err)
+		log.Errorln("Failed to write dns message: %v\n", err)
+		return
 	}
+	log.Infoln("write dns message back")
 }
 
 func handle(dnsMessage *dns.Msg) (*dns.Msg, error) {

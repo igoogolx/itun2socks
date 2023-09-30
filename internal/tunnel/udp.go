@@ -73,7 +73,11 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	var lc conn.UdpConn
 	var err error
 	if ct.Metadata().DstPort.String() == constants.DnsPort {
-		lc = dns.NewConn()
+		err = dns.HandleDnsConn(ct.Conn())
+		if err != nil {
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle dns conn, err: %v, target: %v"), err, ct.Metadata().DstIP.String())
+		}
+		return
 	} else {
 		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 		if err != nil {

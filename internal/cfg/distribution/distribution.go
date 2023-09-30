@@ -121,6 +121,8 @@ func (c Config) GetRule(ip string) constants.IpRule {
 	//default rule
 	if c.Ip.DefaultProxy {
 		rule = constants.DistributionProxy
+	} else {
+		rule = constants.DistributionBypass
 	}
 
 	return rule

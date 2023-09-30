@@ -3,7 +3,9 @@ package dns
 import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/resolver"
+	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"io"
 	"net"
@@ -31,6 +33,25 @@ func getMatcher() Matcher {
 	return defaultMatcher
 }
 
+func HandleDnsConn(conn conn.UdpConn) error {
+	var err error
+	data := pool.NewBytes(pool.BufSize)
+	defer pool.FreeBytes(data)
+	_, addr, err := conn.ReadFrom(data)
+	dnsMessage := new(D.Msg)
+	err = dnsMessage.Unpack(data)
+	if err != nil {
+		return fmt.Errorf("fail to unpack dns message: err: %v", err)
+	}
+	res, err := handle(dnsMessage)
+	if err != nil {
+		return fmt.Errorf("fail to hanlde dns message: err: %v", err)
+	}
+	resData, err := res.Pack()
+	_, err = conn.WriteTo(resData, addr)
+	return err
+}
+
 type Conn struct {
 	remoteAddr chan net.Addr
 	written    bool
@@ -42,7 +63,6 @@ func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	if d.written {
 		return 0, io.EOF
 	}
-
 	dnsMessage := new(D.Msg)
 	err := dnsMessage.Unpack(data)
 	if err != nil {

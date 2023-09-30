@@ -34,7 +34,7 @@ func Hijack(networkService string) error {
 	if err != nil {
 		return err
 	}
-	dnsServer := "127.0.0.1"
+	dnsServer := "8.8.8.8"
 	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
 	_, err = cmd.Output()
 	if err != nil {
