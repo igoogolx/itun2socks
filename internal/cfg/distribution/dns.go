@@ -6,6 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/resolver"
 	"github.com/igoogolx/itun2socks/pkg/geo"
 	"github.com/igoogolx/itun2socks/pkg/list"
+	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"strings"
 )
 
@@ -17,10 +18,12 @@ func NewDnsDistribution(
 	tunDeviceName string,
 ) (DnsDistribution, error) {
 	var err error
+	bootDns = bootDns + "#" + network_iface.GetDefaultInterfaceName()
 	boostDnsClient, err := resolver.New([]string{bootDns}, []string{})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
+	localDns = localDns + "#" + network_iface.GetDefaultInterfaceName()
 	localDnsClient, err := resolver.New([]string{localDns}, []string{bootDns})
 	if err != nil {
 		return DnsDistribution{}, err
