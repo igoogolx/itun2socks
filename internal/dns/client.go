@@ -10,7 +10,6 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
-	"io"
 	"net"
 	"strings"
 	"sync"
@@ -53,61 +52,6 @@ func HandleDnsConn(conn conn.UdpConn) error {
 	resData, err := res.Pack()
 	_, err = conn.WriteTo(resData, addr)
 	return err
-}
-
-type Conn struct {
-	remoteAddr chan net.Addr
-	written    bool
-	read       bool
-	data       chan []byte
-}
-
-func (d *Conn) WriteTo(data []byte, addr net.Addr) (int, error) {
-	if d.written {
-		return 0, io.EOF
-	}
-	dnsMessage := new(D.Msg)
-	err := dnsMessage.Unpack(data)
-	if err != nil {
-		return 0, fmt.Errorf("fail to unpack dns message: err: %v", err)
-	}
-	res, err := handle(dnsMessage)
-	if err != nil {
-		return 0, fmt.Errorf("fail to hanlde dns message: err: %v", err)
-	}
-	resData, err := res.Pack()
-	d.data <- resData
-	d.remoteAddr <- addr
-	d.written = true
-	return len(data), err
-}
-
-func (d *Conn) ReadFrom(data []byte) (int, net.Addr, error) {
-	if d.read {
-		return 0, nil, io.EOF
-	}
-	n := copy(data, <-d.data)
-	d.read = true
-	return n, <-d.remoteAddr, nil
-}
-
-func (d *Conn) Close() error {
-	return nil
-}
-
-func (d *Conn) SetDeadline(_ time.Time) error {
-	return nil
-}
-
-func (d *Conn) SetReadDeadline(_ time.Time) error {
-	return nil
-}
-
-func NewConn() *Conn {
-	return &Conn{
-		data:       make(chan []byte),
-		remoteAddr: make(chan net.Addr),
-	}
 }
 
 func getDnsQuestion(msg *D.Msg) (string, error) {
