@@ -47,7 +47,10 @@ func New() (*Handler, error) {
 		return nil, err
 	}
 	defaultInterfaceMonitor.RegisterCallback(func(event int) {
-		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+		err := update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+		if err != nil {
+			log.Infoln(log.FormatLog(log.ExecutorPrefix, "fail to update default interface: %v"), err)
+		}
 	})
 	err = update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
 	if err != nil {
