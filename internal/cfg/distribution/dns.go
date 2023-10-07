@@ -6,7 +6,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/resolver"
 	"github.com/igoogolx/itun2socks/pkg/geo"
 	"github.com/igoogolx/itun2socks/pkg/list"
-	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"strings"
 )
 
@@ -15,15 +14,16 @@ func NewDnsDistribution(
 	remoteDns string,
 	localDns string,
 	config configuration.DnsItem,
-	tunDeviceName string,
+	tunInterfaceName string,
+	defaultInterfaceName string,
 ) (DnsDistribution, error) {
 	var err error
-	bootDns = bootDns + "#" + network_iface.GetDefaultInterfaceName()
+	bootDns = bootDns + "#" + defaultInterfaceName
 	boostDnsClient, err := resolver.New([]string{bootDns}, []string{})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	localDns = localDns + "#" + network_iface.GetDefaultInterfaceName()
+	localDns = localDns + "#" + defaultInterfaceName
 	localDnsClient, err := resolver.New([]string{localDns}, []string{bootDns})
 	if err != nil {
 		return DnsDistribution{}, err
@@ -49,8 +49,8 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	remoteDns = remoteDns + "#" + tunDeviceName
-	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunDeviceName})
+	remoteDns = remoteDns + "#" + tunInterfaceName
+	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunInterfaceName})
 	if err != nil {
 		return DnsDistribution{}, err
 	}

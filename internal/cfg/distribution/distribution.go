@@ -161,9 +161,10 @@ func New(
 	remoteDns string,
 	localDns string,
 	rule configuration.RuleCfg,
-	tunDeviceName string,
+	tunInterfaceName string,
+	defaultInterfaceName string,
 ) (Config, error) {
-	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns, tunDeviceName)
+	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns, tunInterfaceName, defaultInterfaceName)
 	if err != nil {
 		return Config{}, err
 	}

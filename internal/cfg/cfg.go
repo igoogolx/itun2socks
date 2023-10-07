@@ -12,27 +12,32 @@ import (
 type Config struct {
 	Rule        distribution.Config
 	Proxy       constant.Proxy
-	Device      tun.Config
+	Device      *tun.Config
 	LocalServer local_server.Cfg
 	HijackDns   configuration.HijackDns
 }
 
-func New() (Config, error) {
+func New(defaultInterfaceName string) (*Config, error) {
 	rawConfig, err := configuration.Read()
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 	selectedRule, err := configuration.GetSelectedRule()
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 	device, err := tun.New()
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
-	rule, err := distribution.New(rawConfig.Setting.Dns.Boost.Value, rawConfig.Setting.Dns.Remote.Value, rawConfig.Setting.Dns.Local.Value, selectedRule, device.Name)
+	rule, err := distribution.New(
+		rawConfig.Setting.Dns.Boost.Value,
+		rawConfig.Setting.Dns.Remote.Value,
+		rawConfig.Setting.Dns.Local.Value,
+		selectedRule, device.Name,
+		defaultInterfaceName)
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 	outboundOption := outbound.Option{
 		AutoMode:      rawConfig.Setting.AutoMode,
@@ -41,10 +46,10 @@ func New() (Config, error) {
 	}
 	proxy, err := outbound.New(outboundOption)
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 	newLocalServer := local_server.New(rawConfig.Setting.LocalServer)
-	return Config{
+	return &Config{
 		rule,
 		proxy,
 		device,

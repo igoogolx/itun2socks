@@ -23,7 +23,7 @@ func New() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	config, err := cfg.New()
+	config, err := cfg.New(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +52,7 @@ func New() (*Client, error) {
 
 	newLocalServer := localserver.New(config.LocalServer.HttpAddr)
 
-	if err = updateCfg(config); err != nil {
-		return nil, err
-	}
+	updateCfg(*config)
 	return &Client{
 		stack:                   stack,
 		tun:                     tun,
@@ -64,11 +62,10 @@ func New() (*Client, error) {
 	}, nil
 }
 
-func updateCfg(config cfg.Config) error {
+func updateCfg(config cfg.Config) {
 	updateMatcher(config)
 	updateConn(config)
 	updateDns(config)
-	return nil
 }
 
 func updateMatcher(c cfg.Config) {

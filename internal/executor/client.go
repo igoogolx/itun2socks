@@ -28,7 +28,7 @@ type Client struct {
 	stack                   sTun.Stack
 	localserver             localserver.Server
 	defaultInterfaceHandler network_iface.Handler
-	config                  cfg.Config
+	config                  *cfg.Config
 }
 
 func (c *Client) RuntimeDetail() (*Detail, error) {
