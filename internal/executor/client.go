@@ -23,11 +23,10 @@ type Detail struct {
 
 type Client struct {
 	sync.RWMutex
-	tun                     sTun.Tun
-	stack                   sTun.Stack
-	localserver             localserver.Server
-	defaultInterfaceHandler network_iface.Handler
-	config                  *cfg.Config
+	tun         sTun.Tun
+	stack       sTun.Stack
+	localserver localserver.Server
+	config      *cfg.Config
 }
 
 func (c *Client) RuntimeDetail() (*Detail, error) {
@@ -71,7 +70,7 @@ func (c *Client) Close() error {
 	if err = c.tun.Close(); err != nil {
 		return err
 	}
-	err = c.defaultInterfaceHandler.Monitor.Close()
+	err = network_iface.StopMonitor()
 	if err != nil {
 		return err
 	}

@@ -15,11 +15,7 @@ import (
 )
 
 func New() (*Client, error) {
-	interfaceHandler, err := network_iface.New()
-	if err != nil {
-		return nil, err
-	}
-	err = interfaceHandler.Monitor.Start()
+	err := network_iface.StartMonitor()
 	if err != nil {
 		return nil, err
 	}
@@ -54,11 +50,10 @@ func New() (*Client, error) {
 
 	updateCfg(*config)
 	return &Client{
-		stack:                   stack,
-		tun:                     tun,
-		localserver:             newLocalServer,
-		defaultInterfaceHandler: *interfaceHandler,
-		config:                  config,
+		stack:       stack,
+		tun:         tun,
+		localserver: newLocalServer,
+		config:      config,
 	}, nil
 }
 

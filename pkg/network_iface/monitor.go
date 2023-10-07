@@ -13,6 +13,7 @@ import (
 )
 
 var defaultInterfaceName = atomic.NewString("")
+var defaultInterfaceMonitor tun.DefaultInterfaceMonitor
 
 func GetDefaultInterfaceName() string {
 	return defaultInterfaceName.Load()
@@ -29,47 +30,51 @@ type Handler struct {
 	Monitor tun.DefaultInterfaceMonitor
 }
 
-func New() (*Handler, error) {
-	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(logrus.New())
-	if err != nil {
-		err = E.Cause(err, "create NetworkUpdateMonitor")
-		return nil, err
-	}
-	err = networkUpdateMonitor.Start()
-	if err != nil {
-		err = E.Cause(err, "start NetworkUpdateMonitor")
-		return nil, err
-	}
-
-	defaultInterfaceMonitor, err := tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, logrus.New(), tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
-	if err != nil {
-		err = E.Cause(err, "create DefaultInterfaceMonitor")
-		return nil, err
-	}
-	defaultInterfaceMonitor.RegisterCallback(func(event int) {
-		err := update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
-		if err != nil {
-			log.Infoln(log.FormatLog(log.ExecutorPrefix, "fail to update default interface: %v"), err)
-		}
-	})
-	err = update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
-	if err != nil {
-		return nil, err
-	}
-	return &Handler{defaultInterfaceMonitor}, nil
-}
-
-func update(name string) error {
+func StartMonitor() error {
 	setting, err := configuration.GetSetting()
 	if err != nil {
 		return err
 	}
-	nextName := name
 	if len(setting.DefaultInterface) != 0 {
-		nextName = setting.DefaultInterface
+		update(setting.DefaultInterface)
+		return nil
 	}
-	defaultInterfaceName.Store(nextName)
-	dialer.DefaultInterface.Store(nextName)
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update default interface: %v"), name)
+	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(logrus.New())
+	if err != nil {
+		err = E.Cause(err, "create NetworkUpdateMonitor")
+		return err
+	}
+	err = networkUpdateMonitor.Start()
+	if err != nil {
+		err = E.Cause(err, "start NetworkUpdateMonitor")
+		return err
+	}
+
+	defaultInterfaceMonitor, err = tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, logrus.New(), tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
+	if err != nil {
+		err = E.Cause(err, "create DefaultInterfaceMonitor")
+		return err
+	}
+	defaultInterfaceMonitor.RegisterCallback(func(event int) {
+		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+
+	})
+	update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
 	return nil
+}
+
+func StopMonitor() error {
+	defer func() {
+		defaultInterfaceMonitor = nil
+	}()
+	if defaultInterfaceMonitor != nil {
+		return defaultInterfaceMonitor.Close()
+	}
+	return nil
+}
+
+func update(name string) {
+	defaultInterfaceName.Store(name)
+	dialer.DefaultInterface.Store(name)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update default interface: %v"), name)
 }

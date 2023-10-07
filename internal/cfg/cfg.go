@@ -34,7 +34,8 @@ func New(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.Dns.Boost.Value,
 		rawConfig.Setting.Dns.Remote.Value,
 		rawConfig.Setting.Dns.Local.Value,
-		selectedRule, device.Name,
+		selectedRule,
+		device.Name,
 		defaultInterfaceName)
 	if err != nil {
 		return nil, err

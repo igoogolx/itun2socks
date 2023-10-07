@@ -3,16 +3,15 @@ package resolver
 import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/Dreamacro/clash/dns"
-	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	_ "unsafe"
 )
 
-func New(mainServer, defaultServer []string) (cResolver.Resolver, error) {
-	defaultNameResolver, err := parse(defaultServer)
+func New(mainServer, defaultServer []string, defaultInterfaceName string) (cResolver.Resolver, error) {
+	defaultNameResolver, err := parse(defaultServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err
 	}
-	mainNameResolver, err := parse(mainServer)
+	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +24,7 @@ func New(mainServer, defaultServer []string) (cResolver.Resolver, error) {
 	return mainDnsClient, nil
 }
 
-func parse(servers []string) ([]dns.NameServer, error) {
+func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, error) {
 	nameResolvers, err := parseNameServer(servers)
 	if err != nil {
 		return nil, err
@@ -34,8 +33,8 @@ func parse(servers []string) ([]dns.NameServer, error) {
 		if nameResolver.Net == "dhcp" && nameResolver.Addr == "auto" {
 			nameResolvers[index] = dns.NameServer{
 				Net:       "dhcp",
-				Addr:      network_iface.GetDefaultInterfaceName(),
-				Interface: network_iface.GetDefaultInterfaceName(),
+				Addr:      defaultInterfaceName,
+				Interface: defaultInterfaceName,
 			}
 		}
 	}

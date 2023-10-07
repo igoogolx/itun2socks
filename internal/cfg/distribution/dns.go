@@ -19,12 +19,12 @@ func NewDnsDistribution(
 ) (DnsDistribution, error) {
 	var err error
 	bootDns = bootDns + "#" + defaultInterfaceName
-	boostDnsClient, err := resolver.New([]string{bootDns}, []string{})
+	boostDnsClient, err := resolver.New([]string{bootDns}, []string{}, defaultInterfaceName)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	localDns = localDns + "#" + defaultInterfaceName
-	localDnsClient, err := resolver.New([]string{localDns}, []string{bootDns})
+	localDnsClient, err := resolver.New([]string{localDns}, []string{bootDns}, defaultInterfaceName)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -50,7 +50,7 @@ func NewDnsDistribution(
 		return DnsDistribution{}, err
 	}
 	remoteDns = remoteDns + "#" + tunInterfaceName
-	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunInterfaceName})
+	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunInterfaceName}, defaultInterfaceName)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
