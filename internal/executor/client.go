@@ -9,7 +9,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
-	"runtime"
 	"sync"
 )
 
@@ -56,11 +55,10 @@ func (c *Client) Start() error {
 		return fmt.Errorf("fail to start stack: %v", err)
 	}
 	if c.config.HijackDns.Enabled {
-		if runtime.GOOS == "darwin" {
-			err := dns.Hijack(c.config.HijackDns.NetworkService)
-			if err != nil {
-				return err
-			}
+
+		err := dns.Hijack(c.config.HijackDns.NetworkService)
+		if err != nil {
+			return err
 		}
 	}
 	c.localserver.Start()
@@ -78,11 +76,9 @@ func (c *Client) Close() error {
 		return err
 	}
 	if c.config.HijackDns.Enabled {
-		if runtime.GOOS == "darwin" {
-			err := dns.Resume(c.config.HijackDns.NetworkService)
-			if err != nil {
-				return err
-			}
+		err := dns.Resume(c.config.HijackDns.NetworkService)
+		if err != nil {
+			return err
 		}
 	}
 	if err = c.localserver.Stop(); err != nil {
