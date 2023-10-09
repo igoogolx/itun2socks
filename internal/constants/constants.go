@@ -16,6 +16,13 @@ const (
 	DistributionBoostDns  DnsRule = "boost"
 )
 
+type RuleConfig string
+
+const (
+	RuleIpCidr RuleConfig = "IP-CIDR"
+	RuleDomain RuleConfig = "DOMAIN"
+)
+
 const DnsPort = "53"
 
 const (
