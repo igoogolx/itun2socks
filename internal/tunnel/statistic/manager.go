@@ -58,7 +58,7 @@ func (m *Manager) Leave(c tracker) {
 	m.connections.Delete(c.ID())
 }
 
-func (m *Manager) getStatistic(rule constants.IpRule) *Statistic {
+func (m *Manager) getStatistic(rule constants.RuleType) *Statistic {
 	if rule == constants.DistributionProxy {
 		return m.proxy
 	}
@@ -68,7 +68,7 @@ func (m *Manager) getStatistic(rule constants.IpRule) *Statistic {
 	return nil
 }
 
-func (m *Manager) PushUploaded(size int64, rule constants.IpRule) {
+func (m *Manager) PushUploaded(size int64, rule constants.RuleType) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.uploadTemp.Add(size)
@@ -76,7 +76,7 @@ func (m *Manager) PushUploaded(size int64, rule constants.IpRule) {
 	}
 }
 
-func (m *Manager) PushDownloaded(size int64, rule constants.IpRule) {
+func (m *Manager) PushDownloaded(size int64, rule constants.RuleType) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.downloadTemp.Add(size)
@@ -84,7 +84,7 @@ func (m *Manager) PushDownloaded(size int64, rule constants.IpRule) {
 	}
 }
 
-func (m *Manager) Now(rule constants.IpRule) (up int64, down int64) {
+func (m *Manager) Now(rule constants.RuleType) (up int64, down int64) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		return s.uploadBlip.Load(), s.downloadBlip.Load()
@@ -127,7 +127,7 @@ func (m *Manager) GetTotal() *Total {
 	}
 }
 
-func (m *Manager) ResetStatistic(rule constants.IpRule) {
+func (m *Manager) ResetStatistic(rule constants.RuleType) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.uploadTemp.Store(0)
@@ -139,7 +139,7 @@ func (m *Manager) ResetStatistic(rule constants.IpRule) {
 	}
 }
 
-func (m *Manager) handle(rule constants.IpRule) {
+func (m *Manager) handle(rule constants.RuleType) {
 	s := m.getStatistic(rule)
 	if s == nil {
 		return

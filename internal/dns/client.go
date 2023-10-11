@@ -17,7 +17,7 @@ import (
 )
 
 type Matcher interface {
-	GetDns(question string) (resolver.Resolver, constants.DnsRule)
+	GetDns(question string) (resolver.Resolver, constants.DnsType)
 }
 
 var defaultMatcher Matcher

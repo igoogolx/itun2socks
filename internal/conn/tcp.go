@@ -17,7 +17,7 @@ type TcpConnContext struct {
 	id       uuid.UUID
 	metadata *constant.Metadata
 	conn     net.Conn
-	rule     constants.IpRule
+	rule     constants.RuleType
 }
 
 func (t *TcpConnContext) Wg() *sync.WaitGroup {
@@ -28,7 +28,7 @@ func (t *TcpConnContext) Ctx() context.Context {
 	return t.ctx
 }
 
-func (t *TcpConnContext) Rule() constants.IpRule {
+func (t *TcpConnContext) Rule() constants.RuleType {
 	return t.rule
 }
 
@@ -58,6 +58,6 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *constant.Me
 
 }
 
-func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule constants.IpRule, defaultInterface string) (net.Conn, error) {
+func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule constants.RuleType, defaultInterface string) (net.Conn, error) {
 	return GetProxy(rule).DialContext(ctx, metadata, dialer.WithInterface(defaultInterface))
 }

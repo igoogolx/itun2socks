@@ -6,7 +6,7 @@ import (
 )
 
 type Matcher interface {
-	GetRule(ip string) constants.IpRule
+	GetRule(ip string) constants.RuleType
 }
 
 var defaultMatcher Matcher

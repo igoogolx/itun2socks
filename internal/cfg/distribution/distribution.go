@@ -3,7 +3,8 @@ package distribution
 import (
 	"github.com/Dreamacro/clash/component/resolver"
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/igoogolx/itun2socks/internal/configuration"
+	_ "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule"
+	rule2 "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"strings"
@@ -11,7 +12,7 @@ import (
 
 var dnsCache, _ = lru.New(1000)
 
-func getRuleStr(rule constants.IpRule) string {
+func getRuleStr(rule constants.RuleType) string {
 	if rule == constants.DistributionBypass {
 		return "direct"
 	}
@@ -27,7 +28,7 @@ func GetCachedDnsItem(ip string) (CacheItem, bool) {
 	return CacheItem{}, false
 }
 
-func AddCachedDnsItem(ip, domain string, rule constants.DnsRule) {
+func AddCachedDnsItem(ip, domain string, rule constants.DnsType) {
 	dnsCache.Add(ip, CacheItem{
 		Domain: domain,
 		Rule:   rule,
@@ -36,12 +37,12 @@ func AddCachedDnsItem(ip, domain string, rule constants.DnsRule) {
 
 type CacheItem struct {
 	Domain string
-	Rule   constants.DnsRule
+	Rule   constants.DnsType
 }
 
 type Config struct {
 	Dns      DnsDistribution
-	Ip       IpDistribution
+	Rules    []rule2.Rule
 	dnsTable Cache
 }
 
@@ -50,7 +51,7 @@ type Cache interface {
 	Add(key interface{}, val interface{}) bool
 }
 
-func (c Config) GetDnsServerRule(ip string) constants.IpRule {
+func (c Config) GetDnsServerRule(ip string) constants.RuleType {
 	result := constants.DistributionNotFound
 	if strings.Contains(c.Dns.Remote.Address, ip) {
 		result = constants.DistributionProxy
@@ -58,15 +59,7 @@ func (c Config) GetDnsServerRule(ip string) constants.IpRule {
 	return result
 }
 
-func (c Config) GetSubnetRule(ip string) constants.IpRule {
-	return c.Ip.Subnet.LookUp(ip)
-}
-
-func (c Config) GetGeoRule(ip string) constants.IpRule {
-	return c.Ip.GeoIps.LookUp(ip)
-}
-
-func (c Config) GetDnsRule(ip string) constants.IpRule {
+func (c Config) GetDnsRule(ip string) constants.RuleType {
 	result := constants.DistributionNotFound
 	cacheItem, ok := GetCachedDnsItem(ip)
 	if ok {
@@ -79,7 +72,7 @@ func (c Config) GetDnsRule(ip string) constants.IpRule {
 	return result
 }
 
-func (c Config) GetRule(ip string) constants.IpRule {
+func (c Config) GetRule(ip string) constants.RuleType {
 
 	rule := constants.DistributionBypass
 
@@ -100,53 +93,45 @@ func (c Config) GetRule(ip string) constants.IpRule {
 		return rule
 	}
 
-	//subnet rule
-	rule = c.GetSubnetRule(ip)
-	if rule != constants.DistributionNotFound {
-		return rule
-	}
-
-	//geo rule
-	rule = c.GetGeoRule(ip)
-	if rule != constants.DistributionNotFound {
-		return rule
-	}
-
 	//dns rule
 	rule = c.GetDnsRule(ip)
 	if rule != constants.DistributionNotFound {
 		return rule
 	}
 
-	//default rule
-	if c.Ip.DefaultProxy {
-		rule = constants.DistributionProxy
-	} else {
-		rule = constants.DistributionBypass
+	for _, rule := range c.Rules {
+		if rule.Match(ip) {
+			if rule.Policy() == "bypass" {
+				return constants.DistributionBypass
+			}
+			if rule.Policy() == "proxy" {
+				return constants.DistributionProxy
+			}
+		}
 	}
 
-	return rule
+	return constants.DistributionProxy
 
 }
 
-func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsRule) {
+func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsType) {
 	result := constants.DistributionLocalDns
-	if c.Dns.Boost.Domains.Has(domain) {
+	if strings.Contains(c.Dns.Remote.Address, domain) {
 		result = constants.DistributionBoostDns
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from boost domains"), domain)
-	} else if c.Dns.Local.Domains.Has(domain) {
-		result = constants.DistributionLocalDns
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local domains"), domain)
-	} else if c.Dns.Local.GeoSites.Has(domain) {
-		result = constants.DistributionLocalDns
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from local geo sites"), domain)
-	} else if c.Dns.Remote.Domains.Has(domain) {
-		result = constants.DistributionRemoteDns
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote domains"), domain)
-	} else if c.Dns.Remote.GeoSites.Has(domain) {
-		result = constants.DistributionRemoteDns
-		log.Debugln(log.FormatLog(log.RulePrefix, "%v is from remote geo sites"), domain)
+	} else {
+		for _, rule := range c.Rules {
+			if rule.Match(domain) {
+				if rule.Policy() == "bypass" {
+					result = constants.DistributionLocalDns
+				}
+				if rule.Policy() == "proxy" {
+					result = constants.DistributionRemoteDns
+				}
+			}
+		}
+
 	}
+
 	if result == constants.DistributionLocalDns {
 		return c.Dns.Local.Client, constants.DistributionLocalDns
 	}
@@ -160,19 +145,19 @@ func New(
 	boostDns string,
 	remoteDns string,
 	localDns string,
-	rule configuration.RuleCfg,
+	rule string,
 	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (Config, error) {
-	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, rule.Dns, tunInterfaceName, defaultInterfaceName)
+	rules, err := rule2.Parse(rule)
 	if err != nil {
 		return Config{}, err
 	}
-	ip, err := NewIpDistribution(rule.Ip)
+	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, tunInterfaceName, defaultInterfaceName)
 	if err != nil {
 		return Config{}, err
 	}
 	return Config{
-		Dns: dns, Ip: ip, dnsTable: dnsCache,
+		Dns: dns, dnsTable: dnsCache, Rules: rules,
 	}, nil
 }

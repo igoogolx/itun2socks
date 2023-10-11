@@ -19,14 +19,14 @@ type tracker interface {
 }
 
 type trackerInfo struct {
-	UUID          uuid.UUID        `json:"id"`
-	Metadata      *C.Metadata      `json:"metadata"`
-	UploadTotal   *atomic.Int64    `json:"upload"`
-	DownloadTotal *atomic.Int64    `json:"download"`
-	Start         int64            `json:"start"`
-	Rule          constants.IpRule `json:"rule"`
-	Domain        string           `json:"domain"`
-	Process       string           `json:"process"`
+	UUID          uuid.UUID          `json:"id"`
+	Metadata      *C.Metadata        `json:"metadata"`
+	UploadTotal   *atomic.Int64      `json:"upload"`
+	DownloadTotal *atomic.Int64      `json:"download"`
+	Start         int64              `json:"start"`
+	Rule          constants.RuleType `json:"rule"`
+	Domain        string             `json:"domain"`
+	Process       string             `json:"process"`
 }
 
 type TcpTracker struct {
@@ -60,7 +60,7 @@ func (tt *TcpTracker) Close() error {
 	return tt.Conn.Close()
 }
 
-func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule constants.IpRule) *TcpTracker {
+func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule constants.RuleType) *TcpTracker {
 	uid, _ := uuid.NewV4()
 
 	t := &TcpTracker{
@@ -117,7 +117,7 @@ func (ut *UdpTracker) Close() error {
 	return ut.PacketConn.Close()
 }
 
-func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, rule constants.IpRule) *UdpTracker {
+func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, rule constants.RuleType) *UdpTracker {
 	uid, _ := uuid.NewV4()
 
 	ut := &UdpTracker{

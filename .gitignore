@@ -7,3 +7,4 @@ dist-ui
 geoData
 ./config.json
 tmp
+rules

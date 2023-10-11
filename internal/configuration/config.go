@@ -3,7 +3,6 @@ package configuration
 type Config struct {
 	ClashYamlUrl string                   `json:"clashYamlUrl"`
 	Proxy        []map[string]interface{} `json:"proxy"`
-	Rules        []RuleCfg                `json:"rules"`
 
 	Selected struct {
 		Proxy string `json:"proxy"`

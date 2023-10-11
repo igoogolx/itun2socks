@@ -1,19 +1,19 @@
 package constants
 
-type IpRule int
+type RuleType string
 
 const (
-	DistributionBypass   IpRule = 0
-	DistributionProxy    IpRule = 1
-	DistributionNotFound IpRule = 2
+	DistributionBypass   RuleType = "bypass"
+	DistributionProxy    RuleType = "proxy"
+	DistributionNotFound RuleType = "not_found"
 )
 
-type DnsRule string
+type DnsType string
 
 const (
-	DistributionLocalDns  DnsRule = "local"
-	DistributionRemoteDns DnsRule = "remote"
-	DistributionBoostDns  DnsRule = "boost"
+	DistributionLocalDns  DnsType = "local"
+	DistributionRemoteDns DnsType = "remote"
+	DistributionBoostDns  DnsType = "boost"
 )
 
 type RuleConfig string

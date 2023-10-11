@@ -9,19 +9,19 @@ import (
 )
 
 var (
-	proxies map[constants.IpRule]C.Proxy
+	proxies map[constants.RuleType]C.Proxy
 	mux     sync.RWMutex
 )
 
 func UpdateProxy(remoteProxy C.Proxy) {
 	mux.Lock()
 	defer mux.Unlock()
-	proxies = make(map[constants.IpRule]C.Proxy)
+	proxies = make(map[constants.RuleType]C.Proxy)
 	proxies[constants.DistributionProxy] = remoteProxy
 	proxies[constants.DistributionBypass] = adapter.NewProxy(outbound.NewDirect())
 }
 
-func GetProxy(rule constants.IpRule) C.Proxy {
+func GetProxy(rule constants.RuleType) C.Proxy {
 	mux.RLock()
 	defer mux.RUnlock()
 	return proxies[rule]
