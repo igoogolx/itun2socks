@@ -3,7 +3,6 @@ package distribution
 import (
 	"github.com/Dreamacro/clash/component/resolver"
 	lru "github.com/hashicorp/golang-lru"
-	_ "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule"
 	rule2 "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
