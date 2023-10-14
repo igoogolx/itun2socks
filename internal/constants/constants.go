@@ -3,9 +3,8 @@ package constants
 type RuleType string
 
 const (
-	DistributionBypass   RuleType = "bypass"
-	DistributionProxy    RuleType = "proxy"
-	DistributionNotFound RuleType = "not_found"
+	DistributionBypass RuleType = "bypass"
+	DistributionProxy  RuleType = "proxy"
 )
 
 type DnsType string
