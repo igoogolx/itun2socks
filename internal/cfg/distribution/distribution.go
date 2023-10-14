@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/resolver"
 	lru "github.com/hashicorp/golang-lru"
-	rule2 "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"strings"
@@ -35,7 +35,7 @@ type CacheItem struct {
 
 type Config struct {
 	Dns        DnsDistribution
-	RuleEngine *rule2.Engine
+	RuleEngine *ruleEngine.Engine
 	dnsTable   Cache
 }
 
@@ -139,7 +139,7 @@ func New(
 	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (Config, error) {
-	ruleEngine, err := rule2.New(rule)
+	ruleEngine, err := ruleEngine.New(rule)
 	if err != nil {
 		return Config{}, err
 	}
