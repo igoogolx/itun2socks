@@ -82,13 +82,13 @@ func (c Config) GetRule(ip string) constants.RuleType {
 
 	//dns server
 	result, err := c.GetDnsServerRule(ip)
-	if err != nil {
+	if err == nil {
 		return result
 	}
 
 	//dns result
 	result, err = c.GetDnsRule(ip)
-	if err != nil {
+	if err == nil {
 		return result
 	}
 
