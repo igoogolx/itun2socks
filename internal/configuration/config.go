@@ -11,34 +11,6 @@ type Config struct {
 	Setting SettingCfg `json:"setting"`
 }
 
-type RuleCfg struct {
-	Id   string  `json:"id"`
-	Name string  `json:"name"`
-	Dns  DnsItem `json:"dns"`
-	Ip   IpItem  `json:"ip"`
-}
-
-type dnsRule struct {
-	Local  []string `json:"local"`
-	Remote []string `json:"remote"`
-}
-
-type DnsItem struct {
-	Domains  dnsRule `json:"domains"`
-	GeoSites dnsRule `json:"geoSites"`
-}
-
-type IpRule struct {
-	Bypass []string `json:"bypass"`
-	Proxy  []string `json:"proxy"`
-}
-
-type IpItem struct {
-	DefaultProxy bool   `json:"defaultProxy"`
-	GeoIps       IpRule `json:"geoIps"`
-	Subnet       IpRule `json:"subnet"`
-}
-
 type SettingCfg struct {
 	DefaultInterface string `json:"defaultInterface"`
 	LocalServer      `json:"localServer"`
