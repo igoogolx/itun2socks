@@ -20,7 +20,7 @@ func trimArr(arr []string) (r []string) {
 	return
 }
 
-func GetRules() ([]string, error) {
+func GetRuleIds() ([]string, error) {
 	ruleFiles, err := data.ReadDir("rules")
 	var rules []string
 	if err != nil {
@@ -43,26 +43,30 @@ func Parse(name string) ([]Rule, error) {
 		if len(chunks) != 3 {
 			break
 		}
-		ruleType := constants.RuleConfig(chunks[0])
-
-		var rule Rule
-		var err error
-		switch ruleType {
-		case constants.RuleIpCidr:
-			rule, err = NewIpCidrRule(chunks[1], chunks[2])
-			break
-		case constants.RuleDomain:
-			rule, err = NewDomainRule(chunks[1], chunks[2])
-			break
-		default:
-			err = fmt.Errorf("rule type not match: %v", ruleType)
-
-		}
+		rule, err := ParseItem(chunks[0], chunks[1], chunks[2])
 		if err == nil {
 			rules = append(rules, rule)
 		}
 	}
 	return rules, nil
+}
+
+func ParseItem(rawRuleType, value, policy string) (Rule, error) {
+	ruleType := constants.RuleConfig(rawRuleType)
+
+	var rule Rule
+	var err error
+	switch ruleType {
+	case constants.RuleIpCidr:
+		rule, err = NewIpCidrRule(value, policy)
+		break
+	case constants.RuleDomain:
+		rule, err = NewDomainRule(value, policy)
+		break
+	default:
+		err = fmt.Errorf("rule type not match: %v", ruleType)
+	}
+	return rule, err
 }
 
 func readFile(path string) ([]string, error) {
