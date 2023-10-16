@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/configuration"
 	"net/http"
 )
 
@@ -14,13 +14,13 @@ func ruleRouter() http.Handler {
 }
 
 func getRules(w http.ResponseWriter, r *http.Request) {
-	rules, err := configuration2.GetRules()
+	rules, err := configuration.GetRuleIds()
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	selectId, err := configuration2.GetSelectedId("rule")
+	selectId, err := configuration.GetSelectedId("rule")
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))

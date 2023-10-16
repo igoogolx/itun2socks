@@ -3,12 +3,14 @@ package ruleEngine
 import (
 	"fmt"
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
 type Rule interface {
 	Match(value string) bool
 	Value() string
 	Policy() string
+	Type() constants.RuleConfig
 }
 
 type Engine struct {

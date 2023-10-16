@@ -1,6 +1,7 @@
 package ruleEngine
 
 import (
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"regexp"
 	"strings"
 )
@@ -12,6 +13,10 @@ type Domain struct {
 
 func (d Domain) Policy() string {
 	return d.policy
+}
+
+func (d Domain) Type() constants.RuleConfig {
+	return constants.RuleDomain
 }
 
 func (d Domain) Match(value string) bool {

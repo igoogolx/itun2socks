@@ -10,6 +10,30 @@ func GetSelectedRule() (string, error) {
 	return c.Selected.Rule, nil
 }
 
+func GetRuleIds() ([]string, error) {
+	return ruleEngine.GetRuleIds()
+}
+
+func SetRules(rules []string) error {
+	c, err := Read()
+	if err != nil {
+		return err
+	}
+	return Write(c)
+}
+
 func GetRules() ([]string, error) {
-	return ruleEngine.GetRules()
+	c, err := Read()
+	if err != nil {
+		return nil, err
+	}
+	return c.Rules, nil
+}
+
+func GetBuiltInRules(id string) ([]string, error) {
+	c, err := Read()
+	if err != nil {
+		return nil, err
+	}
+	return c.Rules, nil
 }
