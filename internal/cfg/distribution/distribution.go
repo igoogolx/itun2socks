@@ -2,7 +2,6 @@ package distribution
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/component/resolver"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -105,7 +104,7 @@ func (c Config) GetRule(ip string) constants.RuleType {
 
 }
 
-func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsType) {
+func (c Config) GetDns(domain string) SubDnsDistribution {
 	result := constants.DistributionRemoteDns
 	if strings.Contains(c.Dns.Remote.Address, domain) {
 		result = constants.DistributionBoostDns
@@ -122,12 +121,11 @@ func (c Config) GetDns(domain string) (resolver.Resolver, constants.DnsType) {
 
 	switch result {
 	case constants.DistributionLocalDns:
-		return c.Dns.Local.Client, constants.DistributionLocalDns
+		return c.Dns.Local
 	case constants.DistributionRemoteDns:
-		return c.Dns.Remote.Client, constants.DistributionRemoteDns
+		return c.Dns.Remote
 	default:
-		return c.Dns.Boost.Client, constants.DistributionBoostDns
-
+		return c.Dns.Boost
 	}
 }
 
@@ -139,7 +137,7 @@ func New(
 	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (Config, error) {
-	ruleEngine, err := ruleEngine.New(rule)
+	rEngine, err := ruleEngine.New(rule)
 	if err != nil {
 		return Config{}, err
 	}
@@ -148,6 +146,6 @@ func New(
 		return Config{}, err
 	}
 	return Config{
-		Dns: dns, dnsTable: dnsCache, RuleEngine: ruleEngine,
+		Dns: dns, dnsTable: dnsCache, RuleEngine: rEngine,
 	}, nil
 }
