@@ -32,8 +32,8 @@ func (e *Engine) Match(value string) (Rule, error) {
 	return nil, fmt.Errorf("not found")
 }
 
-func New(name string) (*Engine, error) {
-	rules, err := Parse(name)
+func New(name string, extraRules []string) (*Engine, error) {
+	rules, err := Parse(name, extraRules)
 	if err != nil {
 		return nil, err
 	}

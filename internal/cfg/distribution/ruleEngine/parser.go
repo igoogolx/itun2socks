@@ -32,23 +32,35 @@ func GetRuleIds() ([]string, error) {
 	return rules, err
 }
 
-func Parse(name string) ([]Rule, error) {
-	items, err := readFile("rules/" + name)
+func Parse(name string, extraRules []string) ([]Rule, error) {
+	var err error
+	var rules []Rule
+	builtInItems, err := readFile("rules/" + name)
 	if err != nil {
 		return nil, err
 	}
-	var rules []Rule
-	for _, line := range items {
-		chunks := trimArr(strings.Split(strings.TrimSpace(line), ","))
-		if len(chunks) != 3 {
-			break
+	for _, line := range extraRules {
+		rule, err := parseLine(line)
+		if err == nil {
+			rules = append(rules, rule)
 		}
-		rule, err := ParseItem(chunks[0], chunks[1], chunks[2])
+	}
+	for _, line := range builtInItems {
+		rule, err := parseLine(line)
 		if err == nil {
 			rules = append(rules, rule)
 		}
 	}
 	return rules, nil
+}
+
+func parseLine(line string) (Rule, error) {
+	chunks := trimArr(strings.Split(strings.TrimSpace(line), ","))
+	if len(chunks) != 3 {
+		return nil, fmt.Errorf("invald rule line")
+	}
+	return ParseItem(chunks[0], chunks[1], chunks[2])
+
 }
 
 func ParseItem(rawRuleType, value, policy string) (Rule, error) {

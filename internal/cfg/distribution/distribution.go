@@ -130,11 +130,12 @@ func New(
 	boostDns string,
 	remoteDns string,
 	localDns string,
-	rule string,
+	ruleId string,
+	rules []string,
 	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (Config, error) {
-	rEngine, err := ruleEngine.New(rule)
+	rEngine, err := ruleEngine.New(ruleId, rules)
 	if err != nil {
 		return Config{}, err
 	}
