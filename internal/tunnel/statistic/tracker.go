@@ -76,9 +76,9 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 			Process:       "unknown",
 		},
 	}
-	if cachedItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
-		log.Debugln("cached item: %v, %v", cachedItem.Domain, metadata.DstIP.String())
-		t.trackerInfo.Domain = cachedItem.Domain
+	if cachedDomain, _, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
+		log.Debugln("cached item: %v, %v", cachedDomain, metadata.DstIP.String())
+		t.trackerInfo.Domain = cachedDomain
 	} else {
 		t.trackerInfo.Domain = "unknown"
 	}
@@ -134,8 +134,8 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 		},
 	}
 
-	if cacheItem, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
-		ut.trackerInfo.Domain = cacheItem.Domain
+	if cachedDomain, _, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
+		ut.trackerInfo.Domain = cachedDomain
 	} else {
 		ut.trackerInfo.Domain = "unknown"
 	}

@@ -9,27 +9,24 @@ import (
 	"strings"
 )
 
-var dnsCache, _ = lru.New(1000)
+var dnsDomainCache, _ = lru.New(1024)
+var dnsRuleCache, _ = lru.New(1024)
 
-func GetCachedDnsItem(ip string) (CacheItem, bool) {
-	cacheItem, ok := dnsCache.Get(ip)
-	if ok {
-		cacheResult, ok := cacheItem.(CacheItem)
-		return cacheResult, ok
+func GetCachedDnsItem(ip string) (string, constants.DnsType, bool) {
+	rawCachedDomain, ok := dnsDomainCache.Get(ip)
+	if !ok {
+		return "", constants.DistributionLocalDns, false
 	}
-	return CacheItem{}, false
+	rawCachedRule, ok := dnsRuleCache.Get(ip)
+	if !ok {
+		return "", constants.DistributionLocalDns, false
+	}
+	return rawCachedDomain.(string), constants.DnsType(rawCachedRule.(string)), true
 }
 
 func AddCachedDnsItem(ip, domain string, rule constants.DnsType) {
-	dnsCache.Add(ip, CacheItem{
-		Domain: domain,
-		Rule:   rule,
-	})
-}
-
-type CacheItem struct {
-	Domain string
-	Rule   constants.DnsType
+	dnsDomainCache.Add(ip, domain)
+	dnsRuleCache.Add(ip, rule)
 }
 
 type Config struct {
@@ -52,9 +49,9 @@ func (c Config) GetDnsServerRule(ip string) (constants.RuleType, error) {
 
 func (c Config) GetDnsRule(ip string) (constants.RuleType, error) {
 	result := constants.DistributionBypass
-	cacheItem, ok := GetCachedDnsItem(ip)
+	_, cachedRule, ok := GetCachedDnsItem(ip)
 	if ok {
-		if cacheItem.Rule == constants.DistributionLocalDns {
+		if cachedRule == constants.DistributionLocalDns {
 			result = constants.DistributionBypass
 		} else {
 			result = constants.DistributionProxy
@@ -71,10 +68,10 @@ func (c Config) GetRule(ip string) constants.RuleType {
 	defer func(latestIp string) {
 		domain := "unknown"
 		dnsRule := "unknown"
-		cacheItem, ok := GetCachedDnsItem(latestIp)
+		cacheDomain, cachedRule, ok := GetCachedDnsItem(latestIp)
 		if ok {
-			domain = cacheItem.Domain
-			dnsRule = string(cacheItem.Rule)
+			domain = cacheDomain
+			dnsRule = string(cachedRule)
 		}
 		log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), latestIp, result, domain, dnsRule)
 	}(ip)
@@ -146,6 +143,6 @@ func New(
 		return Config{}, err
 	}
 	return Config{
-		Dns: dns, dnsTable: dnsCache, RuleEngine: rEngine,
+		Dns: dns, RuleEngine: rEngine,
 	}, nil
 }
