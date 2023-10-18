@@ -21,7 +21,7 @@ func GetCachedDnsItem(ip string) (string, constants.DnsType, bool) {
 	if !ok {
 		return "", constants.DistributionLocalDns, false
 	}
-	return rawCachedDomain.(string), constants.DnsType(rawCachedRule.(string)), true
+	return rawCachedDomain.(string), rawCachedRule.(constants.DnsType), true
 }
 
 func AddCachedDnsItem(ip, domain string, rule constants.DnsType) {
