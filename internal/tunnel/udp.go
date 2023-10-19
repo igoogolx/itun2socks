@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	udpQueue = make(chan conn.UdpConnContext, 200)
+	udpQueue = make(chan conn.UdpConnContext, 1024)
 )
 
 func UdpQueue() chan conn.UdpConnContext {
