@@ -3,16 +3,16 @@ package constants
 type RuleType string
 
 const (
-	DistributionBypass RuleType = "bypass"
-	DistributionProxy  RuleType = "proxy"
+	RuleBypass RuleType = "bypass"
+	RuleProxy  RuleType = "proxy"
 )
 
 type DnsType string
 
 const (
-	DistributionLocalDns  DnsType = "local"
-	DistributionRemoteDns DnsType = "remote"
-	DistributionBoostDns  DnsType = "boost"
+	LocalDns  DnsType = "local"
+	RemoteDns DnsType = "remote"
+	BoostDns  DnsType = "boost"
 )
 
 type RuleConfig string

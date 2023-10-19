@@ -60,8 +60,8 @@ func getNow(w http.ResponseWriter, r *http.Request) {
 	var err error
 	for range tick.C {
 		buf.Reset()
-		proxyUp, proxyDown := t.Now(constants.DistributionProxy)
-		directUp, directDown := t.Now(constants.DistributionBypass)
+		proxyUp, proxyDown := t.Now(constants.RuleProxy)
+		directUp, directDown := t.Now(constants.RuleBypass)
 		if err := json.NewEncoder(buf).Encode(Traffic{
 			TrafficItem{proxyUp, proxyDown},
 			TrafficItem{directUp, directDown},

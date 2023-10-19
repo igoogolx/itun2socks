@@ -15,11 +15,11 @@ var dnsRuleCache, _ = lru.New(4 * 1024)
 func GetCachedDnsItem(ip string) (string, constants.DnsType, bool) {
 	rawCachedDomain, ok := dnsDomainCache.Get(ip)
 	if !ok {
-		return "", constants.DistributionLocalDns, false
+		return "", constants.LocalDns, false
 	}
 	rawCachedRule, ok := dnsRuleCache.Get(ip)
 	if !ok {
-		return "", constants.DistributionLocalDns, false
+		return "", constants.LocalDns, false
 	}
 	return rawCachedDomain.(string), rawCachedRule.(constants.DnsType), true
 }
@@ -42,28 +42,28 @@ type Cache interface {
 
 func (c Config) GetDnsServerRule(ip string) (constants.RuleType, error) {
 	if strings.Contains(c.Dns.Remote.Address, ip) {
-		return constants.DistributionProxy, nil
+		return constants.RuleProxy, nil
 	}
-	return constants.DistributionBypass, fmt.Errorf("not found")
+	return constants.RuleBypass, fmt.Errorf("not found")
 }
 
 func (c Config) GetDnsRule(ip string) (constants.RuleType, error) {
-	result := constants.DistributionBypass
+	result := constants.RuleBypass
 	_, cachedRule, ok := GetCachedDnsItem(ip)
 	if ok {
-		if cachedRule == constants.DistributionLocalDns {
-			result = constants.DistributionBypass
+		if cachedRule == constants.LocalDns {
+			result = constants.RuleBypass
 		} else {
-			result = constants.DistributionProxy
+			result = constants.RuleProxy
 		}
 		return result, nil
 	}
-	return constants.DistributionBypass, fmt.Errorf("not found")
+	return constants.RuleBypass, fmt.Errorf("not found")
 }
 
 func (c Config) GetRule(ip string) constants.RuleType {
 
-	result := constants.DistributionProxy
+	result := constants.RuleProxy
 
 	defer func(latestIp string) {
 		domain := "unknown"
@@ -90,36 +90,36 @@ func (c Config) GetRule(ip string) constants.RuleType {
 
 	rule, err := c.RuleEngine.Match(ip)
 	if err == nil {
-		if constants.RuleType(rule.Policy()) == constants.DistributionBypass {
-			return constants.DistributionBypass
-		} else if constants.RuleType(rule.Policy()) == constants.DistributionProxy {
-			return constants.DistributionProxy
+		if constants.RuleType(rule.Policy()) == constants.RuleBypass {
+			return constants.RuleBypass
+		} else if constants.RuleType(rule.Policy()) == constants.RuleProxy {
+			return constants.RuleProxy
 		}
 	}
 
-	return constants.DistributionProxy
+	return constants.RuleProxy
 
 }
 
 func (c Config) GetDns(domain string) SubDnsDistribution {
-	result := constants.DistributionRemoteDns
+	result := constants.RemoteDns
 	if strings.Contains(c.Dns.Remote.Address, domain) {
-		result = constants.DistributionBoostDns
+		result = constants.BoostDns
 	} else {
 		var rule, err = c.RuleEngine.Match(domain)
 		if err == nil {
-			if constants.RuleType(rule.Policy()) == constants.DistributionBypass {
-				result = constants.DistributionLocalDns
-			} else if constants.RuleType(rule.Policy()) == constants.DistributionProxy {
-				result = constants.DistributionRemoteDns
+			if constants.RuleType(rule.Policy()) == constants.RuleBypass {
+				result = constants.LocalDns
+			} else if constants.RuleType(rule.Policy()) == constants.RuleProxy {
+				result = constants.RemoteDns
 			}
 		}
 	}
 
 	switch result {
-	case constants.DistributionLocalDns:
+	case constants.LocalDns:
 		return c.Dns.Local
-	case constants.DistributionRemoteDns:
+	case constants.RemoteDns:
 		return c.Dns.Remote
 	default:
 		return c.Dns.Boost

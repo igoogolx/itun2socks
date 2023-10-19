@@ -17,8 +17,8 @@ func UpdateProxy(remoteProxy C.Proxy) {
 	mux.Lock()
 	defer mux.Unlock()
 	proxies = make(map[constants.RuleType]C.Proxy)
-	proxies[constants.DistributionProxy] = remoteProxy
-	proxies[constants.DistributionBypass] = adapter.NewProxy(outbound.NewDirect())
+	proxies[constants.RuleProxy] = remoteProxy
+	proxies[constants.RuleBypass] = adapter.NewProxy(outbound.NewDirect())
 }
 
 func GetProxy(rule constants.RuleType) C.Proxy {

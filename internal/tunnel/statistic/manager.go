@@ -31,8 +31,8 @@ func init() {
 		},
 	}
 
-	go DefaultManager.handle(constants.DistributionProxy)
-	go DefaultManager.handle(constants.DistributionBypass)
+	go DefaultManager.handle(constants.RuleProxy)
+	go DefaultManager.handle(constants.RuleBypass)
 }
 
 type Statistic struct {
@@ -59,10 +59,10 @@ func (m *Manager) Leave(c tracker) {
 }
 
 func (m *Manager) getStatistic(rule constants.RuleType) *Statistic {
-	if rule == constants.DistributionProxy {
+	if rule == constants.RuleProxy {
 		return m.proxy
 	}
-	if rule == constants.DistributionBypass {
+	if rule == constants.RuleBypass {
 		return m.direct
 	}
 	return nil

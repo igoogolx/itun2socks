@@ -28,7 +28,7 @@ func NewDnsDistribution(
 	dd.Local = SubDnsDistribution{
 		Address: localDns,
 		Client:  localDnsClient,
-		Type:    constants.DistributionLocalDns,
+		Type:    constants.LocalDns,
 	}
 	remoteDns = remoteDns + "#" + tunInterfaceName
 	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunInterfaceName}, defaultInterfaceName)
@@ -38,13 +38,13 @@ func NewDnsDistribution(
 	dd.Remote = SubDnsDistribution{
 		Client:  remoteDnsClient,
 		Address: remoteDns,
-		Type:    constants.DistributionRemoteDns,
+		Type:    constants.RemoteDns,
 	}
 
 	dd.Boost = SubDnsDistribution{
 		Client:  boostDnsClient,
 		Address: bootDns,
-		Type:    constants.DistributionBoostDns,
+		Type:    constants.BoostDns,
 	}
 
 	cResolver.DefaultResolver = boostDnsClient
