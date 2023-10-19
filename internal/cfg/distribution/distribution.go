@@ -2,42 +2,15 @@ package distribution
 
 import (
 	"fmt"
-	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"strings"
 )
 
-var dnsDomainCache, _ = lru.New(4 * 1024)
-var dnsRuleCache, _ = lru.New(4 * 1024)
-
-func GetCachedDnsItem(ip string) (string, constants.DnsType, bool) {
-	rawCachedDomain, ok := dnsDomainCache.Get(ip)
-	if !ok {
-		return "", constants.LocalDns, false
-	}
-	rawCachedRule, ok := dnsRuleCache.Get(ip)
-	if !ok {
-		return "", constants.LocalDns, false
-	}
-	return rawCachedDomain.(string), rawCachedRule.(constants.DnsType), true
-}
-
-func AddCachedDnsItem(ip, domain string, rule constants.DnsType) {
-	dnsDomainCache.Add(ip, domain)
-	dnsRuleCache.Add(ip, rule)
-}
-
 type Config struct {
 	Dns        DnsDistribution
 	RuleEngine *ruleEngine.Engine
-	dnsTable   Cache
-}
-
-type Cache interface {
-	Get(key interface{}) (interface{}, bool)
-	Add(key interface{}, val interface{}) bool
 }
 
 func (c Config) GetDnsServerRule(ip string) (constants.RuleType, error) {
