@@ -9,7 +9,7 @@ import (
 type Rule interface {
 	Match(value string) bool
 	Value() string
-	Policy() string
+	Policy() constants.RuleType
 	Type() constants.RuleConfig
 }
 

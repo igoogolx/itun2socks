@@ -90,11 +90,7 @@ func (c Config) GetRule(ip string) constants.RuleType {
 
 	rule, err := c.RuleEngine.Match(ip)
 	if err == nil {
-		if constants.RuleType(rule.Policy()) == constants.RuleBypass {
-			return constants.RuleBypass
-		} else if constants.RuleType(rule.Policy()) == constants.RuleProxy {
-			return constants.RuleProxy
-		}
+		return rule.Policy()
 	}
 
 	return constants.RuleProxy
@@ -108,9 +104,9 @@ func (c Config) GetDns(domain string) SubDnsDistribution {
 	} else {
 		var rule, err = c.RuleEngine.Match(domain)
 		if err == nil {
-			if constants.RuleType(rule.Policy()) == constants.RuleBypass {
+			if rule.Policy() == constants.RuleBypass {
 				result = constants.LocalDns
-			} else if constants.RuleType(rule.Policy()) == constants.RuleProxy {
+			} else if rule.Policy() == constants.RuleProxy {
 				result = constants.RemoteDns
 			}
 		}

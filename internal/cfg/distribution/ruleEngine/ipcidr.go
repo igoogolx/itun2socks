@@ -22,8 +22,8 @@ func (i IpCidr) Match(value string) bool {
 	return i.prefix.Contains(ip)
 }
 
-func (i IpCidr) Policy() string {
-	return i.policy
+func (i IpCidr) Policy() constants.RuleType {
+	return constants.RuleType(i.policy)
 }
 
 func (i IpCidr) Value() string {
