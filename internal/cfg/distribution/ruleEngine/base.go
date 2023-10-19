@@ -3,12 +3,14 @@ package ruleEngine
 import (
 	"fmt"
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
 type Rule interface {
 	Match(value string) bool
 	Value() string
 	Policy() string
+	Type() constants.RuleConfig
 }
 
 type Engine struct {
@@ -30,8 +32,8 @@ func (e *Engine) Match(value string) (Rule, error) {
 	return nil, fmt.Errorf("not found")
 }
 
-func New(name string) (*Engine, error) {
-	rules, err := Parse(name)
+func New(name string, extraRules []string) (*Engine, error) {
+	rules, err := Parse(name, extraRules)
 	if err != nil {
 		return nil, err
 	}

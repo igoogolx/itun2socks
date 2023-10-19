@@ -3,10 +3,8 @@ package dns
 import (
 	"context"
 	"fmt"
-	"github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/conn"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
@@ -17,7 +15,7 @@ import (
 )
 
 type Matcher interface {
-	GetDns(question string) (resolver.Resolver, constants.DnsType)
+	GetDns(question string) distribution.SubDnsDistribution
 }
 
 var defaultMatcher Matcher
@@ -93,16 +91,16 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsClient, dnsRule := getMatcher().GetDns(question)
-	res, err := dnsClient.ExchangeContext(ctx, dnsMessage)
+	dnsClient := getMatcher().GetDns(question)
+	res, err := dnsClient.Client.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
 	}
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
-			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule)
-			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
+			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsClient.Type)
+			distribution.AddCachedDnsItem(resIp.String(), question, dnsClient.Type)
 		}
 	}
 	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, result: %v"), question, resIps)

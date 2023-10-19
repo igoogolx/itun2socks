@@ -20,7 +20,7 @@ func trimArr(arr []string) (r []string) {
 	return
 }
 
-func GetRules() ([]string, error) {
+func GetRuleIds() ([]string, error) {
 	ruleFiles, err := data.ReadDir("rules")
 	var rules []string
 	if err != nil {
@@ -32,37 +32,53 @@ func GetRules() ([]string, error) {
 	return rules, err
 }
 
-func Parse(name string) ([]Rule, error) {
-	items, err := readFile("rules/" + name)
+func Parse(name string, extraRules []string) ([]Rule, error) {
+	var err error
+	var rules []Rule
+	builtInItems, err := readFile("rules/" + name)
 	if err != nil {
 		return nil, err
 	}
-	var rules []Rule
-	for _, line := range items {
-		chunks := trimArr(strings.Split(strings.TrimSpace(line), ","))
-		if len(chunks) != 3 {
-			break
+	for _, line := range extraRules {
+		rule, err := parseLine(line)
+		if err == nil {
+			rules = append(rules, rule)
 		}
-		ruleType := constants.RuleConfig(chunks[0])
-
-		var rule Rule
-		var err error
-		switch ruleType {
-		case constants.RuleIpCidr:
-			rule, err = NewIpCidrRule(chunks[1], chunks[2])
-			break
-		case constants.RuleDomain:
-			rule, err = NewDomainRule(chunks[1], chunks[2])
-			break
-		default:
-			err = fmt.Errorf("rule type not match: %v", ruleType)
-
-		}
+	}
+	for _, line := range builtInItems {
+		rule, err := parseLine(line)
 		if err == nil {
 			rules = append(rules, rule)
 		}
 	}
 	return rules, nil
+}
+
+func parseLine(line string) (Rule, error) {
+	chunks := trimArr(strings.Split(strings.TrimSpace(line), ","))
+	if len(chunks) != 3 {
+		return nil, fmt.Errorf("invald rule line")
+	}
+	return ParseItem(chunks[0], chunks[1], chunks[2])
+
+}
+
+func ParseItem(rawRuleType, value, policy string) (Rule, error) {
+	ruleType := constants.RuleConfig(rawRuleType)
+
+	var rule Rule
+	var err error
+	switch ruleType {
+	case constants.RuleIpCidr:
+		rule, err = NewIpCidrRule(value, policy)
+		break
+	case constants.RuleDomain:
+		rule, err = NewDomainRule(value, policy)
+		break
+	default:
+		err = fmt.Errorf("rule type not match: %v", ruleType)
+	}
+	return rule, err
 }
 
 func readFile(path string) ([]string, error) {

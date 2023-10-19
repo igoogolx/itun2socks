@@ -1,10 +1,17 @@
 package ruleEngine
 
-import "net/netip"
+import (
+	"github.com/igoogolx/itun2socks/internal/constants"
+	"net/netip"
+)
 
 type IpCidr struct {
 	prefix netip.Prefix
 	policy string
+}
+
+func (i IpCidr) Type() constants.RuleConfig {
+	return constants.RuleIpCidr
 }
 
 func (i IpCidr) Match(value string) bool {

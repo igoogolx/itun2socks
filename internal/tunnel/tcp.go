@@ -2,7 +2,7 @@ package tunnel
 
 import (
 	"github.com/igoogolx/itun2socks/internal/conn"
-	statistic2 "github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
@@ -34,7 +34,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		log.Warnln(log.FormatLog(log.TcpPrefix, "fail to get tcp conn, err: %v, rule: %v, remote ip: %v"), err, ct.Rule(), ct.Metadata().DstIP)
 		return
 	}
-	remoteConn = statistic2.NewTCPTracker(remoteConn, statistic2.DefaultManager, ct.Metadata(), ct.Rule())
+	remoteConn = statistic.NewTCPTracker(remoteConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
