@@ -14,12 +14,12 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/golang-lru v1.0.2
 	github.com/miekg/dns v1.1.55
-	github.com/sagernet/sing v0.2.12
-	github.com/sagernet/sing-tun v0.1.14
+	github.com/sagernet/sing v0.2.14
+	github.com/sagernet/sing-tun v0.1.15
 	github.com/sirupsen/logrus v1.9.3
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	go.uber.org/atomic v1.11.0
-	golang.org/x/sys v0.12.0
+	golang.org/x/sys v0.13.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
@@ -48,10 +48,10 @@ require (
 	github.com/vishvananda/netlink v1.2.1-beta.2.0.20230420174744-55c8b9515a01 // indirect
 	github.com/vishvananda/netns v0.0.0-20211101163701-50045581ed74 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
-	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.16.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
