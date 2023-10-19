@@ -11,8 +11,8 @@ type Domain struct {
 	policy  string
 }
 
-func (d Domain) Policy() constants.RuleConfig {
-	return constants.RuleConfig(d.policy)
+func (d Domain) Policy() constants.RuleType {
+	return constants.RuleType(d.policy)
 }
 
 func (d Domain) Type() constants.RuleConfig {
