@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	tcpQueue = make(chan conn.TcpConnContext, 1024)
+	tcpQueue = make(chan conn.TcpConnContext, 200)
 )
 
 func TcpQueue() chan conn.TcpConnContext {
