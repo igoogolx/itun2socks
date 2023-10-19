@@ -104,6 +104,7 @@ func New(
 	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (Config, error) {
+	ResetCache()
 	rEngine, err := ruleEngine.New(ruleId, rules)
 	if err != nil {
 		return Config{}, err

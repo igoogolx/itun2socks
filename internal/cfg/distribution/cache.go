@@ -8,6 +8,11 @@ import (
 var dnsDomainCache, _ = lru.New(4 * 1024)
 var dnsRuleCache, _ = lru.New(4 * 1024)
 
+func ResetCache() {
+	dnsDomainCache.Purge()
+	dnsRuleCache.Purge()
+}
+
 func GetCachedDnsItem(ip string) (string, constants.DnsType, bool) {
 	rawCachedDomain, ok := dnsDomainCache.Get(ip)
 	if !ok {
