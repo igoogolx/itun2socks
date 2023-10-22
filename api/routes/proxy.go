@@ -253,7 +253,7 @@ func addProxiesFromClashUrl(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	newProxies, err := configuration.AddProxies(proxies)
+	newProxies, err := configuration.AddProxies(proxies, req["url"])
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))

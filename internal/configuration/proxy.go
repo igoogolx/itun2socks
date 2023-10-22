@@ -86,11 +86,20 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 	return nil
 }
 
-func AddProxies(proxies []map[string]interface{}) ([]map[string]interface{}, error) {
+func AddProxies(proxies []map[string]interface{}, clashYamlUrl string) ([]map[string]interface{}, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
 	}
+
+	newProxy := make([]map[string]interface{}, 0)
+	for _, v := range data.Proxy {
+		if v["clashYamlUrl"] != clashYamlUrl {
+			newProxy = append(newProxy, v)
+		}
+	}
+	data.Proxy = newProxy
+
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
@@ -102,6 +111,7 @@ func AddProxies(proxies []map[string]interface{}) ([]map[string]interface{}, err
 			return nil, err
 		}
 		proxy["id"] = id.String()
+		proxy["clashYamlUrl"] = clashYamlUrl
 		data.Proxy = append(data.Proxy, proxy)
 	}
 
