@@ -66,13 +66,10 @@ func Write(c Config) error {
 		return fmt.Errorf("fail to deep copy config, err:%v", err)
 	}
 	defaultConfig = &copiedConfig
-
-	go func() {
-		err := writeFile(copiedConfig)
-		if err != nil {
-			log.Errorln(log.FormatLog(log.ConfigurationPrefix, "fail to write file: %v"), err)
-		}
-	}()
+	err = writeFile(copiedConfig)
+	if err != nil {
+		return fmt.Errorf("fail to write file: %v", err)
+	}
 	return nil
 }
 
