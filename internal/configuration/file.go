@@ -107,7 +107,11 @@ func readFile() (*Config, error) {
 	}
 	err = json.Unmarshal(data, c)
 	if err != nil {
-		return nil, fmt.Errorf("fail to parse config file, path:%v, err:%v", configFilePath.Load(), err)
+		log.Errorln("fail to parse config file, path:%v, err:%v, using default file", configFilePath.Load(), err)
+		err = json.Unmarshal(defaultConfigContent, c)
+		if err != nil {
+			return nil, fmt.Errorf("fail to parse defalut config file: %v", err)
+		}
 	}
 	return c, nil
 }
