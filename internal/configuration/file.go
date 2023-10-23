@@ -7,80 +7,47 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"go.uber.org/atomic"
 	"os"
-	"reflect"
 	"sync"
 )
 
 var mux sync.RWMutex
-var defaultConfig *Config
+var fileMutex sync.Mutex
+var configFilePath = atomic.NewString("")
 
-func deepCopy(v interface{}) (interface{}, error) {
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	vptr := reflect.New(reflect.TypeOf(v))
-	err = json.Unmarshal(data, vptr.Interface())
-	if err != nil {
-		return nil, err
-	}
-	return vptr.Elem().Interface(), err
-}
-
-func deepCopyConfig(c Config) (Config, error) {
-	copiedConfig, err := deepCopy(c)
-	if err != nil {
-		return Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
-	}
-	result, ok := copiedConfig.(Config)
-	if !ok {
-		return Config{}, fmt.Errorf("invald copied config, err:%v", err)
-	}
-
-	return result, nil
-}
+//go:embed assets/config.json
+var defaultConfigContent []byte
 
 func Read() (Config, error) {
 	mux.RLock()
 	defer mux.RUnlock()
 	var err error
-	if defaultConfig == nil {
-		defaultConfig, err = readFile()
-		if err != nil {
-			return Config{}, err
-		}
+	config, err := readFile()
+	if err != nil {
+		return Config{}, err
 	}
-	copiedConfig, err := deepCopyConfig(*defaultConfig)
 	if err != nil {
 		return Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
 	}
-	return copiedConfig, nil
+	return *config, nil
 }
 
 func Write(c Config) error {
 	mux.Lock()
 	defer mux.Unlock()
-	copiedConfig, err := deepCopyConfig(c)
-	if err != nil {
-		return fmt.Errorf("fail to deep copy config, err:%v", err)
-	}
-	defaultConfig = &copiedConfig
-	err = writeFile(copiedConfig)
+	err := writeFile(c)
 	if err != nil {
 		return fmt.Errorf("fail to write file: %v", err)
 	}
 	return nil
 }
 
-var fileMutex sync.Mutex
-var configFilePath = atomic.NewString("")
-
 func SetConfigFilePath(path string) {
 	configFilePath.Store(path)
 }
 
 func Reset() error {
+	mux.Lock()
+	defer mux.Unlock()
 	fileMutex.Lock()
 	defer fileMutex.Unlock()
 	return write(defaultConfigContent)
@@ -89,9 +56,6 @@ func Reset() error {
 func GetConfigFilePath() (string, error) {
 	return configFilePath.Load(), nil
 }
-
-//go:embed assets/config.json
-var defaultConfigContent []byte
 
 func readFile() (*Config, error) {
 	fileMutex.Lock()
