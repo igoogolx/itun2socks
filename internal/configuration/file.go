@@ -11,7 +11,6 @@ import (
 )
 
 var mux sync.RWMutex
-var fileMutex sync.Mutex
 var configFilePath = atomic.NewString("")
 
 //go:embed assets/config.json
@@ -41,16 +40,14 @@ func Write(c Config) error {
 	return nil
 }
 
-func SetConfigFilePath(path string) {
-	configFilePath.Store(path)
-}
-
 func Reset() error {
 	mux.Lock()
 	defer mux.Unlock()
-	fileMutex.Lock()
-	defer fileMutex.Unlock()
 	return write(defaultConfigContent)
+}
+
+func SetConfigFilePath(path string) {
+	configFilePath.Store(path)
 }
 
 func GetConfigFilePath() (string, error) {
@@ -58,8 +55,6 @@ func GetConfigFilePath() (string, error) {
 }
 
 func readFile() (*Config, error) {
-	fileMutex.Lock()
-	defer fileMutex.Unlock()
 	if !fileExists(configFilePath.Load()) {
 		err := write(defaultConfigContent)
 		if err != nil {
@@ -84,21 +79,11 @@ func readFile() (*Config, error) {
 }
 
 func writeFile(config Config) error {
-	fileMutex.Lock()
-	defer fileMutex.Unlock()
 	buf, err := json.MarshalIndent(config, "", " ")
 	if err != nil {
 		return fmt.Errorf("fail to marchal json, err:%v", err)
 	}
 	return write(buf)
-}
-
-func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !info.IsDir()
 }
 
 func write(data []byte) error {
@@ -117,4 +102,12 @@ func write(data []byte) error {
 		return fmt.Errorf("fail to write file:%v, err:%v", configFilePath.Load(), err)
 	}
 	return nil
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
