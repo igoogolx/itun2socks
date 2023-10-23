@@ -83,6 +83,12 @@ func SetConfigFilePath(path string) {
 	configFilePath.Store(path)
 }
 
+func Reset() error {
+	fileMutex.Lock()
+	defer fileMutex.Unlock()
+	return write(defaultConfigContent)
+}
+
 func GetConfigFilePath() (string, error) {
 	return configFilePath.Load(), nil
 }

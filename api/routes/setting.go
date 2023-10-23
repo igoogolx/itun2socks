@@ -19,6 +19,7 @@ func settingRouter() http.Handler {
 	r.Get("/executable-path", getExecutablePath)
 	r.Get("/open-config-file-dir", openConfigDir)
 	r.Put("/", setSetting)
+	r.Put("/reset-config", resetConfig)
 	return r
 }
 
@@ -103,4 +104,14 @@ func openConfigDir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.JSON(w, r, render.M{})
+}
+
+func resetConfig(w http.ResponseWriter, r *http.Request) {
+	err := configuration2.Reset()
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	render.NoContent(w, r)
 }
