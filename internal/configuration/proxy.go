@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
+	"slices"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {
@@ -35,15 +36,17 @@ func GetProxies() ([]map[string]interface{}, error) {
 	return data.Proxy, nil
 }
 
-func DeleteProxy(id string) error {
+func DeleteProxies(ids []string) error {
 	data, err := Read()
 	if err != nil {
 		return err
 	}
 	newProxy := make([]map[string]interface{}, 0)
 	for _, v := range data.Proxy {
-		if v["id"] != id {
-			newProxy = append(newProxy, v)
+		if id, ok := v["id"].(string); ok && len(id) != 0 {
+			if !slices.Contains(ids, id) {
+				newProxy = append(newProxy, v)
+			}
 		}
 	}
 	data.Proxy = newProxy

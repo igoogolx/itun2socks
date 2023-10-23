@@ -29,8 +29,8 @@ func proxyRouter() http.Handler {
 	r.Get("/cur-proxy", getCurProxy)
 	r.Put("/", addProxy)
 	r.Put("/clash-url", addProxiesFromClashUrl)
-	r.Delete("/", deleteAllProxies)
-	r.Delete("/{proxyId}", deleteProxy)
+	r.Delete("/all", deleteAllProxies)
+	r.Delete("/", deleteProxies)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
@@ -218,9 +218,14 @@ func addProxy(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, render.M{"id": id})
 }
 
-func deleteProxy(w http.ResponseWriter, r *http.Request) {
-	proxyId := chi.URLParam(r, "proxyId")
-	err := configuration.DeleteProxy(proxyId)
+func deleteProxies(w http.ResponseWriter, r *http.Request) {
+	var req map[string][]string
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	err := configuration.DeleteProxies(req["ids"])
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -245,7 +250,6 @@ func addProxiesFromClashUrl(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
 		return
-
 	}
 	proxies, err := ParseProxiesFromClashUrl(req["url"])
 	if err != nil {
