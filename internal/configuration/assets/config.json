@@ -36,6 +36,7 @@
      "hijackDns": {
       "enabled": true,
       "NetworkService": "Wi-Fi"
-    }
+    },
+    "language": "en-US"
   }
 }
