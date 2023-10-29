@@ -3,6 +3,7 @@
 <br />
 <div align="center">
 
+[![Report][report-shield]][report-url]
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -27,6 +28,8 @@ The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux
 </div>
 
 
+[report-shield]: https://goreportcard.com/badge/github.com/igoogolx/itun2socks
+[report-url]: https://goreportcard.com/report/github.com/igoogolx/itun2socks
 [contributors-shield]: https://img.shields.io/github/contributors/igoogolx/itun2socks.svg
 [contributors-url]: https://github.com/igoogolx/itun2socks/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/igoogolx/itun2socks.svg
