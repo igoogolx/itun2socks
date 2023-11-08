@@ -88,7 +88,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	metadata, err := tunnel.CreateMetadata("0:0:0:0:0", "8.8.8.8:53", C.UDP)
+	metadata, err := tunnel.CreateMetadata("0:0:0:0", "8.8.8.8:53", C.UDP)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
