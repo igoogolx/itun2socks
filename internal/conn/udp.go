@@ -3,7 +3,6 @@ package conn
 import (
 	"context"
 	"github.com/Dreamacro/clash/component/dialer"
-	"github.com/Dreamacro/clash/constant"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/gofrs/uuid/v5"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -24,7 +23,7 @@ type UdpConnContext struct {
 	wg       *sync.WaitGroup
 	ctx      context.Context
 	id       uuid.UUID
-	metadata *constant.Metadata
+	metadata *C.Metadata
 	conn     UdpConn
 	rule     constants.RuleType
 }
@@ -45,7 +44,7 @@ func (u *UdpConnContext) ID() uuid.UUID {
 	return u.id
 }
 
-func (u *UdpConnContext) Metadata() *constant.Metadata {
+func (u *UdpConnContext) Metadata() *C.Metadata {
 	return u.metadata
 }
 
@@ -53,7 +52,7 @@ func (u *UdpConnContext) Conn() UdpConn {
 	return u.conn
 }
 
-func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *constant.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
+func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 	id, _ := uuid.NewV4()
 	rule := GetMatcher().GetRule(metadata.DstIP.String())
 
