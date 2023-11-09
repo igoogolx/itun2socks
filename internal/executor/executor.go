@@ -46,7 +46,7 @@ func New() (*Client, error) {
 		return nil, err
 	}
 
-	newLocalServer := localserver.New(config.LocalServer.HttpAddr)
+	newLocalServer := localserver.NewListener(config.LocalServer.HttpAddr)
 
 	updateCfg(*config)
 	return &Client{

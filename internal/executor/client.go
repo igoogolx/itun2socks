@@ -25,7 +25,7 @@ type Client struct {
 	sync.RWMutex
 	tun         sTun.Tun
 	stack       sTun.Stack
-	localserver localserver.Server
+	localserver localserver.Listener
 	config      *cfg.Config
 }
 
@@ -80,7 +80,7 @@ func (c *Client) Close() error {
 			return err
 		}
 	}
-	if err = c.localserver.Stop(); err != nil {
+	if err = c.localserver.Close(); err != nil {
 		return err
 	}
 	return nil

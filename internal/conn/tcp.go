@@ -37,15 +37,23 @@ func (t *TcpConnContext) Conn() net.Conn {
 	return t.conn
 }
 
-func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) *TcpConnContext {
+func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) (*TcpConnContext, error) {
 	rule := GetMatcher().GetRule(metadata.DstIP.String())
+	if len(metadata.Host) != 0 {
+		addrs, err := net.LookupIP(metadata.Host)
+		if err != nil {
+			return nil, err
+		}
+		metadata.Host = ""
+		metadata.DstIP = addrs[0]
+	}
 	return &TcpConnContext{
 		wg,
 		ctx,
 		metadata,
 		conn,
 		rule,
-	}
+	}, nil
 
 }
 

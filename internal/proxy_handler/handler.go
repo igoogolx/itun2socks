@@ -59,7 +59,10 @@ func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metada
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
+	ct, err := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
+	if err != nil {
+		return err
+	}
 	c.tcpIn <- *ct
 	return nil
 }
