@@ -6,7 +6,6 @@ toolchain go1.21.0
 
 require (
 	github.com/Dreamacro/clash v1.18.0
-	github.com/elazarl/goproxy v0.0.0-20231017160920-1fe6677f404d
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
