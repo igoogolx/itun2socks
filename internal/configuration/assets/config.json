@@ -7,6 +7,7 @@
     "rule": "proxy_all"
   },
   "setting": {
+    "mode": "tun",
     "dns": {
       "boost": {
         "type": "builtIn",
@@ -23,10 +24,8 @@
     },
     "defaultInterface": "",
     "localServer": {
-      "http": {
         "port": 1090,
-        "enabled": false
-      }
+        "allowLan": false
     },
     "autoMode": {
       "enabled": false,
