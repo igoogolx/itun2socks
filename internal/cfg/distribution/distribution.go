@@ -41,9 +41,13 @@ func (c Config) GetRule(metadata C.Metadata) constants.RuleType {
 		client := c.GetDns(metadata.Host)
 		if client.Type == constants.LocalDns {
 			return constants.RuleBypass
+		} else {
+			return constants.RuleBypass
 		}
+
 	}
 
+	// Tun proxy
 	ip := metadata.DstIP.String()
 
 	result := constants.RuleProxy
