@@ -36,6 +36,7 @@ func (c Config) GetDnsRule(ip string) (constants.RuleType, error) {
 }
 
 func (c Config) GetRule(metadata C.Metadata) constants.RuleType {
+	// System proxy
 	if metadata.Host != "" {
 		client := c.GetDns(metadata.Host)
 		if client.Type == constants.LocalDns {
