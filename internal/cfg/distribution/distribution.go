@@ -2,6 +2,7 @@ package distribution
 
 import (
 	"fmt"
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -34,7 +35,15 @@ func (c Config) GetDnsRule(ip string) (constants.RuleType, error) {
 	return constants.RuleBypass, fmt.Errorf("not found")
 }
 
-func (c Config) GetRule(ip string) constants.RuleType {
+func (c Config) GetRule(metadata C.Metadata) constants.RuleType {
+	if metadata.Host != "" {
+		client := c.GetDns(metadata.Host)
+		if client.Type == constants.LocalDns {
+			return constants.RuleBypass
+		}
+	}
+
+	ip := metadata.DstIP.String()
 
 	result := constants.RuleProxy
 

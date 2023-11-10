@@ -1,12 +1,13 @@
 package conn
 
 import (
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"sync"
 )
 
 type Matcher interface {
-	GetRule(ip string) constants.RuleType
+	GetRule(metadata C.Metadata) constants.RuleType
 }
 
 var defaultMatcher Matcher
