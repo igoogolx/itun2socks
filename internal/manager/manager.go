@@ -8,14 +8,8 @@ import (
 	"sync"
 )
 
-type Client interface {
-	Start() error
-	Close() error
-	RuntimeDetail() (interface{}, error)
-}
-
 var (
-	client Client
+	client executor.Client
 	mux    sync.Mutex
 )
 
@@ -26,7 +20,7 @@ func Start() error {
 	if GetIsStarted() {
 		return errors.New("the client has started")
 	}
-	client, err = executor.NewSysProxy()
+	client, err = executor.New()
 	if err != nil {
 		return err
 	}

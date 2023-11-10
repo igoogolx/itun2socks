@@ -36,18 +36,6 @@ func (c Config) getIpRuleFromDns(ip string) (constants.RuleType, error) {
 }
 
 func (c Config) GetConnRule(metadata C.Metadata) constants.RuleType {
-	// System proxy
-	if metadata.Host != "" {
-		client := c.GetDns(metadata.Host)
-		if client.Type == constants.LocalDns {
-			return constants.RuleBypass
-		} else {
-			return constants.RuleBypass
-		}
-
-	}
-
-	// Tun proxy
 	ip := metadata.DstIP.String()
 
 	result := constants.RuleProxy
@@ -84,7 +72,7 @@ func (c Config) GetConnRule(metadata C.Metadata) constants.RuleType {
 
 }
 
-func (c Config) GetDnsRule(domain string) (constants.DnsType, error) {
+func (c Config) GetDnsTypeFromRuleEngine(domain string) (constants.DnsType, error) {
 	var rule, err = c.RuleEngine.Match(domain)
 	if err != nil {
 		return constants.LocalDns, err
@@ -97,28 +85,20 @@ func (c Config) GetDnsRule(domain string) (constants.DnsType, error) {
 	return constants.LocalDns, fmt.Errorf("dns rule not found")
 }
 
-func (c Config) GetDns(domain string) SubDnsDistribution {
+func (c Config) GetDnsType(domain string) constants.DnsType {
 	result := constants.RemoteDns
 	if strings.Contains(c.Dns.Remote.Address, domain) {
 		result = constants.BoostDns
 	} else {
-		var rule, err = c.GetDnsRule(domain)
+		var rule, err = c.GetDnsTypeFromRuleEngine(domain)
 		if err == nil {
 			result = rule
 		}
 	}
-
-	switch result {
-	case constants.LocalDns:
-		return c.Dns.Local
-	case constants.RemoteDns:
-		return c.Dns.Remote
-	default:
-		return c.Dns.Boost
-	}
+	return result
 }
 
-func New(
+func NewTun(
 	boostDns string,
 	remoteDns string,
 	localDns string,

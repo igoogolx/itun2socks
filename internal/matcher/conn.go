@@ -1,4 +1,4 @@
-package conn
+package matcher
 
 import (
 	C "github.com/Dreamacro/clash/constant"
@@ -6,21 +6,21 @@ import (
 	"sync"
 )
 
-type Matcher interface {
+type Conn interface {
 	GetConnRule(metadata C.Metadata) constants.RuleType
 }
 
-var defaultMatcher Matcher
+var defaultConnMatcher Conn
 var matcherMux sync.RWMutex
 
-func UpdateMatcher(c Matcher) {
+func UpdateConnMatcher(c Conn) {
 	matcherMux.Lock()
 	defer matcherMux.Unlock()
-	defaultMatcher = c
+	defaultConnMatcher = c
 }
 
-func GetMatcher() Matcher {
+func GetConnMatcher() Conn {
 	matcherMux.RLock()
 	defer matcherMux.RUnlock()
-	return defaultMatcher
+	return defaultConnMatcher
 }

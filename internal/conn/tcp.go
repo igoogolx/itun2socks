@@ -5,6 +5,8 @@ import (
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/matcher"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
 	"sync"
 )
@@ -38,7 +40,8 @@ func (t *TcpConnContext) Conn() net.Conn {
 }
 
 func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) (*TcpConnContext, error) {
-	rule := GetMatcher().GetConnRule(*metadata)
+	rule := matcher.GetConnMatcher().GetConnRule(*metadata)
+	log.Infoln("des: %v, rule: %v", metadata.String(), rule)
 	return &TcpConnContext{
 		wg,
 		ctx,

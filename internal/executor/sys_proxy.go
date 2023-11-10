@@ -14,7 +14,7 @@ type SysProxyDetail struct {
 type SystemProxyClient struct {
 	sync.RWMutex
 	localserver localserver.Listener
-	config      *cfg.Config
+	config      *cfg.SystemProxyConfig
 	off         func() error
 }
 
