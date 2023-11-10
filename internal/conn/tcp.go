@@ -39,19 +39,13 @@ func (t *TcpConnContext) Conn() net.Conn {
 }
 
 func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) (*TcpConnContext, error) {
+	rule := GetMatcher().GetRule(metadata.DstIP.String())
 	if len(metadata.Host) != 0 {
 		client := dns.GetMatcher().GetDns(metadata.Host)
 		if client.Type == constants.LocalDns {
-			addrs, err := net.LookupIP(metadata.Host)
-			if err != nil {
-				return nil, err
-			}
-			metadata.Host = ""
-			metadata.DstIP = addrs[0]
+			rule = constants.RuleBypass
 		}
-
 	}
-	rule := GetMatcher().GetRule(metadata.DstIP.String())
 	return &TcpConnContext{
 		wg,
 		ctx,

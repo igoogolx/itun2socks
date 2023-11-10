@@ -12,7 +12,9 @@ type Cfg struct {
 func New(config configuration.LocalServer) Cfg {
 	cfg := Cfg{}
 	if config.Http.Enabled {
-		cfg.HttpAddr = ":" + strconv.Itoa(config.Http.Port)
+		cfg.HttpAddr = "127.0.0.1:" + strconv.Itoa(config.Http.Port)
+	} else {
+		cfg.HttpAddr = "127.0.0.1:" + strconv.Itoa(config.Http.Port)
 	}
 	return cfg
 }

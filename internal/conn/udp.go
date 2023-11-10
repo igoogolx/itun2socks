@@ -48,20 +48,14 @@ func (u *UdpConnContext) Conn() UdpConn {
 }
 
 func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
-
+	rule := GetMatcher().GetRule(metadata.DstIP.String())
 	if len(metadata.Host) != 0 {
 		client := dns.GetMatcher().GetDns(metadata.Host)
 		if client.Type == constants.LocalDns {
-			addrs, err := net.LookupIP(metadata.Host)
-			if err != nil {
-				return nil, err
-			}
-			metadata.Host = ""
-			metadata.DstIP = addrs[0]
+			rule = constants.RuleBypass
 		}
 	}
 
-	rule := GetMatcher().GetRule(metadata.DstIP.String())
 	return &UdpConnContext{
 		wg,
 		ctx,
