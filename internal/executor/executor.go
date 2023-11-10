@@ -46,7 +46,7 @@ func NewTun() (*TunClient, error) {
 		return nil, err
 	}
 
-	newLocalServer := localserver.NewListener(config.LocalServer.HttpAddr)
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 
 	updateCfg(*config)
 	return &TunClient{
@@ -62,7 +62,7 @@ func NewSysProxy() (*SystemProxyClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	newLocalServer := localserver.NewListener(config.LocalServer.HttpAddr)
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 	updateCfg(*config)
 	return &SystemProxyClient{
 		localserver: newLocalServer,

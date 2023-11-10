@@ -30,10 +30,8 @@ type DnsServer struct {
 }
 
 type LocalServer struct {
-	Http struct {
-		Port    int  `json:"port"`
-		Enabled bool `json:"enabled"`
-	} `json:"http"`
+	Port     int  `json:"port"`
+	AllowLan bool `json:"allowLan"`
 }
 
 type AutoMode struct {

@@ -6,15 +6,15 @@ import (
 )
 
 type Cfg struct {
-	HttpAddr string
+	Addr string
 }
 
 func New(config configuration.LocalServer) Cfg {
 	cfg := Cfg{}
-	if config.Http.Enabled {
-		cfg.HttpAddr = "127.0.0.1:" + strconv.Itoa(config.Http.Port)
+	if config.AllowLan {
+		cfg.Addr = "0.0.0.0:" + strconv.Itoa(config.Port)
 	} else {
-		cfg.HttpAddr = "127.0.0.1:" + strconv.Itoa(config.Http.Port)
+		cfg.Addr = "127.0.0.1:" + strconv.Itoa(config.Port)
 	}
 	return cfg
 }
