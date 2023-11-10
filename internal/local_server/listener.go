@@ -86,7 +86,7 @@ func init() {
 	go process()
 }
 
-func (l Listener) Start() error {
+func (l *Listener) Start() error {
 	tcpListener, err := mixed.New(l.Addr, tcpIn)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (l Listener) Start() error {
 	return nil
 }
 
-func (l Listener) Close() error {
+func (l *Listener) Close() error {
 	err := l.udpListener.Close()
 	if err != nil {
 		return err

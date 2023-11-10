@@ -2,10 +2,14 @@ package executor
 
 import (
 	"context"
+	"fmt"
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg"
+	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
+	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
@@ -14,12 +18,18 @@ import (
 	"time"
 )
 
-func New() (*Client, error) {
+type Client interface {
+	Start() error
+	Close() error
+	RuntimeDetail() (interface{}, error)
+}
+
+func newTun() (Client, error) {
 	err := network_iface.StartMonitor()
 	if err != nil {
 		return nil, err
 	}
-	config, err := cfg.New(network_iface.GetDefaultInterfaceName())
+	config, err := cfg.NewTun(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err
 	}
@@ -46,10 +56,14 @@ func New() (*Client, error) {
 		return nil, err
 	}
 
-	newLocalServer := localserver.NewListener(config.LocalServer.HttpAddr)
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 
-	updateCfg(*config)
-	return &Client{
+	matcher.UpdateConnMatcher(config.Rule)
+	matcher.UpdateDnsMatcher(config.Rule)
+	conn.UpdateProxy(config.Proxy)
+	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client, config.Rule.Dns.Boost.Client)
+
+	return &TunClient{
 		stack:       stack,
 		tun:         tun,
 		localserver: newLocalServer,
@@ -57,20 +71,37 @@ func New() (*Client, error) {
 	}, nil
 }
 
-func updateCfg(config cfg.Config) {
-	updateMatcher(config)
-	updateConn(config)
-	updateDns(config)
+func newSysProxy() (Client, error) {
+	config, err := cfg.NewSystemProxy()
+	if err != nil {
+		return nil, err
+	}
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
+	matcher.UpdateConnMatcher(config.Rule)
+	matcher.UpdateDnsMatcher(config.Rule)
+	conn.UpdateProxy(config.Proxy)
+	return &SystemProxyClient{
+		localserver: newLocalServer,
+		config:      config,
+	}, nil
 }
 
-func updateMatcher(c cfg.Config) {
-	conn.UpdateMatcher(c.Rule)
+func New() (Client, error) {
+	rawConfig, err := configuration.Read()
+	if err != nil {
+		return nil, err
+	}
+	if rawConfig.Setting.Mode == "tun" {
+		return newTun()
+	}
+	if rawConfig.Setting.Mode == "system" {
+		return newSysProxy()
+	}
+	return nil, fmt.Errorf("invalid proxy mode: %v", rawConfig.Setting.Mode)
 }
 
-func updateDns(c cfg.Config) {
-	dns.UpdateMatcher(c.Rule)
-}
-
-func updateConn(c cfg.Config) {
-	conn.UpdateProxy(c.Proxy)
+type RuntimeConfig struct {
+	connMatcher matcher.Conn
+	dnsMatcher  matcher.Dns
+	C.Proxy
 }

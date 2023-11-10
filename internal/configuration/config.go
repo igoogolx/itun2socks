@@ -12,6 +12,7 @@ type Config struct {
 }
 
 type SettingCfg struct {
+	Mode             string `json:"mode"`
 	DefaultInterface string `json:"defaultInterface"`
 	LocalServer      `json:"localServer"`
 	AutoMode         `json:"autoMode"`
@@ -30,10 +31,8 @@ type DnsServer struct {
 }
 
 type LocalServer struct {
-	Http struct {
-		Port    int  `json:"port"`
-		Enabled bool `json:"enabled"`
-	} `json:"http"`
+	Port     int  `json:"port"`
+	AllowLan bool `json:"allowLan"`
 }
 
 type AutoMode struct {

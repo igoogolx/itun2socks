@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	client *executor.Client
+	client executor.Client
 	mux    sync.Mutex
 )
 
@@ -58,6 +58,6 @@ func GetIsStarted() bool {
 	return client != nil
 }
 
-func RuntimeDetail() (*executor.Detail, error) {
+func RuntimeDetail() (interface{}, error) {
 	return client.RuntimeDetail()
 }

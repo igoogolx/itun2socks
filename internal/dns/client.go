@@ -3,37 +3,32 @@ package dns
 import (
 	"context"
 	"fmt"
+	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
-	"github.com/igoogolx/itun2socks/internal/conn"
+	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"net"
 	"strings"
-	"sync"
 	"time"
 )
 
-type Matcher interface {
-	GetDns(question string) distribution.SubDnsDistribution
+var dnsMap = map[constants.DnsType]cResolver.Resolver{}
+
+func UpdateDnsMap(local, remote, boost cResolver.Resolver) {
+	dnsMap[constants.LocalDns] = local
+	dnsMap[constants.RemoteDns] = remote
+	dnsMap[constants.BoostDns] = boost
 }
 
-var defaultMatcher Matcher
-var mux sync.RWMutex
-
-func UpdateMatcher(m Matcher) {
-	mux.Lock()
-	defer mux.Unlock()
-	defaultMatcher = m
+type Conn interface {
+	ReadFrom([]byte) (int, net.Addr, error)
+	WriteTo([]byte, net.Addr) (int, error)
 }
 
-func getMatcher() Matcher {
-	mux.RLock()
-	defer mux.RUnlock()
-	return defaultMatcher
-}
-
-func HandleDnsConn(conn conn.UdpConn) error {
+func HandleDnsConn(conn Conn) error {
 	var err error
 	data := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(data)
@@ -91,16 +86,16 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsClient := getMatcher().GetDns(question)
-	res, err := dnsClient.Client.ExchangeContext(ctx, dnsMessage)
+	dnsType := matcher.GetDnsMatcher().GetDnsType(question)
+	res, err := dnsMap[dnsType].ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
 	}
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
-			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsClient.Type)
-			distribution.AddCachedDnsItem(resIp.String(), question, dnsClient.Type)
+			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsType)
+			distribution.AddCachedDnsItem(resIp.String(), question, dnsType)
 		}
 	}
 	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, result: %v"), question, resIps)

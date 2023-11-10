@@ -72,6 +72,8 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	}()
 	var lc conn.UdpConn
 	var err error
+
+	//only tun proxy
 	if ct.Metadata().DstPort.String() == constants.DnsPort {
 		err = dns.HandleDnsConn(ct.Conn())
 		if err != nil {

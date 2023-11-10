@@ -17,7 +17,7 @@ type Config struct {
 	HijackDns   configuration.HijackDns
 }
 
-func New(defaultInterfaceName string) (*Config, error) {
+func NewTun(defaultInterfaceName string) (*Config, error) {
 	rawConfig, err := configuration.Read()
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func New(defaultInterfaceName string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	rule, err := distribution.New(
+	rule, err := distribution.NewTun(
 		rawConfig.Setting.Dns.Boost.Value,
 		rawConfig.Setting.Dns.Remote.Value,
 		rawConfig.Setting.Dns.Local.Value,
@@ -38,6 +38,7 @@ func New(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Rules,
 		device.Name,
 		defaultInterfaceName)
+
 	if err != nil {
 		return nil, err
 	}
