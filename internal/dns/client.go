@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
-	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
@@ -13,6 +12,11 @@ import (
 	"sync"
 	"time"
 )
+
+type Conn interface {
+	ReadFrom([]byte) (int, net.Addr, error)
+	WriteTo([]byte, net.Addr) (int, error)
+}
 
 type Matcher interface {
 	GetDns(question string) distribution.SubDnsDistribution
@@ -27,13 +31,13 @@ func UpdateMatcher(m Matcher) {
 	defaultMatcher = m
 }
 
-func getMatcher() Matcher {
+func GetMatcher() Matcher {
 	mux.RLock()
 	defer mux.RUnlock()
 	return defaultMatcher
 }
 
-func HandleDnsConn(conn conn.UdpConn) error {
+func HandleDnsConn(conn Conn) error {
 	var err error
 	data := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(data)
@@ -91,7 +95,7 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsClient := getMatcher().GetDns(question)
+	dnsClient := GetMatcher().GetDns(question)
 	res, err := dnsClient.Client.ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)

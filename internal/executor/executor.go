@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func New() (*Client, error) {
+func NewTun() (*TunClient, error) {
 	err := network_iface.StartMonitor()
 	if err != nil {
 		return nil, err
@@ -49,9 +49,22 @@ func New() (*Client, error) {
 	newLocalServer := localserver.NewListener(config.LocalServer.HttpAddr)
 
 	updateCfg(*config)
-	return &Client{
+	return &TunClient{
 		stack:       stack,
 		tun:         tun,
+		localserver: newLocalServer,
+		config:      config,
+	}, nil
+}
+
+func NewSysProxy() (*SystemProxyClient, error) {
+	config, err := cfg.New("")
+	if err != nil {
+		return nil, err
+	}
+	newLocalServer := localserver.NewListener(config.LocalServer.HttpAddr)
+	updateCfg(*config)
+	return &SystemProxyClient{
 		localserver: newLocalServer,
 		config:      config,
 	}, nil

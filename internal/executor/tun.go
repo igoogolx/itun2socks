@@ -21,7 +21,7 @@ type Detail struct {
 	BoostDns                string   `json:"boostDns"`
 }
 
-type Client struct {
+type TunClient struct {
 	sync.RWMutex
 	tun         sTun.Tun
 	stack       sTun.Stack
@@ -29,7 +29,7 @@ type Client struct {
 	config      *cfg.Config
 }
 
-func (c *Client) RuntimeDetail() (*Detail, error) {
+func (c *TunClient) RuntimeDetail() (interface{}, error) {
 	networkInterface, err := iface.ResolveInterface(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (c *Client) RuntimeDetail() (*Detail, error) {
 	}, nil
 }
 
-func (c *Client) Start() error {
+func (c *TunClient) Start() error {
 	var err error
 	if err = c.stack.Start(); err != nil {
 		return fmt.Errorf("fail to start stack: %v", err)
@@ -60,11 +60,14 @@ func (c *Client) Start() error {
 			return err
 		}
 	}
-	c.localserver.Start()
+	err = c.localserver.Start()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (c *Client) Close() error {
+func (c *TunClient) Close() error {
 	var err error
 	statistic.DefaultManager.CloseAllConnections()
 	if err = c.tun.Close(); err != nil {
