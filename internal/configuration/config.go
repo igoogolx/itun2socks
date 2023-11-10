@@ -12,6 +12,7 @@ type Config struct {
 }
 
 type SettingCfg struct {
+	Mode             string `json:"mode"`
 	DefaultInterface string `json:"defaultInterface"`
 	LocalServer      `json:"localServer"`
 	AutoMode         `json:"autoMode"`

@@ -47,7 +47,7 @@ func (u *UdpConnContext) Conn() UdpConn {
 }
 
 func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
-	rule := GetMatcher().GetRule(*metadata)
+	rule := GetMatcher().GetConnRule(*metadata)
 
 	return &UdpConnContext{
 		wg,

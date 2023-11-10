@@ -19,7 +19,7 @@ type SystemProxyClient struct {
 }
 
 func (c *SystemProxyClient) RuntimeDetail() (interface{}, error) {
-	return &Detail{}, nil
+	return &SysProxyDetail{}, nil
 }
 
 func (c *SystemProxyClient) Start() error {

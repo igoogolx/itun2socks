@@ -14,14 +14,14 @@ type Config struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c Config) GetDnsServerRule(ip string) (constants.RuleType, error) {
+func (c Config) getIpRuleFromDnsServer(ip string) (constants.RuleType, error) {
 	if strings.Contains(c.Dns.Remote.Address, ip) {
 		return constants.RuleProxy, nil
 	}
 	return constants.RuleBypass, fmt.Errorf("not found")
 }
 
-func (c Config) GetDnsRule(ip string) (constants.RuleType, error) {
+func (c Config) getIpRuleFromDns(ip string) (constants.RuleType, error) {
 	result := constants.RuleBypass
 	_, cachedRule, ok := GetCachedDnsItem(ip)
 	if ok {
@@ -35,7 +35,7 @@ func (c Config) GetDnsRule(ip string) (constants.RuleType, error) {
 	return constants.RuleBypass, fmt.Errorf("not found")
 }
 
-func (c Config) GetRule(metadata C.Metadata) constants.RuleType {
+func (c Config) GetConnRule(metadata C.Metadata) constants.RuleType {
 	// System proxy
 	if metadata.Host != "" {
 		client := c.GetDns(metadata.Host)
@@ -64,13 +64,13 @@ func (c Config) GetRule(metadata C.Metadata) constants.RuleType {
 	}(ip)
 
 	//dns server
-	result, err := c.GetDnsServerRule(ip)
+	result, err := c.getIpRuleFromDnsServer(ip)
 	if err == nil {
 		return result
 	}
 
 	//dns result
-	result, err = c.GetDnsRule(ip)
+	result, err = c.getIpRuleFromDns(ip)
 	if err == nil {
 		return result
 	}
@@ -84,18 +84,27 @@ func (c Config) GetRule(metadata C.Metadata) constants.RuleType {
 
 }
 
+func (c Config) GetDnsRule(domain string) (constants.DnsType, error) {
+	var rule, err = c.RuleEngine.Match(domain)
+	if err != nil {
+		return constants.LocalDns, err
+	}
+	if rule.Policy() == constants.RuleBypass {
+		return constants.LocalDns, nil
+	} else if rule.Policy() == constants.RuleProxy {
+		return constants.RemoteDns, nil
+	}
+	return constants.LocalDns, fmt.Errorf("dns rule not found")
+}
+
 func (c Config) GetDns(domain string) SubDnsDistribution {
 	result := constants.RemoteDns
 	if strings.Contains(c.Dns.Remote.Address, domain) {
 		result = constants.BoostDns
 	} else {
-		var rule, err = c.RuleEngine.Match(domain)
+		var rule, err = c.GetDnsRule(domain)
 		if err == nil {
-			if rule.Policy() == constants.RuleBypass {
-				result = constants.LocalDns
-			} else if rule.Policy() == constants.RuleProxy {
-				result = constants.RemoteDns
-			}
+			result = rule
 		}
 	}
 

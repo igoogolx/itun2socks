@@ -7,7 +7,7 @@ import (
 )
 
 type Matcher interface {
-	GetRule(metadata C.Metadata) constants.RuleType
+	GetConnRule(metadata C.Metadata) constants.RuleType
 }
 
 var defaultMatcher Matcher

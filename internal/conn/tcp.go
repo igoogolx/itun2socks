@@ -38,7 +38,7 @@ func (t *TcpConnContext) Conn() net.Conn {
 }
 
 func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) (*TcpConnContext, error) {
-	rule := GetMatcher().GetRule(*metadata)
+	rule := GetMatcher().GetConnRule(*metadata)
 	return &TcpConnContext{
 		wg,
 		ctx,
