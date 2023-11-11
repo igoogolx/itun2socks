@@ -6,8 +6,6 @@ before:
     - go mod tidy
     # you may remove this if you don't need go generate
     - go run scripts/generate.go
-universal_binaries:
-  - replace: false
 
 builds:
   - env:
@@ -22,6 +20,10 @@ builds:
     goos:
       - windows
       - darwin
+    ignore:
+      - goos: windows
+        goarch: arm64
+
 
 archives:
   - format: tar.gz
