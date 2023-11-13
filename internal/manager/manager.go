@@ -17,6 +17,11 @@ func Start() error {
 	mux.Lock()
 	defer mux.Unlock()
 	var err error
+	defer func() {
+		if err != nil {
+			client = nil
+		}
+	}()
 	if GetIsStarted() {
 		return errors.New("the client has started")
 	}
@@ -27,11 +32,10 @@ func Start() error {
 	err = client.Start()
 	if err != nil {
 		log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to start the client: %v"), err)
-		err := client.Close()
+		err = client.Close()
 		if err != nil {
 			log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to close the client: %v"), err)
 		}
-		client = nil
 		return err
 	}
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Started the client successfully"))
