@@ -28,8 +28,8 @@ func (c *SystemProxyClient) Start() error {
 	if err != nil {
 		return err
 	}
-	helperFullPath := "sysproxy-cmd"
-	err = sysproxy.EnsureHelperToolPresent(helperFullPath, "Input your password and save the world!", "")
+	helperFullPath := "sysproxy"
+	err = sysproxy.EnsureHelperToolPresent(helperFullPath, "Input your password to set system proxy!", "")
 	if err != nil {
 		return err
 	}
