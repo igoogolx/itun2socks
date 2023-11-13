@@ -3,8 +3,10 @@ package executor
 import (
 	"github.com/getlantern/sysproxy"
 	"github.com/igoogolx/itun2socks/internal/cfg"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"path"
 	"sync"
 )
 
@@ -28,8 +30,8 @@ func (c *SystemProxyClient) Start() error {
 	if err != nil {
 		return err
 	}
-	helperFullPath := "sysproxy"
-	err = sysproxy.EnsureHelperToolPresent(helperFullPath, "Input your password to set system proxy!", "")
+	helperName := "sysproxy"
+	err = sysproxy.EnsureHelperToolPresent(path.Join(constants.Path.HomeDir(), helperName), "Input your password to set system proxy!", "")
 	if err != nil {
 		return err
 	}
