@@ -4,6 +4,10 @@ go 1.21
 
 toolchain go1.21.0
 
+replace (
+		github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => github.com/igoogolx/sysproxy v0.0.0-20231114093054-40dbe55b06e6
+)
+
 require (
 	github.com/Dreamacro/clash v1.18.0
 	github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b
