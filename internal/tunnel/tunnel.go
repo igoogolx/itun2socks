@@ -16,8 +16,8 @@ func process() {
 	}
 	for i := 0; i < numUDPWorkers; i++ {
 		go processUDP()
+		go processTCP()
 	}
-	go processTCP()
 }
 
 func init() {
