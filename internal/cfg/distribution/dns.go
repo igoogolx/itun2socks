@@ -5,6 +5,18 @@ import (
 	"github.com/igoogolx/itun2socks/internal/resolver"
 )
 
+/*
+
+TODO: dhcp may be better as boost dns
+
+boost dns works when local or remote is a doh server
+
+local dns -> boost dns -> default network interface, will not be tracked
+remote dns -> tun interface name -> boot dns -> proxy -> default network interface, will be tracked
+boost dns -> default network interface, will not be tracked
+
+*/
+
 func NewDnsDistribution(
 	bootDns string,
 	remoteDns string,
