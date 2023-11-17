@@ -79,10 +79,7 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 	defer cancel()
 	start := time.Now()
 	question, err := getDnsQuestion(dnsMessage)
-	defer func() {
-		elapsed := time.Since(start).Milliseconds()
-		log.Debugln(log.FormatLog(log.DnsPrefix, "it took %v ms to handle dns, question: %v"), elapsed, question)
-	}()
+
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
@@ -98,6 +95,7 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 			distribution.AddCachedDnsItem(resIp.String(), question, dnsType)
 		}
 	}
-	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, result: %v"), question, resIps)
+	elapsed := time.Since(start).Milliseconds()
+	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, time: %v ms, result: %v"), question, elapsed, resIps)
 	return res, err
 }
