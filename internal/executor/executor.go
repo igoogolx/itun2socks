@@ -50,7 +50,7 @@ func newTun() (Client, error) {
 		Tun:        tun,
 		Name:       config.Device.Name,
 		MTU:        uint32(config.Device.Mtu),
-		UDPTimeout: int64(5 * time.Minute),
+		UDPTimeout: int64(5 * time.Second),
 	})
 	if err != nil {
 		return nil, err
