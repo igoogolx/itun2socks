@@ -40,6 +40,10 @@ func (uc udpConn) SetReadDeadline(t time.Time) error {
 	return nil
 }
 
+func (uc udpConn) SetWriteDeadline(t time.Time) error {
+	return nil
+}
+
 var tcpIn = make(chan C.ConnContext, 16)
 var udpIn = make(chan *inbound.PacketAdapter, 16)
 

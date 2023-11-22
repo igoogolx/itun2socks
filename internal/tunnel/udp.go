@@ -30,8 +30,9 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 	for {
 		err := rc.SetReadDeadline(time.Now().Add(5 * time.Second))
 		if err != nil {
-			return fmt.Errorf("fail to set udp conn deadline: %v", err)
+			return fmt.Errorf("fail to set udp conn read deadline: %v", err)
 		}
+
 		n, addr, err := rc.ReadFrom(receivedBuf)
 		var ne net.Error
 		if errors.As(err, &ne) && ne.Timeout() {
@@ -45,6 +46,12 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 		if err != nil {
 			return fmt.Errorf("fail to read udp from rc:%v", err)
 		}
+
+		err = lc.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		if err != nil {
+			return fmt.Errorf("fail to set udp conn write deadline: %v", err)
+		}
+
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
 		if errors.As(err, &ne) && ne.Timeout() {
 			log.Debugln(log.FormatLog(log.UdpPrefix, "udp write io timeout"))
@@ -65,6 +72,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, dst ip: %v, dst port: %v"), ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
 	defer func() {
 		ct.Wg().Done()
+		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().String())
 		err := closeConn(ct.Conn())
 		if err != nil {
 			log.Debugln(log.FormatLog(log.UdpPrefix, "fail to close remote udp conn,err: %v"), err)
@@ -92,7 +100,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	defer func() {
 		err = closeConn(lc)
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote local conn,err: %v"), err)
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close local conn,err: %v"), err)
 		}
 	}()
 

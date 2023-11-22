@@ -17,6 +17,7 @@ type UdpConn interface {
 	Close() error
 	SetDeadline(t time.Time) error
 	SetReadDeadline(t time.Time) error
+	SetWriteDeadline(t time.Time) error
 }
 
 type UdpConnContext struct {
