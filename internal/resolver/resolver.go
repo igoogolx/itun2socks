@@ -2,23 +2,20 @@ package resolver
 
 import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/dns"
 	_ "unsafe"
 )
 
-func New(mainServer, defaultServer []string, defaultInterfaceName string) (cResolver.Resolver, error) {
-	defaultNameResolver, err := parse(defaultServer, defaultInterfaceName)
-	if err != nil {
-		return nil, err
-	}
+func New(mainServer []string, defaultInterfaceName string, getDialer func() C.Proxy) (cResolver.Resolver, error) {
 	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err
 	}
 
 	mainDnsClient := dns.NewResolver(dns.Config{
-		Main:    mainNameResolver,
-		Default: defaultNameResolver,
+		Main:      mainNameResolver,
+		GetDialer: getDialer,
 	})
 
 	return mainDnsClient, nil

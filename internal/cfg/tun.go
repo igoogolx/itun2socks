@@ -36,7 +36,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.Dns.Local.Value,
 		selectedRule,
 		rawConfig.Rules,
-		device.Name,
 		defaultInterfaceName)
 
 	if err != nil {

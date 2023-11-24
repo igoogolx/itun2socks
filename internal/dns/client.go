@@ -12,12 +12,16 @@ import (
 	D "github.com/miekg/dns"
 	"net"
 	"strings"
+	"sync"
 	"time"
 )
 
 var dnsMap = map[constants.DnsType]cResolver.Resolver{}
+var mux sync.Mutex
 
 func UpdateDnsMap(local, remote, boost cResolver.Resolver) {
+	mux.Lock()
+	defer mux.Unlock()
 	dnsMap[constants.LocalDns] = local
 	dnsMap[constants.RemoteDns] = remote
 	dnsMap[constants.BoostDns] = boost
@@ -75,6 +79,8 @@ func getResponseIp(msg *D.Msg) []net.IP {
 }
 
 func handle(dnsMessage *D.Msg) (*D.Msg, error) {
+	mux.Lock()
+	defer mux.Unlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	start := time.Now()

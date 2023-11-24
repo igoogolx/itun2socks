@@ -14,13 +14,6 @@ type Config struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c Config) getIpRuleFromDnsServer(ip string) (constants.RuleType, error) {
-	if strings.Contains(c.Dns.Remote.Address, ip) {
-		return constants.RuleProxy, nil
-	}
-	return constants.RuleBypass, fmt.Errorf("not found")
-}
-
 func (c Config) getIpRuleFromDns(ip string) (constants.RuleType, error) {
 	result := constants.RuleBypass
 	_, cachedRule, ok := GetCachedDnsItem(ip)
@@ -51,12 +44,7 @@ func (c Config) GetConnRule(metadata C.Metadata) constants.RuleType {
 		log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), latestIp, result, domain, dnsRule)
 	}(ip)
 
-	//dns server
-	result, err := c.getIpRuleFromDnsServer(ip)
-	if err == nil {
-		return result
-	}
-
+	var err error
 	//dns result
 	result, err = c.getIpRuleFromDns(ip)
 	if err == nil {
@@ -104,7 +92,6 @@ func NewTun(
 	localDns string,
 	ruleId string,
 	rules []string,
-	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (Config, error) {
 	ResetCache()
@@ -112,7 +99,7 @@ func NewTun(
 	if err != nil {
 		return Config{}, err
 	}
-	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, tunInterfaceName, defaultInterfaceName)
+	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName)
 	if err != nil {
 		return Config{}, err
 	}

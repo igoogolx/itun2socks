@@ -57,10 +57,13 @@ func StartMonitor() error {
 	}
 	defaultInterfaceMonitor.RegisterCallback(func(event int) {
 		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
-
 	})
 	update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
 	return nil
+}
+
+func RegisterCallback(callback tun.DefaultInterfaceUpdateCallback) {
+	defaultInterfaceMonitor.RegisterCallback(callback)
 }
 
 func StopMonitor() error {

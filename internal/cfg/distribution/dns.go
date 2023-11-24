@@ -2,6 +2,9 @@ package distribution
 
 import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
+	C "github.com/Dreamacro/clash/constant"
+	"github.com/igoogolx/itun2socks/internal/conn"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/resolver"
 )
 
@@ -21,17 +24,20 @@ func NewDnsDistribution(
 	bootDns string,
 	remoteDns string,
 	localDns string,
-	tunInterfaceName string,
 	defaultInterfaceName string,
 ) (DnsDistribution, error) {
 	var err error
 	bootDns = bootDns + "#" + defaultInterfaceName
-	boostDnsClient, err := resolver.New([]string{bootDns}, []string{}, defaultInterfaceName)
+	boostDnsClient, err := resolver.New([]string{bootDns}, defaultInterfaceName, func() C.Proxy {
+		return conn.GetProxy(constants.RuleBypass)
+	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	localDns = localDns + "#" + defaultInterfaceName
-	localDnsClient, err := resolver.New([]string{localDns}, []string{bootDns}, defaultInterfaceName)
+	localDnsClient, err := resolver.New([]string{localDns}, defaultInterfaceName, func() C.Proxy {
+		return conn.GetProxy(constants.RuleBypass)
+	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -40,8 +46,10 @@ func NewDnsDistribution(
 		Address: localDns,
 		Client:  localDnsClient,
 	}
-	remoteDns = remoteDns + "#" + tunInterfaceName
-	remoteDnsClient, err := resolver.New([]string{remoteDns}, []string{"udp://8.8.8.8#" + tunInterfaceName}, defaultInterfaceName)
+
+	remoteDnsClient, err := resolver.New([]string{remoteDns}, defaultInterfaceName, func() C.Proxy {
+		return conn.GetProxy(constants.RuleProxy)
+	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
