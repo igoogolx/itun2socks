@@ -47,8 +47,8 @@ github.com/gorilla/websocket v1.5.1 h1:gmztn0JnHVt9JZquRuzLw3g4wouNVzKL15iLr/zn/
 github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZHL0uE0tcaY=
 github.com/hashicorp/golang-lru v1.0.2 h1:dV3g9Z/unq5DpblPpw+Oqcv4dU/1omnb4Ok8iPY6p1c=
 github.com/hashicorp/golang-lru v1.0.2/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
-github.com/igoogolx/clash v1.19.0 h1:Zoftyi6512l5RHLZR36OqBEZrgd0eqSugot3UkTJxdI=
-github.com/igoogolx/clash v1.19.0/go.mod h1:+wnoypVCuzUn6UcUdsxoNV9HfHXGFCag+erj4vBJAy0=
+github.com/igoogolx/clash v1.19.1 h1:0L9gGjmlkuuiCougnzN/zSd4Ws9s4D+2Da+thjC8KtM=
+github.com/igoogolx/clash v1.19.1/go.mod h1:r//xe/2pA3Zl+3fjIiI/o6RjIVd+z87drCD58dpRnFg=
 github.com/igoogolx/sysproxy v0.0.1 h1:7lwOzt1XGW0ZJuXjMx5oPU/TIU3tH3TA9MVOYf8jRyc=
 github.com/igoogolx/sysproxy v0.0.1/go.mod h1:qjD2ty3qu7E12mJ2gVU/I2wCuebaLR5ePSQLY3eXrDQ=
 github.com/insomniacslk/dhcp v0.0.0-20231016090811-6a2c8fbdcc1c h1:PgxFEySCI41sH0mB7/2XswdXbUykQsRUGod8Rn+NubM=
