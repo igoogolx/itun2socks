@@ -59,6 +59,10 @@ func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*consta
 	if err != nil {
 		return nil, err
 	}
+
+	if err != nil {
+		return nil, err
+	}
 	metadata := &constant.Metadata{
 		SrcIP:   srcIp,
 		SrcPort: constant.Port(metaSrcPort),
