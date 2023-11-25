@@ -40,13 +40,13 @@ func Parse(name string, extraRules []string) ([]Rule, error) {
 		return nil, err
 	}
 	for _, line := range extraRules {
-		rule, err := parseLine(line)
+		rule, err := ParseRawValue(line)
 		if err == nil {
 			rules = append(rules, rule)
 		}
 	}
 	for _, line := range builtInItems {
-		rule, err := parseLine(line)
+		rule, err := ParseRawValue(line)
 		if err == nil {
 			rules = append(rules, rule)
 		}
@@ -54,7 +54,7 @@ func Parse(name string, extraRules []string) ([]Rule, error) {
 	return rules, nil
 }
 
-func parseLine(line string) (Rule, error) {
+func ParseRawValue(line string) (Rule, error) {
 	chunks := trimArr(strings.Split(strings.TrimSpace(line), ","))
 	if len(chunks) != 3 {
 		return nil, fmt.Errorf("invald rule line")

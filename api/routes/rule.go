@@ -10,6 +10,7 @@ import (
 func ruleRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getRules)
+	r.Get("/{id}", getRuleDetail)
 	return r
 }
 
@@ -29,5 +30,23 @@ func getRules(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, render.M{
 		"rules":      rules,
 		"selectedId": selectId,
+	})
+}
+
+func getRuleDetail(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	rules, err := configuration.GetBuiltInRules(id)
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	render.JSON(w, r, render.M{
+		"items": rules,
 	})
 }

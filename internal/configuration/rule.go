@@ -14,26 +14,53 @@ func GetRuleIds() ([]string, error) {
 	return ruleEngine.GetRuleIds()
 }
 
-func SetRules(rules []string) error {
+func AddCustomizedRule(rule string) error {
 	c, err := Read()
 	if err != nil {
 		return err
 	}
+	_, err = ruleEngine.ParseRawValue(rule)
+	if err != nil {
+		return err
+	}
+	c.Rules = append(c.Rules, rule)
 	return Write(c)
 }
 
-func GetRules() ([]string, error) {
+func DeleteCustomizedRule(rule string) error {
 	c, err := Read()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return c.Rules, nil
+	_, err = ruleEngine.ParseRawValue(rule)
+	if err != nil {
+		return err
+	}
+	var rules []string
+	for _, item := range c.Rules {
+		if item != rule {
+			rules = append(rules, item)
+		}
+	}
+	c.Rules = rules
+	return Write(c)
 }
 
-func GetBuiltInRules(id string) ([]string, error) {
+func GetCustomizedRules() ([]ruleEngine.Rule, error) {
 	c, err := Read()
 	if err != nil {
 		return nil, err
 	}
-	return c.Rules, nil
+	var items []ruleEngine.Rule
+	for _, rule := range c.Rules {
+		item, err := ruleEngine.ParseRawValue(rule)
+		if err == nil {
+			items = append(items, item)
+		}
+	}
+	return items, nil
+}
+
+func GetBuiltInRules(id string) ([]ruleEngine.Rule, error) {
+	return ruleEngine.Parse(id, []string{})
 }

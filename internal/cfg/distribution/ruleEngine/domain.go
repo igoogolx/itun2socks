@@ -7,8 +7,9 @@ import (
 )
 
 type Domain struct {
-	payload string
-	policy  string
+	RuleType constants.RuleConfig
+	Payload  string
+	policy   string
 }
 
 func (d Domain) Policy() constants.RuleType {
@@ -20,15 +21,15 @@ func (d Domain) Type() constants.RuleConfig {
 }
 
 func (d Domain) Match(value string) bool {
-	return isContainsDomain(d.payload, value)
+	return isContainsDomain(d.Payload, value)
 }
 
 func (d Domain) Value() string {
-	return d.payload
+	return d.Payload
 }
 
 func NewDomainRule(payload, policy string) (*Domain, error) {
-	return &Domain{payload, policy}, nil
+	return &Domain{constants.RuleDomain, payload, policy}, nil
 }
 
 func isContainsDomain(domain string, s string) bool {
