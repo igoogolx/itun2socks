@@ -8,15 +8,20 @@ import (
 	"github.com/sagernet/sing/common/buf"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
+	"io"
 	"net"
 	"sync"
 )
 
 type udpConn struct {
 	network.PacketConn
+	read bool
 }
 
-func (uc udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
+func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
+	if uc.read {
+		return 0, nil, io.EOF
+	}
 	newBuf := buf.NewPacket()
 	defer newBuf.Release()
 	des, err := uc.ReadPacket(newBuf)
@@ -27,10 +32,11 @@ func (uc udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
 	if err != nil {
 		return 0, nil, err
 	}
+	uc.read = true
 	return n, des.UDPAddr(), nil
 }
 
-func (uc udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
+func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	newBuf := buf.NewPacket()
 	defer newBuf.Release()
 	_, err := newBuf.Write(data)
@@ -80,7 +86,7 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct, err := conn.NewUdpConnContext(ctx, udpConn{packetConn}, &m, &wg)
+	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
 	if err != nil {
 		return err
 	}
