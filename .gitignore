@@ -8,3 +8,4 @@ geoData
 ./config.json
 tmp
 rules
+.Ds_Store
