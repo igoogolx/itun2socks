@@ -7,13 +7,13 @@ import (
 )
 
 type Domain struct {
-	RuleType constants.RuleConfig
-	Payload  string
-	policy   string
+	RuleType constants.RuleConfig `json:"ruleType"`
+	Payload  string               `json:"payload"`
+	Policy   string               `json:"policy"`
 }
 
-func (d Domain) Policy() constants.RuleType {
-	return constants.RuleType(d.policy)
+func (d Domain) GetPolicy() constants.RuleType {
+	return constants.RuleType(d.Policy)
 }
 
 func (d Domain) Type() constants.RuleConfig {

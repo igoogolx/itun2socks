@@ -53,7 +53,7 @@ func (c Config) GetConnRule(metadata C.Metadata) constants.RuleType {
 
 	rule, err := c.RuleEngine.Match(ip)
 	if err == nil {
-		return rule.Policy()
+		return rule.GetPolicy()
 	}
 
 	return constants.RuleProxy
@@ -65,9 +65,9 @@ func (c Config) GetDnsTypeFromRuleEngine(domain string) (constants.DnsType, erro
 	if err != nil {
 		return constants.LocalDns, err
 	}
-	if rule.Policy() == constants.RuleBypass {
+	if rule.GetPolicy() == constants.RuleBypass {
 		return constants.LocalDns, nil
-	} else if rule.Policy() == constants.RuleProxy {
+	} else if rule.GetPolicy() == constants.RuleProxy {
 		return constants.RemoteDns, nil
 	}
 	return constants.LocalDns, fmt.Errorf("dns rule not found")

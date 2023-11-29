@@ -31,7 +31,7 @@ func (c SystemProxyConfig) GetConnRule(metadata C.Metadata) constants.RuleType {
 
 	rule, err := c.RuleEngine.Match(ip)
 	if err == nil {
-		return rule.Policy()
+		return rule.GetPolicy()
 	}
 
 	return constants.RuleProxy
@@ -41,9 +41,9 @@ func (c SystemProxyConfig) GetConnRule(metadata C.Metadata) constants.RuleType {
 func (c SystemProxyConfig) GetDnsType(domain string) constants.DnsType {
 	var rule, err = c.RuleEngine.Match(domain)
 	if err == nil {
-		if rule.Policy() == constants.RuleBypass {
+		if rule.GetPolicy() == constants.RuleBypass {
 			return constants.LocalDns
-		} else if rule.Policy() == constants.RuleProxy {
+		} else if rule.GetPolicy() == constants.RuleProxy {
 			return constants.RemoteDns
 		}
 	}
