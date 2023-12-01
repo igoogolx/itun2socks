@@ -11,13 +11,13 @@ type SystemProxyConfig struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c SystemProxyConfig) GetConnRule(metadata C.Metadata) constants.RuleType {
+func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata) (constants.RuleType, error) {
 	if metadata.Host != "" {
 		dnsRule := c.GetDnsType(metadata.Host)
 		if dnsRule == constants.LocalDns {
-			return constants.RuleBypass
+			return constants.RuleBypass, nil
 		} else {
-			return constants.RuleProxy
+			return constants.RuleProxy, nil
 		}
 	}
 
@@ -31,10 +31,10 @@ func (c SystemProxyConfig) GetConnRule(metadata C.Metadata) constants.RuleType {
 
 	rule, err := c.RuleEngine.Match(ip)
 	if err == nil {
-		return rule.GetPolicy()
+		return rule.GetPolicy(), nil
 	}
 
-	return constants.RuleProxy
+	return constants.RuleProxy, nil
 
 }
 

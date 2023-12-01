@@ -9,6 +9,7 @@ import (
 	"github.com/sagernet/sing/common/bufio"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
+	"io"
 	"net"
 	"sync"
 )
@@ -19,6 +20,9 @@ type udpConn struct {
 }
 
 func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
+	if uc.read {
+		return 0, nil, io.EOF
+	}
 
 	var err error
 	var buff *buf.Buffer
@@ -55,6 +59,7 @@ func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
 	if err != nil {
 		return 0, nil, err
 	}
+	uc.read = true
 
 	return n, dest.UDPAddr(), nil
 }

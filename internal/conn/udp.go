@@ -5,7 +5,6 @@ import (
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/internal/matcher"
 	"net"
 	"sync"
 	"time"
@@ -49,15 +48,21 @@ func (u *UdpConnContext) Conn() UdpConn {
 }
 
 func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
-	rule := matcher.GetConnMatcher().GetConnRule(*metadata)
-
-	return &UdpConnContext{
+	var connContext = &UdpConnContext{
 		wg,
 		ctx,
 		metadata,
 		conn,
-		rule,
-	}, nil
+		constants.RuleProxy,
+	}
+
+	for _, matcher := range GetConnMatcher() {
+		rule, err := matcher(metadata)
+		if err == nil {
+			connContext.rule = rule
+		}
+	}
+	return connContext, nil
 }
 
 func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule constants.RuleType, defaultInterface string) (net.PacketConn, error) {

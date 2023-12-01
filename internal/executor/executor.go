@@ -58,7 +58,10 @@ func newTun() (Client, error) {
 
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 
-	matcher.UpdateConnMatcher(config.Rule)
+	conn.UpdateConnMatcher([]conn.Matcher{
+		config.Rule.ConnMatcher,
+		conn.RejectQuicMather,
+	})
 	matcher.UpdateDnsMatcher(config.Rule)
 	conn.UpdateProxy(config.Proxy)
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client, config.Rule.Dns.Boost.Client)
@@ -77,7 +80,9 @@ func newSysProxy() (Client, error) {
 		return nil, err
 	}
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
-	matcher.UpdateConnMatcher(config.Rule)
+	conn.UpdateConnMatcher([]conn.Matcher{
+		config.Rule.ConnMatcher,
+	})
 	matcher.UpdateDnsMatcher(config.Rule)
 	conn.UpdateProxy(config.Proxy)
 	return &SystemProxyClient{
@@ -101,7 +106,6 @@ func New() (Client, error) {
 }
 
 type RuntimeConfig struct {
-	connMatcher matcher.Conn
-	dnsMatcher  matcher.Dns
+	dnsMatcher matcher.Dns
 	C.Proxy
 }

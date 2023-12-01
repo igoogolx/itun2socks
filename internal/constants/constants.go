@@ -5,6 +5,7 @@ type RuleType string
 const (
 	RuleBypass RuleType = "bypass"
 	RuleProxy  RuleType = "proxy"
+	RuleReject RuleType = "reject"
 )
 
 type DnsType string
