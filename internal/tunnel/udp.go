@@ -1,7 +1,6 @@
 package tunnel
 
 import (
-	"errors"
 	"fmt"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -10,11 +9,18 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
-	"io"
-	"net"
+	E "github.com/sagernet/sing/common/exceptions"
 	"sync"
 	"time"
 )
+
+func ShouldIgnorePacketError(err error) bool {
+	// ignore simple error
+	if E.IsTimeout(err) || E.IsClosed(err) || E.IsCanceled(err) {
+		return true
+	}
+	return false
+}
 
 var (
 	udpQueue = make(chan conn.UdpConnContext, 1024)
@@ -34,13 +40,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 		}
 
 		n, addr, err := rc.ReadFrom(receivedBuf)
-		var ne net.Error
-		if errors.As(err, &ne) && ne.Timeout() {
-			log.Debugln(log.FormatLog(log.UdpPrefix, "udp read io timeout"))
-			return nil /* ignore I/O timeout */
-		}
-		if errors.Is(err, io.EOF) {
-			log.Debugln(log.FormatLog(log.UdpPrefix, "udp read EOF"))
+		if ShouldIgnorePacketError(err) {
 			return nil
 		}
 		if err != nil {
@@ -53,12 +53,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 		}
 
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
-		if errors.As(err, &ne) && ne.Timeout() {
-			log.Debugln(log.FormatLog(log.UdpPrefix, "udp write io timeout"))
-			return nil /* ignore I/O timeout */
-		}
-		if errors.Is(err, io.EOF) {
-			log.Debugln(log.FormatLog(log.UdpPrefix, "udp write EOF"))
+		if ShouldIgnorePacketError(err) {
 			return nil
 		}
 		if err != nil {
