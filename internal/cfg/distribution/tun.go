@@ -28,7 +28,7 @@ func (c Config) getIpRuleFromDns(ip string) (constants.RuleType, error) {
 	return constants.RuleBypass, fmt.Errorf("not found")
 }
 
-func (c Config) ConnMatcher(metadata *C.Metadata) (constants.RuleType, error) {
+func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error) {
 	ip := metadata.DstIP.String()
 
 	result := constants.RuleProxy

@@ -48,7 +48,7 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata,
 	}
 
 	for _, matcher := range GetConnMatcher() {
-		rule, err := matcher(metadata)
+		rule, err := matcher(metadata, connContext.rule)
 		if err == nil {
 			connContext.rule = rule
 		}

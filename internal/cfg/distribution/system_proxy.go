@@ -11,7 +11,7 @@ type SystemProxyConfig struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata) (constants.RuleType, error) {
+func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error) {
 	if metadata.Host != "" {
 		dnsRule := c.GetDnsType(metadata.Host)
 		if dnsRule == constants.LocalDns {

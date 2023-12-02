@@ -57,7 +57,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, 
 	}
 
 	for _, matcher := range GetConnMatcher() {
-		rule, err := matcher(metadata)
+		rule, err := matcher(metadata, connContext.rule)
 		if err == nil {
 			connContext.rule = rule
 		}

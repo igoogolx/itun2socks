@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
+	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
 	"io"
@@ -114,6 +115,9 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
+	if deadline.NeedAdditionalReadDeadline(packetConn) {
+		packetConn = deadline.NewFallbackPacketConn(bufio.NewNetPacketConn(packetConn)) // conn from sing should check NeedAdditionalReadDeadline
+	}
 	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
 	if err != nil {
 		return err

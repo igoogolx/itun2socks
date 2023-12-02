@@ -16,10 +16,10 @@ var (
 	mux     sync.RWMutex
 )
 
-type Matcher func(metadata *C.Metadata) (constants.RuleType, error)
+type Matcher func(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error)
 
-func RejectQuicMather(metadata *C.Metadata) (constants.RuleType, error) {
-	if strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
+func RejectQuicMather(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error) {
+	if prevRule == constants.RuleProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
 		log.Debugln("reject quic conn:%v", metadata.RemoteAddress())
 		return constants.RuleReject, nil
 	}
