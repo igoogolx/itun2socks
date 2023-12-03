@@ -57,11 +57,13 @@ func newTun() (Client, error) {
 	}
 
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
-
-	conn.UpdateConnMatcher([]conn.Matcher{
+	var matchers = []conn.Matcher{
 		config.Rule.ConnMatcher,
-		conn.RejectQuicMather,
-	})
+	}
+	if config.BlockQuic {
+		matchers = append(matchers, conn.RejectQuicMather)
+	}
+	conn.UpdateConnMatcher(matchers)
 	matcher.UpdateDnsMatcher(config.Rule)
 	conn.UpdateProxy(config.Proxy)
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client, config.Rule.Dns.Boost.Client)

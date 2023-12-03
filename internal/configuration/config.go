@@ -22,7 +22,8 @@ type SettingCfg struct {
 		Remote DnsServer `json:"remote"`
 		Local  DnsServer `json:"local"`
 	} `json:"dns"`
-	Language string `json:"language,omitempty"`
+	Language  string `json:"language,omitempty"`
+	BlockQuic bool   `json:"blockQuic,omitempty"`
 }
 
 type DnsServer struct {

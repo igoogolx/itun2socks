@@ -15,6 +15,7 @@ type Config struct {
 	Device      *tun.Config
 	LocalServer local_server.Cfg
 	HijackDns   configuration.HijackDns
+	BlockQuic   bool
 }
 
 func NewTun(defaultInterfaceName string) (*Config, error) {
@@ -57,5 +58,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		device,
 		newLocalServer,
 		rawConfig.Setting.HijackDns,
+		rawConfig.Setting.BlockQuic,
 	}, nil
 }
