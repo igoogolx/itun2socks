@@ -66,12 +66,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 func handleUdpConn(ct conn.UdpConnContext) {
 	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, dst ip: %v, dst port: %v"), ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
 	defer func() {
-		ct.Wg().Done()
 		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().String())
-		err := closeConn(ct.Conn())
-		if err != nil {
-			log.Debugln(log.FormatLog(log.UdpPrefix, "fail to close remote udp conn,err: %v"), err)
-		}
 	}()
 	var lc conn.UdpConn
 	var err error

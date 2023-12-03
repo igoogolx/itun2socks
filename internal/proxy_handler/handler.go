@@ -13,56 +13,24 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 type udpConn struct {
 	network.PacketConn
 	read bool
+	dest M.Socksaddr
+	buff *buf.Buffer
 }
 
 func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
 	if uc.read {
 		return 0, nil, io.EOF
 	}
-
-	var err error
-	var buff *buf.Buffer
-	var dest M.Socksaddr
-
-	defer func() {
-		if buff != nil {
-			buff.Release()
-		}
-
-	}()
-
-	newBuffer := func() *buf.Buffer {
-		buff = buf.NewPacket() // do not use stack buffer
-		return buff
-	}
-	readWaiter, isReadWaiter := bufio.CreatePacketReadWaiter(uc)
-	if isReadWaiter {
-		readWaiter.InitializeReadWaiter(newBuffer)
-	}
-
-	if isReadWaiter {
-		dest, err = readWaiter.WaitReadPacket()
-	} else {
-		dest, err = uc.ReadPacket(newBuffer())
-	}
-
-	if err != nil {
-		return 0, nil, err
-	}
-
-	n, err := buff.Read(data)
-
-	if err != nil {
-		return 0, nil, err
-	}
+	n, err := uc.buff.Read(data)
+	uc.buff.Release()
 	uc.read = true
-
-	return n, dest.UDPAddr(), nil
+	return n, uc.dest.UDPAddr(), err
 }
 
 func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
@@ -76,12 +44,16 @@ func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	return len(data), err
 }
 
+func (uc ConnHandler) SetReadDeadline(t time.Time) error {
+	return nil
+}
+
 type ConnHandler struct {
 	tcpIn chan conn.TcpConnContext
 	udpIn chan conn.UdpConnContext
 }
 
-func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metadata M.Metadata) error {
+func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metadata M.Metadata) error {
 	local, err := net.ResolveTCPAddr("tcp", metadata.Source.String())
 	if err != nil {
 		return err
@@ -98,11 +70,17 @@ func (c ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metada
 	if err != nil {
 		return err
 	}
-	c.tcpIn <- *ct
+	uc.tcpIn <- *ct
 	return nil
 }
 
-func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network.PacketConn, metadata M.Metadata) error {
+func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn network.PacketConn, metadata M.Metadata) error {
+	defer func(packetConn network.PacketConn) {
+		err := packetConn.Close()
+		if err != nil {
+			log.Errorln("fail to close packetConn")
+		}
+	}(packetConn)
 	local, err := net.ResolveUDPAddr("udp", metadata.Source.String())
 	if err != nil {
 		return err
@@ -112,21 +90,48 @@ func (c ConnHandler) NewPacketConnection(ctx context.Context, packetConn network
 		return err
 	}
 	m := tunnel.CreateUdpMetadata(*local, *remote)
-	var wg sync.WaitGroup
-	wg.Add(1)
-	defer wg.Wait()
+
 	if deadline.NeedAdditionalReadDeadline(packetConn) {
 		packetConn = deadline.NewFallbackPacketConn(bufio.NewNetPacketConn(packetConn)) // conn from sing should check NeedAdditionalReadDeadline
 	}
-	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
-	if err != nil {
-		return err
+
+	for {
+		var buff *buf.Buffer
+		newBuffer := func() *buf.Buffer {
+			buff = buf.NewPacket() // do not use stack buffer
+			return buff
+		}
+		var err error
+		var dest M.Socksaddr
+		readWaiter, isReadWaiter := bufio.CreatePacketReadWaiter(packetConn)
+		if isReadWaiter {
+			readWaiter.InitializeReadWaiter(newBuffer)
+		}
+		if isReadWaiter {
+			dest, err = readWaiter.WaitReadPacket()
+		} else {
+			dest, err = packetConn.ReadPacket(newBuffer())
+		}
+		if err != nil {
+			if buff != nil {
+				buff.Release()
+			}
+			break
+		}
+		ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn, dest: dest, buff: buff}, &m)
+		if err != nil {
+			if buff != nil {
+				buff.Release()
+			}
+			break
+		}
+		uc.udpIn <- *ct
 	}
-	c.udpIn <- *ct
+
 	return nil
 }
 
-func (c ConnHandler) NewError(_ context.Context, err error) {
+func (uc ConnHandler) NewError(_ context.Context, err error) {
 	log.Errorln(log.FormatLog(log.TunPrefix, "err: %v"), err)
 }
 func New(tcpIn chan conn.TcpConnContext,
