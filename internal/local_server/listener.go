@@ -67,7 +67,7 @@ func processTcp(t C.ConnContext) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct, err := conn.NewTcpConnContext(context.Background(), t.Conn(), t.Metadata(), &wg)
+	ct, err := conn.NewTcpConnContext(context.Background(), t.Conn(), t.Metadata())
 	if err != nil {
 		return
 	}

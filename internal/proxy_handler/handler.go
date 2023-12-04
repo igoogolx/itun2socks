@@ -12,7 +12,6 @@ import (
 	"github.com/sagernet/sing/common/network"
 	"io"
 	"net"
-	"sync"
 	"time"
 )
 
@@ -63,10 +62,7 @@ func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metad
 		return err
 	}
 	m := tunnel.CreateTcpMetadata(*local, *remote)
-	var wg sync.WaitGroup
-	wg.Add(1)
-	defer wg.Wait()
-	ct, err := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
+	ct, err := conn.NewTcpConnContext(ctx, netConn, &m)
 	if err != nil {
 		return err
 	}

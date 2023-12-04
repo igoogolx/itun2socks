@@ -22,7 +22,6 @@ func TcpQueue() chan conn.TcpConnContext {
 func handleTCPConn(ct conn.TcpConnContext) {
 	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 	defer func() {
-		ct.Wg().Done()
 		if err := closeConn(ct.Conn()); err != nil {
 			log.Debugln(log.FormatLog(log.TcpPrefix, "fail to close local tcp conn,err: %v"), err)
 		}
