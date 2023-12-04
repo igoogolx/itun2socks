@@ -8,6 +8,8 @@ replace github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => git
 
 replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.1
 
+replace github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61 => github.com/igoogolx/go-tun2socks v1.17.0
+
 require (
 	github.com/Dreamacro/clash v1.18.0
 	github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b
@@ -30,6 +32,8 @@ require (
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20230911123819-0bbf144b9b9a // indirect
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/djherbis/buffer v1.2.0 // indirect
+	github.com/djherbis/nio v2.0.3+incompatible // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/getlantern/byteexec v0.0.0-20220903141943-7db46f110fbc // indirect

@@ -44,7 +44,7 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	stack, err := sTun.NewStack("gvisor", sTun.StackOptions{
+	stack, err := sTun.NewStack("lwip", sTun.StackOptions{
 		Context:    context.TODO(),
 		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		Tun:        tun,
