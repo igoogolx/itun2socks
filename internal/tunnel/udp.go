@@ -64,7 +64,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 }
 
 func handleUdpConn(ct conn.UdpConnContext) {
-	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, dst ip: %v, dst port: %v"), ct.Metadata().DstIP.String(), ct.Metadata().DstPort)
+	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, remote address: %v"), ct.Metadata().RemoteAddress())
 	defer func() {
 		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().String())
 	}()
@@ -75,13 +75,13 @@ func handleUdpConn(ct conn.UdpConnContext) {
 	if ct.Metadata().DstPort.String() == constants.DnsPort {
 		err = dns.HandleDnsConn(ct.Conn())
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle dns conn, err: %v, target: %v"), err, ct.Metadata().DstIP.String())
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle dns conn, err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}
 		return
 	} else {
 		localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to get udp conn, err: %v, target: %v"), err, ct.Metadata().DstIP.String())
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to get udp conn, err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 			return
 		}
 		lc = statistic.NewUDPTracker(localConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
@@ -101,14 +101,14 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		defer wg.Done()
 		err := copyUdpPacket(lc, ct.Conn())
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle output ,err: %v"), err)
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle output ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}
 	}()
 	go func() {
 		defer wg.Done()
 		err := copyUdpPacket(ct.Conn(), lc)
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle input ,err: %v"), err)
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle input ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}
 	}()
 

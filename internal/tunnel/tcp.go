@@ -20,6 +20,7 @@ func TcpQueue() chan conn.TcpConnContext {
 }
 
 func handleTCPConn(ct conn.TcpConnContext) {
+	log.Debugln(log.FormatLog(log.UdpPrefix, "handle tcp conn, remote address: %v"), ct.Metadata().RemoteAddress())
 	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 	defer func() {
 		if err := closeConn(ct.Conn()); err != nil {
@@ -30,7 +31,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		}
 	}()
 	if err != nil {
-		log.Warnln(log.FormatLog(log.TcpPrefix, "fail to get tcp conn, err: %v, rule: %v, remote ip: %v"), err, ct.Rule(), ct.Metadata().DstIP)
+		log.Warnln(log.FormatLog(log.TcpPrefix, "fail to get tcp conn, err: %v, rule: %v, remote address: %v"), err, ct.Rule(), ct.Metadata().RemoteAddress())
 		return
 	}
 	remoteConn = statistic.NewTCPTracker(remoteConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
@@ -41,13 +42,13 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		defer wg.Done()
 		if err := copyPacket(ct.Conn(), remoteConn); err != nil {
 
-			log.Warnln(log.FormatLog(log.TcpPrefix, "fail to input: %v"), err)
+			log.Warnln(log.FormatLog(log.TcpPrefix, "fail to input: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}
 	}()
 	go func() {
 		defer wg.Done()
 		if err := copyPacket(remoteConn, ct.Conn()); err != nil {
-			log.Warnln(log.FormatLog(log.TcpPrefix, "fail to output: %v"), err)
+			log.Warnln(log.FormatLog(log.TcpPrefix, "fail to output: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}
 	}()
 	wg.Wait()
