@@ -1,38 +1,50 @@
-name: goreleaser
+name: Build
 
 on:
   push:
-    # run only against tags
+    # Sequence of patterns matched against refs/tags
     tags:
-      - '*'
-
-permissions:
-  contents: write
-  # packages: write
-  # issues: write
+      - v*.*.*           # Push events to v1.0, v1.1, and v1.9 tags
 
 jobs:
-  goreleaser:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
         with:
-          fetch-depth: 0
-      - run: git fetch --force --tags
-      - uses: actions/setup-go@v3
+          go-version: '^1.21.4' # The Go version to download (if necessary) and use.
+        run: |
+          goreleaser release --clean -f .goreleaser_${{ matrix.os }}.yaml
+
+      - uses: actions/upload-artifact@v3
         with:
-          go-version: '>=1.20.0'
-          cache: true
-      # More assembly might be required: Docker logins, GPG, etc. It all depends
-      # on your needs.
-      - uses: goreleaser/goreleaser-action@v4
+          name: artifact
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - name: Generate checksum
+        uses: jmgilman/actions-generate-checksum@v1
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro':
-          distribution: goreleaser
-          version: latest
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Your GoReleaser Pro key, if you are using the 'goreleaser-pro'
-          # distribution:
-          # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          patterns: |
+            artifact/*/*
+
+      - name: GH Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            artifact/*/*

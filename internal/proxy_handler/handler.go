@@ -7,7 +7,6 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
-	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
 	"io"
@@ -86,10 +85,6 @@ func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn networ
 		return err
 	}
 	m := tunnel.CreateUdpMetadata(*local, *remote)
-
-	if deadline.NeedAdditionalReadDeadline(packetConn) {
-		packetConn = deadline.NewFallbackPacketConn(bufio.NewNetPacketConn(packetConn)) // conn from sing should check NeedAdditionalReadDeadline
-	}
 
 	for {
 		var buff *buf.Buffer
