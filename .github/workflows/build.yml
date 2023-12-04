@@ -15,39 +15,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+
+      - uses: goreleaser/goreleaser-action@v4
         with:
-          go-version: '^1.21.4' # The Go version to download (if necessary) and use.
+          # either 'goreleaser' (default) or 'goreleaser-pro':
+          distribution: goreleaser
+          version: latest
+          args: release --clean -f .goreleaser_${{ matrix.os }}.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          go install github.com/goreleaser/goreleaser@latest
-          goreleaser release --clean -f .goreleaser_${{ matrix.os }}.yaml
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: artifact
-          path: |
-            dist/*.tar.gz
-            dist/*.zip
-
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/download-artifact@v3
-
-      - name: Generate checksum
-        uses: jmgilman/actions-generate-checksum@v1
-        with:
-          patterns: |
-            artifact/*/*
-
-      - name: GH Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          files: |
-            artifact/*/*
