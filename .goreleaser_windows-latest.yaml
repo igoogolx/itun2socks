@@ -21,10 +21,10 @@ builds:
       - windows
     ignore:
       - goos: windows
-        goarch: |
-          386
-          arm64
+        goarch: 386
 
+      - goos: windows
+        goarch: arm64
 
 archives:
   - format: tar.gz
