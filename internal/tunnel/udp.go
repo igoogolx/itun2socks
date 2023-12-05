@@ -34,6 +34,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 	receivedBuf := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(receivedBuf)
 	for {
+
 		err := rc.SetReadDeadline(time.Now().Add(5 * time.Second))
 		if err != nil {
 			return fmt.Errorf("fail to set udp conn read deadline: %v", err)
@@ -66,6 +67,11 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 func handleUdpConn(ct conn.UdpConnContext) {
 	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, remote address: %v"), ct.Metadata().RemoteAddress())
 	defer func() {
+		err := closeConn(ct.Conn())
+		ct.Wg().Done()
+		if err != nil {
+			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote conn,err: %v"), err)
+		}
 		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().String())
 	}()
 	var lc conn.UdpConn

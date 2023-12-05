@@ -6,6 +6,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,11 @@ type UdpConnContext struct {
 	metadata *C.Metadata
 	conn     UdpConn
 	rule     constants.RuleType
+	wg       *sync.WaitGroup
+}
+
+func (u *UdpConnContext) Wg() *sync.WaitGroup {
+	return u.wg
 }
 
 func (u *UdpConnContext) Ctx() context.Context {
@@ -41,12 +47,13 @@ func (u *UdpConnContext) Conn() UdpConn {
 	return u.conn
 }
 
-func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata) (*UdpConnContext, error) {
+func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 	var connContext = &UdpConnContext{
 		ctx,
 		metadata,
 		conn,
 		constants.RuleProxy,
+		wg,
 	}
 
 	for _, matcher := range GetConnMatcher() {

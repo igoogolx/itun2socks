@@ -75,7 +75,10 @@ func processTcp(t C.ConnContext) {
 }
 
 func processUdp(u *inbound.PacketAdapter) {
-	ct, err := conn.NewUdpConnContext(context.Background(), udpConn{u.UDPPacket}, u.Metadata())
+	var wg sync.WaitGroup
+	wg.Add(1)
+	defer wg.Wait()
+	ct, err := conn.NewUdpConnContext(context.Background(), udpConn{u.UDPPacket}, u.Metadata(), &wg)
 	if err != nil {
 		return
 	}

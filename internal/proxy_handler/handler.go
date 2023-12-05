@@ -7,28 +7,56 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
+	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
-	"io"
 	"net"
-	"time"
+	"sync"
 )
 
 type udpConn struct {
 	network.PacketConn
-	read bool
-	dest M.Socksaddr
-	buff *buf.Buffer
 }
 
 func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
-	if uc.read {
-		return 0, nil, io.EOF
+
+	var err error
+	var buff *buf.Buffer
+	var dest M.Socksaddr
+
+	defer func() {
+		if buff != nil {
+			buff.Release()
+		}
+
+	}()
+
+	newBuffer := func() *buf.Buffer {
+		buff = buf.NewPacket() // do not use stack buffer
+		return buff
 	}
-	n, err := uc.buff.Read(data)
-	uc.buff.Release()
-	uc.read = true
-	return n, uc.dest.UDPAddr(), err
+	readWaiter, isReadWaiter := bufio.CreatePacketReadWaiter(uc)
+	if isReadWaiter {
+		readWaiter.InitializeReadWaiter(newBuffer)
+	}
+
+	if isReadWaiter {
+		dest, err = readWaiter.WaitReadPacket()
+	} else {
+		dest, err = uc.ReadPacket(newBuffer())
+	}
+
+	if err != nil {
+		return 0, nil, err
+	}
+
+	n, err := buff.Read(data)
+
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return n, dest.UDPAddr(), nil
 }
 
 func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
@@ -40,10 +68,6 @@ func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
 	}
 	err = uc.WritePacket(newBuf, M.SocksaddrFromNet(addr))
 	return len(data), err
-}
-
-func (uc ConnHandler) SetReadDeadline(t time.Time) error {
-	return nil
 }
 
 type ConnHandler struct {
@@ -70,12 +94,6 @@ func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metad
 }
 
 func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn network.PacketConn, metadata M.Metadata) error {
-	defer func(packetConn network.PacketConn) {
-		err := packetConn.Close()
-		if err != nil {
-			log.Errorln("fail to close packetConn")
-		}
-	}(packetConn)
 	local, err := net.ResolveUDPAddr("udp", metadata.Source.String())
 	if err != nil {
 		return err
@@ -86,39 +104,19 @@ func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn networ
 	}
 	m := tunnel.CreateUdpMetadata(*local, *remote)
 
-	for {
-		var buff *buf.Buffer
-		newBuffer := func() *buf.Buffer {
-			buff = buf.NewPacket() // do not use stack buffer
-			return buff
-		}
-		var err error
-		var dest M.Socksaddr
-		readWaiter, isReadWaiter := bufio.CreatePacketReadWaiter(packetConn)
-		if isReadWaiter {
-			readWaiter.InitializeReadWaiter(newBuffer)
-		}
-		if isReadWaiter {
-			dest, err = readWaiter.WaitReadPacket()
-		} else {
-			dest, err = packetConn.ReadPacket(newBuffer())
-		}
-		if err != nil {
-			if buff != nil {
-				buff.Release()
-			}
-			break
-		}
-		ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn, dest: dest, buff: buff}, &m)
-		if err != nil {
-			if buff != nil {
-				buff.Release()
-			}
-			break
-		}
-		uc.udpIn <- *ct
+	if deadline.NeedAdditionalReadDeadline(packetConn) {
+		packetConn = deadline.NewFallbackPacketConn(bufio.NewNetPacketConn(packetConn)) // conn from sing should check NeedAdditionalReadDeadline
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(1)
+	defer wg.Wait()
+
+	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
+	if err != nil {
+		return err
+	}
+	uc.udpIn <- *ct
 	return nil
 }
 
