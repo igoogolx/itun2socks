@@ -21,7 +21,9 @@ builds:
       - windows
     ignore:
       - goos: windows
-        goarch: 386
+        goarch: |
+          386
+          arm64
 
 
 archives:
