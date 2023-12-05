@@ -56,7 +56,7 @@ func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
 		return 0, nil, err
 	}
 
-	return n, dest.UDPAddr(), nil
+	return n, dest, nil
 }
 
 func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
@@ -110,13 +110,13 @@ func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn networ
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	defer wg.Wait()
 
 	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
 	if err != nil {
 		return err
 	}
 	uc.udpIn <- *ct
+	wg.Wait()
 	return nil
 }
 

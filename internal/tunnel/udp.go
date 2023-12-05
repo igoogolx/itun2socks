@@ -42,6 +42,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 
 		n, addr, err := rc.ReadFrom(receivedBuf)
 		if ShouldIgnorePacketError(err) {
+			log.Debugln("ignore packet read from err: %v", err)
 			return nil
 		}
 		if err != nil {
@@ -52,7 +53,6 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 		if err != nil {
 			return fmt.Errorf("fail to set udp conn write deadline: %v", err)
 		}
-
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
 		if ShouldIgnorePacketError(err) {
 			return nil
@@ -72,7 +72,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		if err != nil {
 			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote conn,err: %v"), err)
 		}
-		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().String())
+		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().RemoteAddress())
 	}()
 	var lc conn.UdpConn
 	var err error
