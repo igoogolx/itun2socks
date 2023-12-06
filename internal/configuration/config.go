@@ -8,7 +8,7 @@ type Config struct {
 		Rule  string `json:"rule"`
 	} `json:"selected"`
 	Setting SettingCfg `json:"setting"`
-	Rules   []string
+	Rules   []string   `json:"rules"`
 }
 
 type SettingCfg struct {
