@@ -7,7 +7,7 @@ import (
 	_ "unsafe"
 )
 
-func New(mainServer []string, defaultInterfaceName string, getDialer func() C.Proxy) (cResolver.Resolver, error) {
+func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error)) (cResolver.Resolver, error) {
 	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err

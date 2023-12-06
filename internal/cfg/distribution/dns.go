@@ -16,14 +16,14 @@ func NewDnsDistribution(
 ) (DnsDistribution, error) {
 	var err error
 	bootDns = bootDns + "#" + defaultInterfaceName
-	boostDnsClient, err := resolver.New([]string{bootDns}, defaultInterfaceName, func() C.Proxy {
+	boostDnsClient, err := resolver.New([]string{bootDns}, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.RuleBypass)
 	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	localDns = localDns + "#" + defaultInterfaceName
-	localDnsClient, err := resolver.New([]string{localDns}, defaultInterfaceName, func() C.Proxy {
+	localDnsClient, err := resolver.New([]string{localDns}, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.RuleBypass)
 	})
 	if err != nil {
@@ -35,7 +35,7 @@ func NewDnsDistribution(
 		Client:  localDnsClient,
 	}
 
-	remoteDnsClient, err := resolver.New([]string{remoteDns}, defaultInterfaceName, func() C.Proxy {
+	remoteDnsClient, err := resolver.New([]string{remoteDns}, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.RuleProxy)
 	})
 	if err != nil {

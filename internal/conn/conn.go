@@ -35,8 +35,12 @@ func UpdateProxy(remoteProxy C.Proxy) {
 	proxies[constants.RuleReject] = adapter.NewProxy(outbound.NewReject())
 }
 
-func GetProxy(rule constants.RuleType) C.Proxy {
+func GetProxy(rule constants.RuleType) (C.Proxy, error) {
 	mux.RLock()
 	defer mux.RUnlock()
-	return proxies[rule]
+	connDialer := proxies[rule]
+	if connDialer == nil {
+		return nil, fmt.Errorf("empty dialer")
+	}
+	return connDialer, nil
 }

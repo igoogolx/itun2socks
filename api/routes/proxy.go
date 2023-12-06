@@ -184,7 +184,12 @@ func getCurProxy(w http.ResponseWriter, r *http.Request) {
 	addr := ""
 
 	if manager.GetIsStarted() {
-		curAutoProxy := conn.GetProxy(constants.RuleProxy)
+		curAutoProxy, err := conn.GetProxy(constants.RuleProxy)
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
 		if curAutoProxy != nil {
 			if curAutoProxy.Type() == C.URLTest || curAutoProxy.Type() == C.Fallback {
 				curAutoProxy = curAutoProxy.Unwrap(&C.Metadata{})
