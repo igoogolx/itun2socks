@@ -34,7 +34,7 @@
     },
      "hijackDns": {
       "enabled": true,
-      "NetworkService": "Wi-Fi"
+      "networkService": "Wi-Fi"
     },
     "language": "en-US",
     "blockQuic": false
