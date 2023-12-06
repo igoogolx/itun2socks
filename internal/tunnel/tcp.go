@@ -20,7 +20,7 @@ func TcpQueue() chan conn.TcpConnContext {
 }
 
 func handleTCPConn(ct conn.TcpConnContext) {
-	log.Debugln(log.FormatLog(log.UdpPrefix, "handle tcp conn, remote address: %v"), ct.Metadata().RemoteAddress())
+	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, remote address: %v"), ct.Metadata().RemoteAddress())
 	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
 	defer func() {
 		if err := closeConn(ct.Conn()); err != nil {
