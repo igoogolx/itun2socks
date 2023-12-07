@@ -26,11 +26,9 @@ const (
 const DnsPort = "53"
 
 const (
-	TunName      = "utun"
-	TunLocalAddr = "10.255.0.2"
-	TunGateway   = "10.255.0.1"
-	TunMask      = "255.255.255.255"
-	TunMtu       = 1500
+	TunName    = "utun"
+	TunGateway = "10.255.0.1/30"
+	TunMtu     = 1500
 )
 
 const (

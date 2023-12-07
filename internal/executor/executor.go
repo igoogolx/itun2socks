@@ -36,7 +36,7 @@ func newTun() (Client, error) {
 	tunOptions := sTun.Options{
 		Name:         config.Device.Name,
 		MTU:          uint32(config.Device.Mtu),
-		Inet4Address: []netip.Prefix{netip.MustParsePrefix(config.Device.Gateway.String())},
+		Inet4Address: []netip.Prefix{config.Device.Gateway},
 		AutoRoute:    true,
 		StrictRoute:  true,
 	}
@@ -44,13 +44,14 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	stack, err := sTun.NewStack("lwip", sTun.StackOptions{
-		Context:    context.TODO(),
-		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
-		Tun:        tun,
-		Name:       config.Device.Name,
-		MTU:        uint32(config.Device.Mtu),
-		UDPTimeout: int64(5 * time.Second),
+	stack, err := sTun.NewStack("system", sTun.StackOptions{
+		Context:      context.TODO(),
+		Handler:      proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
+		Tun:          tun,
+		Name:         config.Device.Name,
+		MTU:          uint32(config.Device.Mtu),
+		UDPTimeout:   int64(5 * time.Second),
+		Inet4Address: tunOptions.Inet4Address,
 	})
 	if err != nil {
 		return nil, err

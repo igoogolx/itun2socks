@@ -90,6 +90,9 @@ func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metad
 		return err
 	}
 	uc.tcpIn <- *ct
+	var wg sync.WaitGroup
+	wg.Add(1)
+	wg.Wait()
 	return nil
 }
 
