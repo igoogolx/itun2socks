@@ -6,6 +6,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
+	"sync"
 )
 
 type TcpConnContext struct {
@@ -13,6 +14,11 @@ type TcpConnContext struct {
 	metadata *C.Metadata
 	conn     net.Conn
 	rule     constants.RuleType
+	wg       *sync.WaitGroup
+}
+
+func (t *TcpConnContext) Wg() *sync.WaitGroup {
+	return t.wg
 }
 
 func (t *TcpConnContext) Ctx() context.Context {
@@ -31,13 +37,14 @@ func (t *TcpConnContext) Conn() net.Conn {
 	return t.conn
 }
 
-func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata) (*TcpConnContext, error) {
+func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) (*TcpConnContext, error) {
 
 	var connContext = &TcpConnContext{
 		ctx,
 		metadata,
 		conn,
 		constants.RuleProxy,
+		wg,
 	}
 
 	for _, matcher := range GetConnMatcher() {

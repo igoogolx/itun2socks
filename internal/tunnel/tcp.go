@@ -29,6 +29,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 		if err := closeConn(remoteConn); err != nil {
 			log.Debugln(log.FormatLog(log.TcpPrefix, "fail to close remote tcp conn, err: %v"), err)
 		}
+		ct.Wg().Done()
 	}()
 	if err != nil {
 		log.Warnln(log.FormatLog(log.TcpPrefix, "fail to get tcp conn, err: %v, rule: %v, remote address: %v"), err, ct.Rule(), ct.Metadata().RemoteAddress())

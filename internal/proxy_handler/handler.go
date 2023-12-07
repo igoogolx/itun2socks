@@ -84,14 +84,15 @@ func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metad
 	if err != nil {
 		return err
 	}
+
 	m := tunnel.CreateTcpMetadata(*local, *remote)
-	ct, err := conn.NewTcpConnContext(ctx, netConn, &m)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	ct, err := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
 	if err != nil {
 		return err
 	}
 	uc.tcpIn <- *ct
-	var wg sync.WaitGroup
-	wg.Add(1)
 	wg.Wait()
 	return nil
 }

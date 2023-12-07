@@ -66,12 +66,12 @@ func process() {
 func processTcp(t C.ConnContext) {
 	var wg sync.WaitGroup
 	wg.Add(1)
-	defer wg.Wait()
-	ct, err := conn.NewTcpConnContext(context.Background(), t.Conn(), t.Metadata())
+	ct, err := conn.NewTcpConnContext(context.Background(), t.Conn(), t.Metadata(), &wg)
 	if err != nil {
 		return
 	}
 	tunnel.TcpQueue() <- *ct
+	wg.Wait()
 }
 
 func processUdp(u *inbound.PacketAdapter) {
