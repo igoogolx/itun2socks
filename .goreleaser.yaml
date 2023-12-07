@@ -9,22 +9,22 @@ before:
 
 builds:
   - env:
-      - CGO_ENABLED=1
+      - CGO_ENABLED=0
     flags:
       - -v
       - -trimpath
     ldflags:
       - -s -w -X github.com/igoogolx/itun2socks/internal/constants.Version={{ .Tag }} -X github.com/igoogolx/itun2socks/internal/constants.BuildTime={{ .Date }} -buildid=
     tags:
-      - with_lwip
+      - with_gvisor
+      - with_system
     goos:
       - windows
+      - darwin
     ignore:
       - goos: windows
-        goarch: 386
-
-      - goos: windows
         goarch: arm64
+
 
 archives:
   - format: tar.gz
