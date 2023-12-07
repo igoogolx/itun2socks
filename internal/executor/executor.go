@@ -44,8 +44,8 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	stack, err := sTun.NewStack("system", sTun.StackOptions{
-		Context:      context.TODO(),
+	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
+		Context:      context.Background(),
 		Handler:      proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		Tun:          tun,
 		Name:         config.Device.Name,

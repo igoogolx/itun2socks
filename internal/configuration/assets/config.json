@@ -37,6 +37,7 @@
       "networkService": "Wi-Fi"
     },
     "language": "en-US",
-    "blockQuic": false
+    "blockQuic": false,
+    "stack": "system"
   }
 }

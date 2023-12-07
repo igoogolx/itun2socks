@@ -24,6 +24,7 @@ type SettingCfg struct {
 	} `json:"dns"`
 	Language  string `json:"language,omitempty"`
 	BlockQuic bool   `json:"blockQuic,omitempty"`
+	Stack     string `json:"stack"`
 }
 
 type DnsServer struct {

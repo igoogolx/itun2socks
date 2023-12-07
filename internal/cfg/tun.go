@@ -16,6 +16,7 @@ type Config struct {
 	LocalServer local_server.Cfg
 	HijackDns   configuration.HijackDns
 	BlockQuic   bool
+	Stack       string
 }
 
 func NewTun(defaultInterfaceName string) (*Config, error) {
@@ -52,6 +53,13 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		return nil, err
 	}
 	newLocalServer := local_server.New(rawConfig.Setting.LocalServer)
+
+	var stack = rawConfig.Setting.Stack
+
+	if len(stack) == 0 {
+		stack = "system"
+	}
+
 	return &Config{
 		rule,
 		proxy,
@@ -59,5 +67,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		newLocalServer,
 		rawConfig.Setting.HijackDns,
 		rawConfig.Setting.BlockQuic,
+		stack,
 	}, nil
 }
