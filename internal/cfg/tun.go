@@ -54,12 +54,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 	}
 	newLocalServer := local_server.New(rawConfig.Setting.LocalServer)
 
-	var stack = rawConfig.Setting.Stack
-
-	if len(stack) == 0 {
-		stack = "system"
-	}
-
 	return &Config{
 		rule,
 		proxy,
@@ -67,6 +61,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		newLocalServer,
 		rawConfig.Setting.HijackDns,
 		rawConfig.Setting.BlockQuic,
-		stack,
+		rawConfig.Setting.Stack,
 	}, nil
 }

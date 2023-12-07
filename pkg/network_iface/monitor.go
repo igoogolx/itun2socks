@@ -39,7 +39,7 @@ func StartMonitor() error {
 		update(setting.DefaultInterface)
 		return nil
 	}
-	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(logrus.New())
+	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(logrus.StandardLogger())
 	if err != nil {
 		err = E.Cause(err, "create NetworkUpdateMonitor")
 		return err
@@ -50,7 +50,7 @@ func StartMonitor() error {
 		return err
 	}
 
-	defaultInterfaceMonitor, err = tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, logrus.New(), tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
+	defaultInterfaceMonitor, err = tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, logrus.StandardLogger(), tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
 	if err != nil {
 		err = E.Cause(err, "create DefaultInterfaceMonitor")
 		return err

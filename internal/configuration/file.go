@@ -27,6 +27,11 @@ func Read() (Config, error) {
 	if err != nil {
 		return Config{}, fmt.Errorf("fail to deep copy config, err:%v", err)
 	}
+
+	if len(config.Setting.Stack) == 0 {
+		config.Setting.Stack = "system"
+	}
+
 	return *config, nil
 }
 

@@ -12,8 +12,10 @@ import (
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
+	"github.com/sirupsen/logrus"
 	"net/netip"
 	"time"
 )
@@ -39,11 +41,13 @@ func newTun() (Client, error) {
 		Inet4Address: []netip.Prefix{config.Device.Gateway},
 		AutoRoute:    true,
 		StrictRoute:  true,
+		Logger:       logrus.StandardLogger(),
 	}
 	tun, err := sTun.New(tunOptions)
 	if err != nil {
 		return nil, err
 	}
+	log.Errorln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
 	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
 		Context:      context.Background(),
 		Handler:      proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
@@ -52,6 +56,7 @@ func newTun() (Client, error) {
 		MTU:          uint32(config.Device.Mtu),
 		UDPTimeout:   int64(5 * time.Second),
 		Inet4Address: tunOptions.Inet4Address,
+		Logger:       logrus.StandardLogger(),
 	})
 	if err != nil {
 		return nil, err

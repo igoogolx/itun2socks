@@ -21,6 +21,7 @@ func (o *output) Write(p []byte) (int, error) {
 }
 
 func InitLog() {
+	log.StandardLogger()
 	log.SetOutput(&output{
 		&lumberjack.Logger{
 			Filename:   constants.Path.LogFilePath(),
