@@ -29,7 +29,7 @@ func Read() (Config, error) {
 	}
 
 	if len(config.Setting.Stack) == 0 {
-		config.Setting.Stack = "system"
+		config.Setting.Stack = "gvisor"
 	}
 
 	return *config, nil

@@ -38,6 +38,6 @@
     },
     "language": "en-US",
     "blockQuic": false,
-    "stack": "system"
+    "stack": "gvisor"
   }
 }
