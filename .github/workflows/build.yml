@@ -1,30 +1,38 @@
-name: Build
+name: goreleaser
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
+    # run only against tags
     tags:
-      - v*.*.*           # Push events to v1.0, v1.1, and v1.9 tags
+      - '*'
+
+permissions:
+  contents: write
+  # packages: write
+  # issues: write
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-
+  goreleaser:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
         with:
-          go-version: '^1.21.4' # The Go version to download (if necessary) and use.
-
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.20.0'
+          cache: true
+      # More assembly might be required: Docker logins, GPG, etc. It all depends
+      # on your needs.
       - uses: goreleaser/goreleaser-action@v4
         with:
           # either 'goreleaser' (default) or 'goreleaser-pro':
           distribution: goreleaser
           version: latest
-          args: release --clean -f .goreleaser_${{ matrix.os }}.yaml
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          # Your GoReleaser Pro key, if you are using the 'goreleaser-pro'
+          # distribution:
+          # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
