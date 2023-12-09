@@ -53,6 +53,7 @@ github.com/hashicorp/golang-lru v1.0.2 h1:dV3g9Z/unq5DpblPpw+Oqcv4dU/1omnb4Ok8iP
 github.com/hashicorp/golang-lru v1.0.2/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
 github.com/igoogolx/clash v1.19.2 h1:ZX5ONbdIEBPrrdDgcB1uf2L+DZ1+y0wYe83v2tANIOw=
 github.com/igoogolx/clash v1.19.2/go.mod h1:+wnoypVCuzUn6UcUdsxoNV9HfHXGFCag+erj4vBJAy0=
+github.com/igoogolx/clash v1.19.3/go.mod h1:+wnoypVCuzUn6UcUdsxoNV9HfHXGFCag+erj4vBJAy0=
 github.com/igoogolx/go-tun2socks v1.17.0 h1:wx7CXF5TN2M3c3WM9ZiNvsr260kLU69MeyJN03gaMzY=
 github.com/igoogolx/go-tun2socks v1.17.0/go.mod h1:IDi+QvZouVPPKGEEDSLLZCQY1sCaaQutxE5/R8caogM=
 github.com/igoogolx/sysproxy v0.0.1 h1:7lwOzt1XGW0ZJuXjMx5oPU/TIU3tH3TA9MVOYf8jRyc=
