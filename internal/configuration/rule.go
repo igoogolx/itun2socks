@@ -14,35 +14,40 @@ func GetRuleIds() ([]string, error) {
 	return ruleEngine.GetRuleIds()
 }
 
-func AddCustomizedRule(rule string) error {
+func AddCustomizedRule(rules []string) error {
 	c, err := Read()
 	if err != nil {
 		return err
 	}
-	_, err = ruleEngine.ParseRawValue(rule)
-	if err != nil {
-		return err
+	for _, rule := range rules {
+		_, err = ruleEngine.ParseRawValue(rule)
+		if err != nil {
+			return err
+		}
+		c.Rules = append(c.Rules, rule)
 	}
-	c.Rules = append(c.Rules, rule)
+
 	return Write(c)
 }
 
-func DeleteCustomizedRule(rule string) error {
+func DeleteCustomizedRule(rules []string) error {
 	c, err := Read()
 	if err != nil {
 		return err
 	}
-	_, err = ruleEngine.ParseRawValue(rule)
-	if err != nil {
-		return err
-	}
-	var rules []string
-	for _, item := range c.Rules {
-		if item != rule {
-			rules = append(rules, item)
+	for _, rule := range rules {
+		_, err = ruleEngine.ParseRawValue(rule)
+		if err != nil {
+			return err
 		}
+		var newRules []string
+		for _, item := range c.Rules {
+			if item != rule {
+				newRules = append(newRules, item)
+			}
+		}
+		c.Rules = newRules
 	}
-	c.Rules = rules
 	return Write(c)
 }
 
