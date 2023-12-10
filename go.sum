@@ -51,8 +51,8 @@ github.com/gorilla/websocket v1.5.1 h1:gmztn0JnHVt9JZquRuzLw3g4wouNVzKL15iLr/zn/
 github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZHL0uE0tcaY=
 github.com/hashicorp/golang-lru v1.0.2 h1:dV3g9Z/unq5DpblPpw+Oqcv4dU/1omnb4Ok8iPY6p1c=
 github.com/hashicorp/golang-lru v1.0.2/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
-github.com/igoogolx/clash v1.19.3 h1:9P/VrUG+5N40VEeQbKguOJGErHgWV8HXOSnwGWM06SM=
-github.com/igoogolx/clash v1.19.3/go.mod h1:+wnoypVCuzUn6UcUdsxoNV9HfHXGFCag+erj4vBJAy0=
+github.com/igoogolx/clash v1.19.4 h1:GGXczRAbduuEbJx2P/+Jp/XnjFjMXg1d3G1+rMjdY84=
+github.com/igoogolx/clash v1.19.4/go.mod h1:+wnoypVCuzUn6UcUdsxoNV9HfHXGFCag+erj4vBJAy0=
 github.com/igoogolx/go-tun2socks v1.17.0 h1:wx7CXF5TN2M3c3WM9ZiNvsr260kLU69MeyJN03gaMzY=
 github.com/igoogolx/go-tun2socks v1.17.0/go.mod h1:IDi+QvZouVPPKGEEDSLLZCQY1sCaaQutxE5/R8caogM=
 github.com/igoogolx/sysproxy v0.0.1 h1:7lwOzt1XGW0ZJuXjMx5oPU/TIU3tH3TA9MVOYf8jRyc=
