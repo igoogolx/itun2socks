@@ -18,9 +18,12 @@ type SettingCfg struct {
 	AutoMode         `json:"autoMode"`
 	HijackDns        `json:"hijackDns"`
 	Dns              struct {
-		Boost  DnsServer `json:"boost"`
-		Remote DnsServer `json:"remote"`
-		Local  DnsServer `json:"local"`
+		Server struct {
+			Boost  []string `json:"boost"`
+			Remote []string `json:"remote"`
+			Local  []string `json:"local"`
+		} `json:"server"`
+		CustomizedOptions []string `json:"customizedOptions"`
 	} `json:"dns"`
 	Language  string `json:"language,omitempty"`
 	BlockQuic bool   `json:"blockQuic,omitempty"`

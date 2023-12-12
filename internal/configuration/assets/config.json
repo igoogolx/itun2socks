@@ -9,30 +9,30 @@
   "setting": {
     "mode": "tun",
     "dns": {
-      "boost": {
-        "type": "builtIn",
-        "value": "tcp://114.114.114.114:53"
+      "server": {
+        "boost": [
+          "tcp://114.114.114.114:53"
+        ],
+        "local": [
+          "tcp://114.114.114.114:53"
+        ],
+        "remote": [
+          "tcp://8.8.8.8:53"
+        ]
       },
-      "local": {
-        "type": "builtIn",
-        "value": "tcp://114.114.114.114:53"
-      },
-      "remote": {
-        "type": "builtIn",
-        "value": "tcp://8.8.8.8:53"
-      }
+      "customizedOptions": []
     },
     "defaultInterface": "",
     "localServer": {
-        "port": 1090,
-        "allowLan": false
+      "port": 1090,
+      "allowLan": false
     },
     "autoMode": {
       "enabled": false,
       "type": "url-test",
       "url": "https://google.com"
     },
-     "hijackDns": {
+    "hijackDns": {
       "enabled": true,
       "networkService": "Wi-Fi"
     },

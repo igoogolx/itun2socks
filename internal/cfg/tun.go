@@ -33,9 +33,9 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		return nil, err
 	}
 	rule, err := distribution.NewTun(
-		rawConfig.Setting.Dns.Boost.Value,
-		rawConfig.Setting.Dns.Remote.Value,
-		rawConfig.Setting.Dns.Local.Value,
+		rawConfig.Setting.Dns.Server.Boost,
+		rawConfig.Setting.Dns.Server.Remote,
+		rawConfig.Setting.Dns.Server.Local,
 		selectedRule,
 		rawConfig.Rules,
 		defaultInterfaceName)

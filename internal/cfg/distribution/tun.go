@@ -6,7 +6,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"strings"
 )
 
 type Config struct {
@@ -74,21 +73,17 @@ func (c Config) GetDnsTypeFromRuleEngine(domain string) (constants.DnsType, erro
 
 func (c Config) GetDnsType(domain string) constants.DnsType {
 	result := constants.RemoteDns
-	if strings.Contains(c.Dns.Remote.Address, domain) {
-		result = constants.BoostDns
-	} else {
-		var rule, err = c.GetDnsTypeFromRuleEngine(domain)
-		if err == nil {
-			result = rule
-		}
+	var rule, err = c.GetDnsTypeFromRuleEngine(domain)
+	if err == nil {
+		result = rule
 	}
 	return result
 }
 
 func NewTun(
-	boostDns string,
-	remoteDns string,
-	localDns string,
+	boostDns []string,
+	remoteDns []string,
+	localDns []string,
 	ruleId string,
 	rules []string,
 	defaultInterfaceName string,

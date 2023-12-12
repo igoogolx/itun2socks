@@ -18,7 +18,7 @@ type Detail struct {
 	TunInterfaceName        string   `json:"tunInterfaceName"`
 	LocalDns                []string `json:"localDns"`
 	RemoteDns               []string `json:"remoteDns"`
-	BoostDns                string   `json:"boostDns"`
+	BoostDns                []string `json:"boostDns"`
 }
 
 type TunClient struct {
@@ -42,9 +42,9 @@ func (c *TunClient) RuntimeDetail() (interface{}, error) {
 		DirectedInterfaceV4Addr: addr.IP.String(),
 		DirectedInterfaceName:   networkInterface.Name,
 		TunInterfaceName:        c.config.Device.Name,
-		LocalDns:                []string{c.config.Rule.Dns.Local.Address},
-		RemoteDns:               []string{c.config.Rule.Dns.Remote.Address},
-		BoostDns:                c.config.Rule.Dns.Boost.Address,
+		LocalDns:                c.config.Rule.Dns.Local.Addresses,
+		RemoteDns:               c.config.Rule.Dns.Remote.Addresses,
+		BoostDns:                c.config.Rule.Dns.Boost.Addresses,
 	}, nil
 }
 

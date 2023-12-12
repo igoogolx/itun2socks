@@ -9,21 +9,27 @@ import (
 )
 
 func NewDnsDistribution(
-	bootDns string,
-	remoteDns string,
-	localDns string,
+	bootDns []string,
+	remoteDns []string,
+	localDns []string,
 	defaultInterfaceName string,
 ) (DnsDistribution, error) {
 	var err error
-	bootDns = bootDns + "#" + defaultInterfaceName
-	boostDnsClient, err := resolver.New([]string{bootDns}, defaultInterfaceName, func() (C.Proxy, error) {
+	var bootDnsServers []string
+	for _, server := range bootDns {
+		bootDnsServers = append(bootDnsServers, server+"#"+defaultInterfaceName)
+	}
+	boostDnsClient, err := resolver.New(bootDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.RuleBypass)
 	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	localDns = localDns + "#" + defaultInterfaceName
-	localDnsClient, err := resolver.New([]string{localDns}, defaultInterfaceName, func() (C.Proxy, error) {
+	var localDnsServers []string
+	for _, server := range bootDns {
+		localDnsServers = append(localDns, server+"#"+defaultInterfaceName)
+	}
+	localDnsClient, err := resolver.New(localDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.RuleBypass)
 	})
 	if err != nil {
@@ -31,24 +37,24 @@ func NewDnsDistribution(
 	}
 	dd := DnsDistribution{}
 	dd.Local = SubDnsDistribution{
-		Address: localDns,
-		Client:  localDnsClient,
+		Addresses: localDnsServers,
+		Client:    localDnsClient,
 	}
 
-	remoteDnsClient, err := resolver.New([]string{remoteDns}, defaultInterfaceName, func() (C.Proxy, error) {
+	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.RuleProxy)
 	})
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	dd.Remote = SubDnsDistribution{
-		Client:  remoteDnsClient,
-		Address: remoteDns,
+		Client:    remoteDnsClient,
+		Addresses: remoteDns,
 	}
 
 	dd.Boost = SubDnsDistribution{
-		Client:  boostDnsClient,
-		Address: bootDns,
+		Client:    boostDnsClient,
+		Addresses: bootDnsServers,
 	}
 
 	cResolver.DefaultResolver = boostDnsClient
@@ -56,8 +62,8 @@ func NewDnsDistribution(
 }
 
 type SubDnsDistribution struct {
-	Address string
-	Client  cResolver.Resolver
+	Addresses []string
+	Client    cResolver.Resolver
 }
 
 type DnsDistribution struct {
