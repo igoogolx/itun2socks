@@ -3,6 +3,7 @@ package executor
 import (
 	"context"
 	"fmt"
+	cResolver "github.com/Dreamacro/clash/component/resolver"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/configuration"
@@ -100,6 +101,7 @@ func newSysProxy() (Client, error) {
 }
 
 func New() (Client, error) {
+	cResolver.DefaultResolver = nil
 	rawConfig, err := configuration.Read()
 	if err != nil {
 		return nil, err

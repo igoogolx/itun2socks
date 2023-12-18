@@ -88,6 +88,9 @@ func NewTun(
 	rules []string,
 	defaultInterfaceName string,
 ) (Config, error) {
+	if len(boostDns) == 0 || len(remoteDns) == 0 || len(localDns) == 0 {
+		return Config{}, fmt.Errorf("dns can't be empty")
+	}
 	ResetCache()
 	rEngine, err := ruleEngine.New(ruleId, rules)
 	if err != nil {
