@@ -19,8 +19,11 @@ const (
 type RuleConfig string
 
 const (
-	RuleIpCidr RuleConfig = "IP-CIDR"
-	RuleDomain RuleConfig = "DOMAIN"
+	RuleIpCidr        RuleConfig = "IP-CIDR"
+	RuleDomain        RuleConfig = "DOMAIN"
+	RuleDomainKeyword RuleConfig = "DOMAIN-KEYWORD"
+	RuleDomainRegex   RuleConfig = "DOMAIN-REGEX"
+	RuleDomainSuffix  RuleConfig = "DOMAIN-SUFFIX"
 )
 
 const DnsPort = "53"

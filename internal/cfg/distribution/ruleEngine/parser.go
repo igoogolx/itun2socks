@@ -73,6 +73,9 @@ func ParseItem(rawRuleType, value, policy string) (Rule, error) {
 		rule, err = NewIpCidrRule(value, policy)
 		break
 	case constants.RuleDomain:
+	case constants.RuleDomainKeyword:
+	case constants.RuleDomainSuffix:
+	case constants.RuleDomainRegex:
 		rule, err = NewDomainRule(value, policy)
 		break
 	default:

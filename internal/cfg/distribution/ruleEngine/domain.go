@@ -21,7 +21,7 @@ func (d Domain) Type() constants.RuleConfig {
 }
 
 func (d Domain) Match(value string) bool {
-	return isContainsDomain(d.Payload, value)
+	return isContainsDomain(d.RuleType, d.Payload, value)
 }
 
 func (d Domain) Value() string {
@@ -32,29 +32,23 @@ func NewDomainRule(payload, policy string) (*Domain, error) {
 	return &Domain{constants.RuleDomain, payload, policy}, nil
 }
 
-func isContainsDomain(domain string, s string) bool {
-	i := strings.LastIndexByte(domain, '/')
-	if i < 0 {
-		return false
-	}
-	domainValue := domain[:i]
-	domainType := domain[i+1:]
-	switch domainType {
-	case "0":
-		return strings.Contains(domainValue, s)
-	case "1":
-		pattern, err := regexp.Compile(domainValue)
+func isContainsDomain(rType constants.RuleConfig, value string, s string) bool {
+	switch rType {
+	case constants.RuleDomainKeyword:
+		return strings.Contains(value, s)
+	case constants.RuleDomainRegex:
+		pattern, err := regexp.Compile(value)
 		if err != nil {
 			return false
 		}
 		return pattern.MatchString(s)
-	case "2":
-		if !strings.HasSuffix(s, domainValue) {
+	case constants.RuleDomainSuffix:
+		if !strings.HasSuffix(s, value) {
 			return false
 		}
-		return len(s) == len(domainValue) || s[len(s)-len(domainValue)-1] == '.'
-	case "3":
-		return domainValue == s
+		return len(s) == len(value) || s[len(s)-len(value)-1] == '.'
+	case constants.RuleDomain:
+		return value == s
 	}
 	return false
 }
