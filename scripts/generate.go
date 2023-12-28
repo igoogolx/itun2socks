@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	download("https://github.com/igoogolx/lux-rules/releases/download/v1.0.1/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "ruleEngine", "rules.tar.gz"))
-	download("https://github.com/igoogolx/lux-client/releases/download/v0.10.1/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
+	download("https://github.com/igoogolx/lux-rules/releases/download/v2.0.0/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "ruleEngine", "rules.tar.gz"))
+	download("https://github.com/igoogolx/lux-client/releases/download/v0.10.3/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
 }
 
 func download(url string, outputPath string) {
