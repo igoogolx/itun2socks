@@ -28,8 +28,8 @@ func (d Domain) Value() string {
 	return d.Payload
 }
 
-func NewDomainRule(payload, policy string) (*Domain, error) {
-	return &Domain{constants.RuleDomain, payload, policy}, nil
+func NewDomainRule(ruleType constants.RuleConfig, payload, policy string) (*Domain, error) {
+	return &Domain{ruleType, payload, policy}, nil
 }
 
 func isContainsDomain(rType constants.RuleConfig, value string, s string) bool {
