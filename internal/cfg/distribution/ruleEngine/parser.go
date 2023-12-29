@@ -64,7 +64,7 @@ func ParseRawValue(line string) (Rule, error) {
 }
 
 func ParseItem(rawRuleType, value, policy string) (Rule, error) {
-	ruleType := constants.RuleConfig(rawRuleType)
+	ruleType := constants.RuleType(rawRuleType)
 
 	var rule Rule
 	var err error

@@ -16,14 +16,14 @@ const (
 	BoostDns  DnsType = "boost"
 )
 
-type RuleConfig string
+type RuleType string
 
 const (
-	RuleIpCidr        RuleConfig = "IP-CIDR"
-	RuleDomain        RuleConfig = "DOMAIN"
-	RuleDomainKeyword RuleConfig = "DOMAIN-KEYWORD"
-	RuleDomainRegex   RuleConfig = "DOMAIN-REGEX"
-	RuleDomainSuffix  RuleConfig = "DOMAIN-SUFFIX"
+	RuleIpCidr        RuleType = "IP-CIDR"
+	RuleDomain        RuleType = "DOMAIN"
+	RuleDomainKeyword RuleType = "DOMAIN-KEYWORD"
+	RuleDomainRegex   RuleType = "DOMAIN-REGEX"
+	RuleDomainSuffix  RuleType = "DOMAIN-SUFFIX"
 )
 
 const DnsPort = "53"

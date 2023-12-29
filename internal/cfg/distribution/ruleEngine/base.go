@@ -10,7 +10,7 @@ type Rule interface {
 	Match(value string) bool
 	Value() string
 	GetPolicy() constants.Policy
-	Type() constants.RuleConfig
+	Type() constants.RuleType
 }
 
 type Engine struct {

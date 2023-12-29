@@ -6,8 +6,8 @@ import (
 )
 
 type IpCidr struct {
-	RuleType constants.RuleConfig `json:"ruleType"`
-	Payload  string               `json:"payload"`
+	RuleType constants.RuleType `json:"ruleType"`
+	Payload  string             `json:"payload"`
 	prefix   netip.Prefix
 	Policy   string `json:"policy"`
 }
@@ -16,7 +16,7 @@ func (d IpCidr) GetPolicy() constants.Policy {
 	return constants.Policy(d.Policy)
 }
 
-func (i IpCidr) Type() constants.RuleConfig {
+func (i IpCidr) Type() constants.RuleType {
 	return constants.RuleIpCidr
 }
 

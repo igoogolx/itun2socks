@@ -7,16 +7,16 @@ import (
 )
 
 type Domain struct {
-	RuleType constants.RuleConfig `json:"ruleType"`
-	Payload  string               `json:"payload"`
-	Policy   string               `json:"policy"`
+	RuleType constants.RuleType `json:"ruleType"`
+	Payload  string             `json:"payload"`
+	Policy   string             `json:"policy"`
 }
 
 func (d Domain) GetPolicy() constants.Policy {
 	return constants.Policy(d.Policy)
 }
 
-func (d Domain) Type() constants.RuleConfig {
+func (d Domain) Type() constants.RuleType {
 	return constants.RuleDomain
 }
 
@@ -32,7 +32,7 @@ func NewDomainRule(payload, policy string) (*Domain, error) {
 	return &Domain{constants.RuleDomain, payload, policy}, nil
 }
 
-func isContainsDomain(rType constants.RuleConfig, value string, s string) bool {
+func isContainsDomain(rType constants.RuleType, value string, s string) bool {
 	switch rType {
 	case constants.RuleDomainKeyword:
 		return strings.Contains(value, s)
