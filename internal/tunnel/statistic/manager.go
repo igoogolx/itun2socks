@@ -31,8 +31,8 @@ func init() {
 		},
 	}
 
-	go DefaultManager.handle(constants.RuleProxy)
-	go DefaultManager.handle(constants.RuleBypass)
+	go DefaultManager.handle(constants.PolicyProxy)
+	go DefaultManager.handle(constants.PolicyDirect)
 }
 
 type Statistic struct {
@@ -58,17 +58,17 @@ func (m *Manager) Leave(c tracker) {
 	m.connections.Delete(c.ID())
 }
 
-func (m *Manager) getStatistic(rule constants.RuleType) *Statistic {
-	if rule == constants.RuleProxy {
+func (m *Manager) getStatistic(rule constants.Policy) *Statistic {
+	if rule == constants.PolicyProxy {
 		return m.proxy
 	}
-	if rule == constants.RuleBypass {
+	if rule == constants.PolicyDirect {
 		return m.direct
 	}
 	return nil
 }
 
-func (m *Manager) PushUploaded(size int64, rule constants.RuleType) {
+func (m *Manager) PushUploaded(size int64, rule constants.Policy) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.uploadTemp.Add(size)
@@ -76,7 +76,7 @@ func (m *Manager) PushUploaded(size int64, rule constants.RuleType) {
 	}
 }
 
-func (m *Manager) PushDownloaded(size int64, rule constants.RuleType) {
+func (m *Manager) PushDownloaded(size int64, rule constants.Policy) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.downloadTemp.Add(size)
@@ -84,7 +84,7 @@ func (m *Manager) PushDownloaded(size int64, rule constants.RuleType) {
 	}
 }
 
-func (m *Manager) Now(rule constants.RuleType) (up int64, down int64) {
+func (m *Manager) Now(rule constants.Policy) (up int64, down int64) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		return s.uploadBlip.Load(), s.downloadBlip.Load()
@@ -127,7 +127,7 @@ func (m *Manager) GetTotal() *Total {
 	}
 }
 
-func (m *Manager) ResetStatistic(rule constants.RuleType) {
+func (m *Manager) ResetStatistic(rule constants.Policy) {
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.uploadTemp.Store(0)
@@ -139,7 +139,7 @@ func (m *Manager) ResetStatistic(rule constants.RuleType) {
 	}
 }
 
-func (m *Manager) handle(rule constants.RuleType) {
+func (m *Manager) handle(rule constants.Policy) {
 	s := m.getStatistic(rule)
 	if s == nil {
 		return

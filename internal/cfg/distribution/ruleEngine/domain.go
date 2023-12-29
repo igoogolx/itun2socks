@@ -12,8 +12,8 @@ type Domain struct {
 	Policy   string               `json:"policy"`
 }
 
-func (d Domain) GetPolicy() constants.RuleType {
-	return constants.RuleType(d.Policy)
+func (d Domain) GetPolicy() constants.Policy {
+	return constants.Policy(d.Policy)
 }
 
 func (d Domain) Type() constants.RuleConfig {

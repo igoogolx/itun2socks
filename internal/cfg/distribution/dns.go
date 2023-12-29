@@ -20,7 +20,7 @@ func NewDnsDistribution(
 		bootDnsServers = append(bootDnsServers, server+"#"+defaultInterfaceName)
 	}
 	boostDnsClient, err := resolver.New(bootDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
-		return conn.GetProxy(constants.RuleBypass)
+		return conn.GetProxy(constants.PolicyDirect)
 	})
 	if err != nil {
 		return DnsDistribution{}, err
@@ -30,7 +30,7 @@ func NewDnsDistribution(
 		localDnsServers = append(localDns, server+"#"+defaultInterfaceName)
 	}
 	localDnsClient, err := resolver.New(localDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
-		return conn.GetProxy(constants.RuleBypass)
+		return conn.GetProxy(constants.PolicyDirect)
 	})
 	if err != nil {
 		return DnsDistribution{}, err
@@ -42,7 +42,7 @@ func NewDnsDistribution(
 	}
 
 	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (C.Proxy, error) {
-		return conn.GetProxy(constants.RuleProxy)
+		return conn.GetProxy(constants.PolicyProxy)
 	})
 	if err != nil {
 		return DnsDistribution{}, err

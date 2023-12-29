@@ -13,24 +13,24 @@ type Config struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c Config) getIpRuleFromDns(ip string) (constants.RuleType, error) {
-	result := constants.RuleBypass
+func (c Config) getIpRuleFromDns(ip string) (constants.Policy, error) {
+	result := constants.PolicyDirect
 	_, cachedRule, ok := GetCachedDnsItem(ip)
 	if ok {
 		if cachedRule == constants.LocalDns {
-			result = constants.RuleBypass
+			result = constants.PolicyDirect
 		} else {
-			result = constants.RuleProxy
+			result = constants.PolicyProxy
 		}
 		return result, nil
 	}
-	return constants.RuleBypass, fmt.Errorf("not found")
+	return constants.PolicyDirect, fmt.Errorf("not found")
 }
 
-func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error) {
+func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
 	ip := metadata.DstIP.String()
 
-	result := constants.RuleProxy
+	result := constants.PolicyProxy
 
 	defer func(latestIp string) {
 		domain := "unknown"
@@ -54,7 +54,7 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.RuleType) (
 	if err == nil {
 		return rule.GetPolicy(), nil
 	}
-	return constants.RuleProxy, nil
+	return constants.PolicyProxy, nil
 
 }
 
@@ -63,9 +63,9 @@ func (c Config) GetDnsTypeFromRuleEngine(domain string) (constants.DnsType, erro
 	if err != nil {
 		return constants.LocalDns, err
 	}
-	if rule.GetPolicy() == constants.RuleBypass {
+	if rule.GetPolicy() == constants.PolicyDirect {
 		return constants.LocalDns, nil
-	} else if rule.GetPolicy() == constants.RuleProxy {
+	} else if rule.GetPolicy() == constants.PolicyProxy {
 		return constants.RemoteDns, nil
 	}
 	return constants.LocalDns, fmt.Errorf("dns rule not found")

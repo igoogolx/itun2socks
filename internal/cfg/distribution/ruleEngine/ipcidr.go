@@ -12,8 +12,8 @@ type IpCidr struct {
 	Policy   string `json:"policy"`
 }
 
-func (d IpCidr) GetPolicy() constants.RuleType {
-	return constants.RuleType(d.Policy)
+func (d IpCidr) GetPolicy() constants.Policy {
+	return constants.Policy(d.Policy)
 }
 
 func (i IpCidr) Type() constants.RuleConfig {

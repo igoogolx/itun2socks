@@ -1,11 +1,11 @@
 package constants
 
-type RuleType string
+type Policy string
 
 const (
-	RuleBypass RuleType = "bypass"
-	RuleProxy  RuleType = "proxy"
-	RuleReject RuleType = "reject"
+	PolicyDirect Policy = "DIRECT"
+	PolicyProxy  Policy = "PROXY"
+	PolicyReject Policy = "REJECT"
 )
 
 type DnsType string

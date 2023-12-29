@@ -12,30 +12,30 @@ import (
 )
 
 var (
-	proxies map[constants.RuleType]C.Proxy
+	proxies map[constants.Policy]C.Proxy
 	mux     sync.RWMutex
 )
 
-type Matcher func(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error)
+type Matcher func(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error)
 
-func RejectQuicMather(metadata *C.Metadata, prevRule constants.RuleType) (constants.RuleType, error) {
-	if prevRule == constants.RuleProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
+func RejectQuicMather(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
+	if prevRule == constants.PolicyProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
 		log.Debugln("reject quic conn:%v", metadata.RemoteAddress())
-		return constants.RuleReject, nil
+		return constants.PolicyReject, nil
 	}
-	return constants.RuleProxy, fmt.Errorf("not quic")
+	return constants.PolicyProxy, fmt.Errorf("not quic")
 }
 
 func UpdateProxy(remoteProxy C.Proxy) {
 	mux.Lock()
 	defer mux.Unlock()
-	proxies = make(map[constants.RuleType]C.Proxy)
-	proxies[constants.RuleProxy] = remoteProxy
-	proxies[constants.RuleBypass] = adapter.NewProxy(outbound.NewDirect())
-	proxies[constants.RuleReject] = adapter.NewProxy(outbound.NewReject())
+	proxies = make(map[constants.Policy]C.Proxy)
+	proxies[constants.PolicyProxy] = remoteProxy
+	proxies[constants.PolicyDirect] = adapter.NewProxy(outbound.NewDirect())
+	proxies[constants.PolicyReject] = adapter.NewProxy(outbound.NewReject())
 }
 
-func GetProxy(rule constants.RuleType) (C.Proxy, error) {
+func GetProxy(rule constants.Policy) (C.Proxy, error) {
 	mux.RLock()
 	defer mux.RUnlock()
 	connDialer := proxies[rule]

@@ -13,7 +13,7 @@ type TcpConnContext struct {
 	ctx      context.Context
 	metadata *C.Metadata
 	conn     net.Conn
-	rule     constants.RuleType
+	rule     constants.Policy
 	wg       *sync.WaitGroup
 }
 
@@ -25,7 +25,7 @@ func (t *TcpConnContext) Ctx() context.Context {
 	return t.ctx
 }
 
-func (t *TcpConnContext) Rule() constants.RuleType {
+func (t *TcpConnContext) Rule() constants.Policy {
 	return t.rule
 }
 
@@ -43,7 +43,7 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata,
 		ctx,
 		metadata,
 		conn,
-		constants.RuleProxy,
+		constants.PolicyProxy,
 		wg,
 	}
 
@@ -58,7 +58,7 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata,
 
 }
 
-func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule constants.RuleType, defaultInterface string) (net.Conn, error) {
+func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule constants.Policy, defaultInterface string) (net.Conn, error) {
 	connDialer, err := GetProxy(rule)
 	if err != nil {
 		return nil, err

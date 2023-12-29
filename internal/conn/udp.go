@@ -23,7 +23,7 @@ type UdpConnContext struct {
 	ctx      context.Context
 	metadata *C.Metadata
 	conn     UdpConn
-	rule     constants.RuleType
+	rule     constants.Policy
 	wg       *sync.WaitGroup
 }
 
@@ -35,7 +35,7 @@ func (u *UdpConnContext) Ctx() context.Context {
 	return u.ctx
 }
 
-func (u *UdpConnContext) Rule() constants.RuleType {
+func (u *UdpConnContext) Rule() constants.Policy {
 	return u.rule
 }
 
@@ -52,7 +52,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, 
 		ctx,
 		metadata,
 		conn,
-		constants.RuleProxy,
+		constants.PolicyProxy,
 		wg,
 	}
 
@@ -65,7 +65,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, 
 	return connContext, nil
 }
 
-func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule constants.RuleType, defaultInterface string) (net.PacketConn, error) {
+func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule constants.Policy, defaultInterface string) (net.PacketConn, error) {
 	connDialer, err := GetProxy(rule)
 	if err != nil {
 		return nil, err

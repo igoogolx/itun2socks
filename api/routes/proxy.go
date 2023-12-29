@@ -184,7 +184,7 @@ func getCurProxy(w http.ResponseWriter, r *http.Request) {
 	addr := ""
 
 	if manager.GetIsStarted() {
-		curAutoProxy, err := conn.GetProxy(constants.RuleProxy)
+		curAutoProxy, err := conn.GetProxy(constants.PolicyProxy)
 		if err != nil {
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, NewError(err.Error()))
