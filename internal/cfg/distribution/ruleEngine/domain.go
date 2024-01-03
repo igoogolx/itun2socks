@@ -28,7 +28,7 @@ func (d Domain) Value() string {
 	return d.Payload
 }
 
-func NewDomainRule(ruleType constants.RuleConfig, payload, policy string) (*Domain, error) {
+func NewDomainRule(ruleType constants.RuleType, payload, policy string) (*Domain, error) {
 	return &Domain{ruleType, payload, policy}, nil
 }
 
