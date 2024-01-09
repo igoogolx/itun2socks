@@ -48,7 +48,7 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Errorln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
 	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
 		Context:    context.Background(),
 		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
