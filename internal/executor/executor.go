@@ -50,14 +50,12 @@ func newTun() (Client, error) {
 	}
 	log.Errorln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
 	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
-		Context:      context.Background(),
-		Handler:      proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
-		Tun:          tun,
-		Name:         config.Device.Name,
-		MTU:          uint32(config.Device.Mtu),
-		UDPTimeout:   int64(5 * time.Second),
-		Inet4Address: tunOptions.Inet4Address,
-		Logger:       logrus.StandardLogger(),
+		Context:    context.Background(),
+		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
+		TunOptions: tunOptions,
+		Tun:        tun,
+		UDPTimeout: int64(5 * time.Second),
+		Logger:     logrus.StandardLogger(),
 	})
 	if err != nil {
 		return nil, err

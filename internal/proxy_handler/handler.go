@@ -35,16 +35,8 @@ func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
 		buff = buf.NewPacket() // do not use stack buffer
 		return buff
 	}
-	readWaiter, isReadWaiter := bufio.CreatePacketReadWaiter(uc)
-	if isReadWaiter {
-		readWaiter.InitializeReadWaiter(newBuffer)
-	}
 
-	if isReadWaiter {
-		dest, err = readWaiter.WaitReadPacket()
-	} else {
-		dest, err = uc.ReadPacket(newBuffer())
-	}
+	dest, err = uc.ReadPacket(newBuffer())
 
 	if err != nil {
 		return 0, nil, err
