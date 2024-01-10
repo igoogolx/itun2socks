@@ -6,7 +6,7 @@ toolchain go1.21.0
 
 replace github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => github.com/igoogolx/sysproxy v0.0.1
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.4
+replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.5
 
 replace github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61 => github.com/igoogolx/go-tun2socks v1.17.0
 
