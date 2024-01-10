@@ -13,46 +13,38 @@ type SystemProxyConfig struct {
 }
 
 func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
-	if metadata.Host != "" {
-		dnsRule, err := c.GetDnsType(metadata.Host)
-		if err != nil {
-			return constants.PolicyProxy, fmt.Errorf("reject dns")
-		}
-		if dnsRule == constants.LocalDns {
-			return constants.PolicyDirect, nil
-		} else {
-			return constants.PolicyProxy, nil
-		}
-	}
-
-	ip := metadata.DstIP.String()
 	result := constants.PolicyProxy
-
 	defer func() {
-		domain := metadata.String()
-		log.Infoln(log.FormatLog(log.RulePrefix, "host: %v, rule: %v"), domain, result)
+		target := metadata.String()
+		log.Infoln(log.FormatLog(log.RulePrefix, "host: %v, rule: %v"), target, result)
 	}()
-
-	rule, err := c.RuleEngine.Match(ip)
-	if err == nil {
-		return rule.GetPolicy(), nil
+	if metadata.Host != "" {
+		var rule, err = c.RuleEngine.Match(metadata.Host)
+		if err == nil {
+			result = rule.GetPolicy()
+		}
+	} else {
+		rule, err := c.RuleEngine.Match(metadata.DstIP.String())
+		if err == nil {
+			result = rule.GetPolicy()
+		}
 	}
-
-	return constants.PolicyProxy, nil
+	return result, nil
 
 }
 
 func (c SystemProxyConfig) GetDnsType(domain string) (constants.DnsType, error) {
 	var rule, err = c.RuleEngine.Match(domain)
-	if err != nil {
-		return constants.RemoteDns, err
+	if err == nil {
+		if rule.GetPolicy() == constants.PolicyDirect {
+			return constants.LocalDns, nil
+		} else if rule.GetPolicy() == constants.PolicyProxy {
+			return constants.RemoteDns, nil
+		} else if rule.GetPolicy() == constants.PolicyReject {
+			return constants.LocalDns, fmt.Errorf("reject dns")
+		}
 	}
-	if rule.GetPolicy() == constants.PolicyDirect {
-		return constants.LocalDns, nil
-	} else if rule.GetPolicy() == constants.PolicyReject {
-		return constants.RemoteDns, fmt.Errorf("reject dns")
-	}
-	return constants.RemoteDns, fmt.Errorf("dns type not found")
+	return constants.RemoteDns, nil
 }
 
 func NewSystemProxy(

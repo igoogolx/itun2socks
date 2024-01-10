@@ -13,23 +13,20 @@ type Config struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c Config) getIpRuleFromDns(ip string) (constants.Policy, error) {
+func (c Config) getIpRuleFromDns(ip string) (constants.Policy, bool) {
 	cachedDomain, _, ok := GetCachedDnsItem(ip)
 	if ok {
 		rule, err := c.RuleEngine.Match(cachedDomain)
-		if err != nil {
-			return constants.PolicyProxy, err
+		if err == nil {
+			return rule.GetPolicy(), true
 		}
-		return rule.GetPolicy(), nil
 	}
-	return constants.PolicyDirect, fmt.Errorf("not found")
+	return constants.PolicyDirect, false
 }
 
 func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
 	ip := metadata.DstIP.String()
-
 	result := constants.PolicyProxy
-
 	defer func(latestIp string) {
 		domain := "unknown"
 		dnsRule := "unknown"
@@ -41,38 +38,31 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (co
 		log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), latestIp, result, domain, dnsRule)
 	}(ip)
 
-	var err error
-	//dns result
-	result, err = c.getIpRuleFromDns(ip)
-	if err == nil {
-		return result, nil
+	result, dnsRuleOk := c.getIpRuleFromDns(ip)
+
+	if !dnsRuleOk {
+		rule, err := c.RuleEngine.Match(ip)
+		if err == nil {
+			result = rule.GetPolicy()
+		}
 	}
 
-	rule, err := c.RuleEngine.Match(ip)
-	if err == nil {
-		return rule.GetPolicy(), nil
-	}
-	return constants.PolicyProxy, nil
-
-}
-
-func (c Config) GetDnsTypeFromRuleEngine(domain string) (constants.DnsType, error) {
-	var rule, err = c.RuleEngine.Match(domain)
-	if err != nil {
-		return constants.LocalDns, err
-	}
-	if rule.GetPolicy() == constants.PolicyDirect {
-		return constants.LocalDns, nil
-	} else if rule.GetPolicy() == constants.PolicyProxy {
-		return constants.RemoteDns, nil
-	} else if rule.GetPolicy() == constants.PolicyReject {
-		return constants.LocalDns, fmt.Errorf("reject dns")
-	}
-	return constants.LocalDns, fmt.Errorf("dns rule not found")
+	return result, nil
 }
 
 func (c Config) GetDnsType(domain string) (constants.DnsType, error) {
-	return c.GetDnsTypeFromRuleEngine(domain)
+	var rule, err = c.RuleEngine.Match(domain)
+	if err == nil {
+		if rule.GetPolicy() == constants.PolicyDirect {
+			return constants.LocalDns, nil
+		} else if rule.GetPolicy() == constants.PolicyProxy {
+			return constants.RemoteDns, nil
+		} else if rule.GetPolicy() == constants.PolicyReject {
+			return constants.LocalDns, fmt.Errorf("reject dns")
+		}
+	}
+
+	return constants.RemoteDns, nil
 }
 
 func NewTun(

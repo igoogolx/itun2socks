@@ -35,7 +35,7 @@ func NewDomainRule(ruleType constants.RuleType, payload, policy string) (*Domain
 func isContainsDomain(rType constants.RuleType, value string, s string) bool {
 	switch rType {
 	case constants.RuleDomainKeyword:
-		return strings.Contains(value, s)
+		return strings.Contains(s, value)
 	case constants.RuleDomainRegex:
 		pattern, err := regexp.Compile(value)
 		if err != nil {
