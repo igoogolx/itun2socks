@@ -87,6 +87,7 @@ func NewTun(
 	ruleId string,
 	rules []string,
 	defaultInterfaceName string,
+	disableCache bool,
 ) (Config, error) {
 	if len(boostDns) == 0 || len(remoteDns) == 0 || len(localDns) == 0 {
 		return Config{}, fmt.Errorf("dns can't be empty")
@@ -96,7 +97,7 @@ func NewTun(
 	if err != nil {
 		return Config{}, err
 	}
-	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName)
+	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName, disableCache)
 	if err != nil {
 		return Config{}, err
 	}

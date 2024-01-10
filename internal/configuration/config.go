@@ -18,7 +18,8 @@ type SettingCfg struct {
 	AutoMode         `json:"autoMode"`
 	HijackDns        `json:"hijackDns"`
 	Dns              struct {
-		Server struct {
+		DisableCache bool `json:"disableCache"`
+		Server       struct {
 			Boost  []string `json:"boost"`
 			Remote []string `json:"remote"`
 			Local  []string `json:"local"`

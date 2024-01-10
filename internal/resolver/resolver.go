@@ -7,15 +7,16 @@ import (
 	_ "unsafe"
 )
 
-func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error)) (cResolver.Resolver, error) {
+func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error), disableCache bool) (cResolver.Resolver, error) {
 	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err
 	}
 
 	mainDnsClient := dns.NewResolver(dns.Config{
-		Main:      mainNameResolver,
-		GetDialer: getDialer,
+		Main:         mainNameResolver,
+		GetDialer:    getDialer,
+		DisableCache: disableCache,
 	})
 
 	return mainDnsClient, nil
