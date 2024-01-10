@@ -6,7 +6,7 @@ import (
 )
 
 type Dns interface {
-	GetDnsType(question string) constants.DnsType
+	GetDnsType(question string) (constants.DnsType, error)
 }
 
 var defaultDnsMatcher Dns

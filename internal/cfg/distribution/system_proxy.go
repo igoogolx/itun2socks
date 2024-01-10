@@ -1,6 +1,7 @@
 package distribution
 
 import (
+	"fmt"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -13,7 +14,10 @@ type SystemProxyConfig struct {
 
 func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
 	if metadata.Host != "" {
-		dnsRule := c.GetDnsType(metadata.Host)
+		dnsRule, err := c.GetDnsType(metadata.Host)
+		if err != nil {
+			return constants.PolicyProxy, fmt.Errorf("reject dns")
+		}
 		if dnsRule == constants.LocalDns {
 			return constants.PolicyDirect, nil
 		} else {
@@ -38,16 +42,17 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule constants.
 
 }
 
-func (c SystemProxyConfig) GetDnsType(domain string) constants.DnsType {
+func (c SystemProxyConfig) GetDnsType(domain string) (constants.DnsType, error) {
 	var rule, err = c.RuleEngine.Match(domain)
-	if err == nil {
-		if rule.GetPolicy() == constants.PolicyDirect {
-			return constants.LocalDns
-		} else if rule.GetPolicy() == constants.PolicyProxy {
-			return constants.RemoteDns
-		}
+	if err != nil {
+		return constants.RemoteDns, err
 	}
-	return constants.RemoteDns
+	if rule.GetPolicy() == constants.PolicyDirect {
+		return constants.LocalDns, nil
+	} else if rule.GetPolicy() == constants.PolicyReject {
+		return constants.RemoteDns, fmt.Errorf("reject dns")
+	}
+	return constants.RemoteDns, fmt.Errorf("dns type not found")
 }
 
 func NewSystemProxy(

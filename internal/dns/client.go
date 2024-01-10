@@ -95,7 +95,10 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsType := matcher.GetDnsMatcher().GetDnsType(question)
+	dnsType, err := matcher.GetDnsMatcher().GetDnsType(question)
+	if err != nil {
+		return nil, fmt.Errorf("fail to get dns type, err: %v, question: %v", err, question)
+	}
 	res, err := dnsMap[dnsType].ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)

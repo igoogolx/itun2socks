@@ -14,15 +14,13 @@ type Config struct {
 }
 
 func (c Config) getIpRuleFromDns(ip string) (constants.Policy, error) {
-	result := constants.PolicyDirect
-	_, cachedRule, ok := GetCachedDnsItem(ip)
+	cachedDomain, _, ok := GetCachedDnsItem(ip)
 	if ok {
-		if cachedRule == constants.LocalDns {
-			result = constants.PolicyDirect
-		} else {
-			result = constants.PolicyProxy
+		rule, err := c.RuleEngine.Match(cachedDomain)
+		if err != nil {
+			return constants.PolicyProxy, err
 		}
-		return result, nil
+		return rule.GetPolicy(), nil
 	}
 	return constants.PolicyDirect, fmt.Errorf("not found")
 }
@@ -67,17 +65,14 @@ func (c Config) GetDnsTypeFromRuleEngine(domain string) (constants.DnsType, erro
 		return constants.LocalDns, nil
 	} else if rule.GetPolicy() == constants.PolicyProxy {
 		return constants.RemoteDns, nil
+	} else if rule.GetPolicy() == constants.PolicyReject {
+		return constants.LocalDns, fmt.Errorf("reject dns")
 	}
 	return constants.LocalDns, fmt.Errorf("dns rule not found")
 }
 
-func (c Config) GetDnsType(domain string) constants.DnsType {
-	result := constants.RemoteDns
-	var rule, err = c.GetDnsTypeFromRuleEngine(domain)
-	if err == nil {
-		result = rule
-	}
-	return result
+func (c Config) GetDnsType(domain string) (constants.DnsType, error) {
+	return c.GetDnsTypeFromRuleEngine(domain)
 }
 
 func NewTun(
