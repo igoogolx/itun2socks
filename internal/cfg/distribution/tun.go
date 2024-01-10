@@ -24,32 +24,30 @@ func (c Config) getIpRuleFromDns(ip string) (constants.Policy, bool) {
 	return constants.PolicyDirect, false
 }
 
-func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
+func (c Config) connMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
 	ip := metadata.DstIP.String()
-	result := constants.PolicyProxy
-	defer func(latestIp string) {
-		domain := "unknown"
-		dnsRule := "unknown"
-		cacheDomain, cachedRule, ok := GetCachedDnsItem(latestIp)
-		if ok {
-			domain = cacheDomain
-			dnsRule = string(cachedRule)
-		}
-		log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), latestIp, result, domain, dnsRule)
-	}(ip)
 
-	dnsResult, dnsRuleOk := c.getIpRuleFromDns(ip)
-
-	if dnsRuleOk {
-		result = dnsResult
-	} else {
-		rule, err := c.RuleEngine.Match(ip)
-		if err == nil {
-			result = rule.GetPolicy()
-		}
+	if dnsResult, dnsRuleOk := c.getIpRuleFromDns(ip); dnsRuleOk {
+		return dnsResult, nil
 	}
+	if rule, err := c.RuleEngine.Match(ip); err == nil {
+		return rule.GetPolicy(), nil
+	}
+	return constants.PolicyProxy, nil
+}
 
-	return result, nil
+func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
+	result, err := c.connMatcher(metadata, prevRule)
+	ip := metadata.DstIP.String()
+	domain := "unknown"
+	dnsRule := "unknown"
+	cacheDomain, cachedRule, ok := GetCachedDnsItem(ip)
+	if ok {
+		domain = cacheDomain
+		dnsRule = string(cachedRule)
+	}
+	log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), ip, result, domain, dnsRule)
+	return result, err
 }
 
 func (c Config) GetDnsType(domain string) (constants.DnsType, error) {

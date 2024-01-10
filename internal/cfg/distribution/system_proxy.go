@@ -12,25 +12,33 @@ type SystemProxyConfig struct {
 	RuleEngine *ruleEngine.Engine
 }
 
+func (c SystemProxyConfig) connMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
+
+	if metadata.Host != "" {
+		var rule, err = c.RuleEngine.Match(metadata.Host)
+		if err == nil {
+			return rule.GetPolicy(), nil
+		}
+	}
+
+	if metadata.DstIP.String() != "" {
+		rule, err := c.RuleEngine.Match(metadata.DstIP.String())
+		if err == nil {
+			return rule.GetPolicy(), nil
+		}
+	}
+
+	return constants.PolicyProxy, nil
+
+}
+
 func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
-	result := constants.PolicyProxy
+	result, err := c.connMatcher(metadata, prevRule)
 	defer func() {
 		target := metadata.String()
 		log.Infoln(log.FormatLog(log.RulePrefix, "host: %v, rule: %v"), target, result)
 	}()
-	if metadata.Host != "" {
-		var rule, err = c.RuleEngine.Match(metadata.Host)
-		if err == nil {
-			result = rule.GetPolicy()
-		}
-	} else {
-		rule, err := c.RuleEngine.Match(metadata.DstIP.String())
-		if err == nil {
-			result = rule.GetPolicy()
-		}
-	}
-	return result, nil
-
+	return result, err
 }
 
 func (c SystemProxyConfig) GetDnsType(domain string) (constants.DnsType, error) {
