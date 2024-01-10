@@ -47,6 +47,9 @@ func HandleDnsConn(conn Conn) error {
 		return fmt.Errorf("fail to hanlde dns message: err: %v", err)
 	}
 	resData, err := res.Pack()
+	if err != nil {
+		return fmt.Errorf("fail to pack dns message: err: %v", err)
+	}
 	_, err = conn.WriteTo(resData, addr)
 	return err
 }
