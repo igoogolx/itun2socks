@@ -37,6 +37,9 @@ func HandleDnsConn(conn Conn) error {
 	data := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(data)
 	_, addr, err := conn.ReadFrom(data)
+	if err != nil {
+		return fmt.Errorf("fail to read dns message: err: %v", err)
+	}
 	dnsMessage := new(D.Msg)
 	err = dnsMessage.Unpack(data)
 	if err != nil {
