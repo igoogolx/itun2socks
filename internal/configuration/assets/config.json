@@ -9,6 +9,7 @@
   "setting": {
     "mode": "tun",
     "dns": {
+      "disableCache": false,
       "server": {
         "boost": [
           "tcp://114.114.114.114:53",
