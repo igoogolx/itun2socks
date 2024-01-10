@@ -38,9 +38,11 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (co
 		log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), latestIp, result, domain, dnsRule)
 	}(ip)
 
-	result, dnsRuleOk := c.getIpRuleFromDns(ip)
+	dnsResult, dnsRuleOk := c.getIpRuleFromDns(ip)
 
-	if !dnsRuleOk {
+	if dnsRuleOk {
+		result = dnsResult
+	} else {
 		rule, err := c.RuleEngine.Match(ip)
 		if err == nil {
 			result = rule.GetPolicy()
