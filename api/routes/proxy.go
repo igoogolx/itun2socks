@@ -34,8 +34,6 @@ func proxyRouter() http.Handler {
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
-	r.Get("/clash-yaml-url", getClashYamlUrl)
-	r.Post("/clash-yaml-url", updateClashYamlUrl)
 	return r
 }
 
@@ -285,31 +283,4 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.NoContent(w, r)
-}
-
-func updateClashYamlUrl(w http.ResponseWriter, r *http.Request) {
-	var req map[string]string
-	if err := render.DecodeJSON(r.Body, &req); err != nil {
-		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, ErrBadRequest)
-		return
-
-	}
-	err := configuration.SetClasYamlUrl(req["url"])
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-	render.NoContent(w, r)
-}
-
-func getClashYamlUrl(w http.ResponseWriter, r *http.Request) {
-	url, err := configuration.GetClasYamlUrl()
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-	render.JSON(w, r, render.M{"url": url})
 }

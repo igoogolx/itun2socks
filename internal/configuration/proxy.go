@@ -146,24 +146,3 @@ func AddProxy(proxy map[string]interface{}) (string, error) {
 	}
 	return id.String(), nil
 }
-
-func SetClasYamlUrl(url string) error {
-	data, err := Read()
-	if err != nil {
-		return err
-	}
-	data.ClashYamlUrl = url
-	err = Write(data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func GetClasYamlUrl() (string, error) {
-	data, err := Read()
-	if err != nil {
-		return "", err
-	}
-	return data.ClashYamlUrl, nil
-}
