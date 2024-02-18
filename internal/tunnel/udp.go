@@ -97,6 +97,8 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		err = closeConn(lc)
 		if err != nil {
 			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close local conn,err: %v"), err)
+		} else {
+			log.Infoln(log.FormatLog(log.UdpPrefix, "close local conn,err: %v"), err)
 		}
 	}()
 
