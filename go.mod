@@ -11,7 +11,7 @@ replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.5
 require (
 	github.com/Dreamacro/clash v1.18.0
 	github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b
-	github.com/go-chi/chi/v5 v5.0.11
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.0.0
