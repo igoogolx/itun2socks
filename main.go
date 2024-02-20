@@ -21,6 +21,7 @@ var (
 	port    int
 )
 
+//go:generate go run scripts/generate.go
 func main() {
 	debug.SetMemoryLimit(32 * 1024 * 1024)
 	flag.BoolVar(&version, "version", false, "Print version")
