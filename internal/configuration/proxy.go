@@ -2,8 +2,8 @@ package configuration
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
+	"github.com/igoogolx/clash/adapter"
 	"slices"
 )
 

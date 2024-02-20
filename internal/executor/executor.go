@@ -3,8 +3,8 @@ package executor
 import (
 	"context"
 	"fmt"
-	cResolver "github.com/Dreamacro/clash/component/resolver"
-	C "github.com/Dreamacro/clash/constant"
+	cResolver "github.com/igoogolx/clash/component/resolver"
+	C "github.com/igoogolx/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"

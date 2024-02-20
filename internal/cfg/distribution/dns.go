@@ -1,8 +1,8 @@
 package distribution
 
 import (
-	cResolver "github.com/Dreamacro/clash/component/resolver"
-	C "github.com/Dreamacro/clash/constant"
+	cResolver "github.com/igoogolx/clash/component/resolver"
+	C "github.com/igoogolx/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/resolver"

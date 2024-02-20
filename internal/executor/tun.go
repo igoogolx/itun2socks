@@ -2,7 +2,7 @@ package executor
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/component/iface"
+	"github.com/igoogolx/clash/component/iface"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"

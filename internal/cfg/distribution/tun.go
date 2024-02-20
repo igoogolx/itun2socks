@@ -2,7 +2,7 @@ package distribution
 
 import (
 	"fmt"
-	C "github.com/Dreamacro/clash/constant"
+	C "github.com/igoogolx/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
