@@ -1,5 +1,3 @@
-github.com/Dreamacro/clash v1.18.0 h1:tic7ykTOCaT0mxwAkXo6QP3LN3Nps8oZz9atgr6TU8A=
-github.com/Dreamacro/clash v1.18.0/go.mod h1:r//xe/2pA3Zl+3fjIiI/o6RjIVd+z87drCD58dpRnFg=
 github.com/Dreamacro/protobytes v0.0.0-20230911123819-0bbf144b9b9a h1:1AtE37gqotGM0T90bcmdh2J2eVIjQneS/4/PGLIjl3Y=
 github.com/Dreamacro/protobytes v0.0.0-20230911123819-0bbf144b9b9a/go.mod h1:ESt8LLs50hyrYzfb7NRh3cDm8W1/r/9+CEAKWV+gc38=
 github.com/ajg/form v1.5.1 h1:t9c7v8JUKu/XxOGBU0yjNpaMloxGEJhUkqFRq0ibGeU=
@@ -49,10 +47,10 @@ github.com/gorilla/websocket v1.5.1 h1:gmztn0JnHVt9JZquRuzLw3g4wouNVzKL15iLr/zn/
 github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZHL0uE0tcaY=
 github.com/hashicorp/golang-lru v1.0.2 h1:dV3g9Z/unq5DpblPpw+Oqcv4dU/1omnb4Ok8iPY6p1c=
 github.com/hashicorp/golang-lru v1.0.2/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
-github.com/igoogolx/clash v1.19.7 h1:jBOzX8lH2e550IG/bw4GH950bUVS7bmR48o8xAmr6gU=
-github.com/igoogolx/clash v1.19.7/go.mod h1:ttrQo5FyFIr2eWQDiS2jBooHHN5H9Umt0YFiNejLhN4=
-github.com/igoogolx/sysproxy v1.0.1 h1:1o4LTW2bBpfh1xaAn9YvwAWA7oiNtIUfqRSOmvKrH3M=
-github.com/igoogolx/sysproxy v1.0.1/go.mod h1:HT9lWEW1dHvmMKGQ2gotRzxENQKMaYi379KvW3dW/Ck=
+github.com/igoogolx/clash v1.19.8 h1:mQOPksvrNUyskYufkMQ9bAY1f2eUYrd9cRe/80dATHU=
+github.com/igoogolx/clash v1.19.8/go.mod h1:ttrQo5FyFIr2eWQDiS2jBooHHN5H9Umt0YFiNejLhN4=
+github.com/igoogolx/sysproxy v1.0.2 h1:0+YOpcfMIqYtGofZKDUGEE2Pj0t0y/ojqqMBC+koktQ=
+github.com/igoogolx/sysproxy v1.0.2/go.mod h1:nlbYvk+EK+EC5JcMwv8Bw+ZqwnOvKc+cYGX1cADWwxg=
 github.com/insomniacslk/dhcp v0.0.0-20231016090811-6a2c8fbdcc1c h1:PgxFEySCI41sH0mB7/2XswdXbUykQsRUGod8Rn+NubM=
 github.com/insomniacslk/dhcp v0.0.0-20231016090811-6a2c8fbdcc1c/go.mod h1:3A9PQ1cunSDF/1rbTq99Ts4pVnycWg+vlPkfeD2NLFI=
 github.com/josharian/native v1.0.1-0.20221213033349-c1e37c09b531/go.mod h1:7X/raswPFr05uY3HiLlYeyQntB6OO7E/d2Cu7qoaN2w=
