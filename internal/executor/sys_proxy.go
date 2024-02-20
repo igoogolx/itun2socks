@@ -1,11 +1,11 @@
 package executor
 
 import (
-	"github.com/getlantern/sysproxy"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/sysproxy"
 	"path"
 	"sync"
 )
