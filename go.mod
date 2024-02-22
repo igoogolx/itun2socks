@@ -4,17 +4,19 @@ go 1.21
 
 toolchain go1.21.0
 
+replace github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => github.com/igoogolx/sysproxy v0.0.1
+
 replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.5
 
 require (
 	github.com/Dreamacro/clash v1.18.0
+	github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/hashicorp/golang-lru v1.0.2
-	github.com/igoogolx/sysproxy v1.0.1
 	github.com/miekg/dns v1.1.58
 	github.com/sagernet/sing v0.3.0
 	github.com/sagernet/sing-tun v0.2.1
