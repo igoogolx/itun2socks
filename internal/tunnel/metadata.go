@@ -2,7 +2,7 @@ package tunnel
 
 import (
 	"errors"
-	"github.com/igoogolx/clash/constant"
+	"github.com/Dreamacro/clash/constant"
 	"net"
 	"strconv"
 )

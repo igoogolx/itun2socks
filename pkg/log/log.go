@@ -1,7 +1,7 @@
 package log
 
 import (
-	cLog "github.com/igoogolx/clash/log"
+	cLog "github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"

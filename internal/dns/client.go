@@ -3,7 +3,7 @@ package dns
 import (
 	"context"
 	"fmt"
-	cResolver "github.com/igoogolx/clash/component/resolver"
+	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"

@@ -3,11 +3,11 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/gofrs/uuid/v5"
 	"github.com/gorilla/websocket"
-	"github.com/igoogolx/clash/log"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net/http"
 	"time"

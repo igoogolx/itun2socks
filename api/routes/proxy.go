@@ -2,11 +2,11 @@ package routes
 
 import (
 	"context"
+	"github.com/Dreamacro/clash/adapter"
+	"github.com/Dreamacro/clash/config"
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/igoogolx/clash/adapter"
-	"github.com/igoogolx/clash/config"
-	C "github.com/igoogolx/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"

@@ -1,9 +1,9 @@
 package resolver
 
 import (
-	cResolver "github.com/igoogolx/clash/component/resolver"
-	C "github.com/igoogolx/clash/constant"
-	"github.com/igoogolx/clash/dns"
+	cResolver "github.com/Dreamacro/clash/component/resolver"
+	C "github.com/Dreamacro/clash/constant"
+	"github.com/Dreamacro/clash/dns"
 	_ "unsafe"
 )
 
@@ -39,5 +39,5 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 	return nameResolvers, err
 }
 
-//go:linkname parseNameServer github.com/igoogolx/clash/config.parseNameServer
+//go:linkname parseNameServer github.com/Dreamacro/clash/config.parseNameServer
 func parseNameServer(servers []string) ([]dns.NameServer, error)

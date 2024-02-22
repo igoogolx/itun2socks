@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"github.com/Dreamacro/clash/adapter"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/igoogolx/clash/adapter"
 	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/manager"

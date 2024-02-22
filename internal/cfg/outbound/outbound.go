@@ -2,10 +2,10 @@ package outbound
 
 import (
 	"fmt"
-	"github.com/igoogolx/clash/adapter"
-	"github.com/igoogolx/clash/adapter/outboundgroup"
-	"github.com/igoogolx/clash/constant"
-	"github.com/igoogolx/clash/constant/provider"
+	"github.com/Dreamacro/clash/adapter"
+	"github.com/Dreamacro/clash/adapter/outboundgroup"
+	"github.com/Dreamacro/clash/constant"
+	"github.com/Dreamacro/clash/constant/provider"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 )
 

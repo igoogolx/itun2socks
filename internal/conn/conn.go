@@ -2,9 +2,9 @@ package conn
 
 import (
 	"fmt"
-	"github.com/igoogolx/clash/adapter"
-	"github.com/igoogolx/clash/adapter/outbound"
-	C "github.com/igoogolx/clash/constant"
+	"github.com/Dreamacro/clash/adapter"
+	"github.com/Dreamacro/clash/adapter/outbound"
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"strings"

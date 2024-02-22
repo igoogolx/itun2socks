@@ -2,7 +2,7 @@ package network_iface
 
 import (
 	"context"
-	"github.com/igoogolx/clash/component/dialer"
+	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	tun "github.com/sagernet/sing-tun"

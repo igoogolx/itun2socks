@@ -2,8 +2,8 @@ package conn
 
 import (
 	"context"
-	"github.com/igoogolx/clash/component/dialer"
-	C "github.com/igoogolx/clash/constant"
+	"github.com/Dreamacro/clash/component/dialer"
+	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
 	"sync"
