@@ -25,7 +25,7 @@ var (
 func main() {
 	debug.SetMemoryLimit(32 * 1024 * 1024)
 	flag.BoolVar(&version, "version", false, "Print version")
-	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default:9000")
+	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default: ${user_config_dir}/itun2socks")
 	flag.StringVar(&homeDir, "home_dir", "", "Config dir, default: current dir")
 	flag.Parse()
 
@@ -35,8 +35,8 @@ func main() {
 			homeDir = filepath.Join(configDir, "itun2socks", homeDir)
 		}
 	} else {
-		currentDir, _ := os.Getwd()
-		homeDir = filepath.Join(currentDir)
+		configDir, _ := os.UserConfigDir()
+		homeDir = filepath.Join(configDir, "itun2socks")
 	}
 	_ = os.MkdirAll(homeDir, os.ModePerm)
 	constants.Path.SetHomeDir(homeDir)
