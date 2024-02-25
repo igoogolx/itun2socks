@@ -31,8 +31,8 @@ func main() {
 	defaultHomeDir := filepath.Join(configDir, packageName)
 
 	flag.BoolVar(&version, "version", false, "Print version")
-	flag.IntVar(&port, "port", constants.DefaultHubPort, fmt.Sprintf("Running port, default: %v", defaultHomeDir))
-	flag.StringVar(&homeDir, "home_dir", "", "Config dir, default: current dir")
+	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default:9000")
+	flag.StringVar(&homeDir, "home_dir", "", fmt.Sprintf("Config dir, default: %v", defaultHomeDir))
 	flag.Parse()
 
 	if homeDir != "" {
