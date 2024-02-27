@@ -11,5 +11,5 @@ jobs:
         with:
           identifier: igoogolx.itun2socks
           max-versions-to-keep: 5 # keep only latest 5 versions
-          installers-regex: '.*windows_amd64.zip$' # Only .exe files
+          installers-regex: '.*windows_amd64.zip$' # Only .zip files
           token: ${{ secrets.WINGET_TOKEN }}
