@@ -30,9 +30,9 @@ func main() {
 	userConfigDir, _ := os.UserConfigDir()
 	defaultHomeDir := filepath.Join(userConfigDir, packageName)
 
-	flag.IntVar(&port, "p", constants.DefaultHubPort, "set running port")
-	flag.StringVar(&homeDir, "d", defaultHomeDir, "set configuration directory")
-	flag.BoolVar(&version, "v", false, "print current version of itun2socks")
+	flag.IntVar(&port, "port", constants.DefaultHubPort, "set running port")
+	flag.StringVar(&homeDir, "home_dir", defaultHomeDir, "set configuration directory")
+	flag.BoolVar(&version, "version", false, "print current version of itun2socks")
 	flag.Parse()
 
 	if version {
