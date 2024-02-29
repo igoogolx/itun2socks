@@ -27,31 +27,28 @@ var packageName = "itun2socks"
 func main() {
 	debug.SetMemoryLimit(32 * 1024 * 1024)
 
-	configDir, _ := os.UserConfigDir()
-	defaultHomeDir := filepath.Join(configDir, packageName)
+	userConfigDir, _ := os.UserConfigDir()
+	defaultHomeDir := filepath.Join(userConfigDir, packageName)
 
-	flag.BoolVar(&version, "version", false, "Print version")
-	flag.IntVar(&port, "port", constants.DefaultHubPort, "Running port, default:9000")
-	flag.StringVar(&homeDir, "home_dir", "", fmt.Sprintf("Config dir, default: %v", defaultHomeDir))
+	flag.IntVar(&port, "p", constants.DefaultHubPort, "set running port")
+	flag.StringVar(&homeDir, "d", defaultHomeDir, "set configuration directory")
+	flag.BoolVar(&version, "v", false, "print current version of itun2socks")
 	flag.Parse()
 
-	if homeDir != "" {
-		if !filepath.IsAbs(homeDir) {
-			homeDir = filepath.Join(configDir, packageName, homeDir)
-		}
-	} else {
-		homeDir = filepath.Join(configDir, packageName)
+	if version {
+		fmt.Printf("version: %v, build on: %v", constants.Version, constants.BuildTime)
+		os.Exit(0)
+	}
+
+	if !filepath.IsAbs(homeDir) {
+		currentDir, _ := os.Getwd()
+		homeDir = filepath.Join(currentDir, homeDir)
 	}
 	_ = os.MkdirAll(homeDir, os.ModePerm)
 	constants.Path.SetHomeDir(homeDir)
 	log.InitLog()
 	log.Infoln(log.FormatLog(log.InitPrefix, "using config: %v"), constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
-
-	if version {
-		fmt.Printf("version: %v, build on: %v", constants.Version, constants.BuildTime)
-		os.Exit(0)
-	}
 	api.Start(port)
 	defer func() {
 		if p := recover(); p != nil {
