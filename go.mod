@@ -18,12 +18,12 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/hashicorp/golang-lru v1.0.2
 	github.com/miekg/dns v1.1.58
-	github.com/sagernet/sing v0.3.2
+	github.com/sagernet/sing v0.3.6
 	github.com/sagernet/sing-tun v0.2.3
 	github.com/sirupsen/logrus v1.9.3
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	go.uber.org/atomic v1.11.0
-	golang.org/x/sys v0.17.0
+	golang.org/x/sys v0.18.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
