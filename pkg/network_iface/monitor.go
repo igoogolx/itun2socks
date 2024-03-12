@@ -14,6 +14,7 @@ import (
 
 var defaultInterfaceName = atomic.NewString("")
 var defaultInterfaceMonitor tun.DefaultInterfaceMonitor
+var networkUpdateMonitor tun.NetworkUpdateMonitor
 
 func GetDefaultInterfaceName() string {
 	return defaultInterfaceName.Load()
@@ -39,7 +40,7 @@ func StartMonitor() error {
 		update(setting.DefaultInterface)
 		return nil
 	}
-	networkUpdateMonitor, err := tun.NewNetworkUpdateMonitor(logrus.StandardLogger())
+	networkUpdateMonitor, err = tun.NewNetworkUpdateMonitor(logrus.StandardLogger())
 	if err != nil {
 		err = E.Cause(err, "create NetworkUpdateMonitor")
 		return err
@@ -69,9 +70,19 @@ func StartMonitor() error {
 func StopMonitor() error {
 	defer func() {
 		defaultInterfaceMonitor = nil
+		networkUpdateMonitor = nil
 	}()
+	if networkUpdateMonitor != nil {
+		err := networkUpdateMonitor.Close()
+		if err != nil {
+			return err
+		}
+	}
 	if defaultInterfaceMonitor != nil {
-		return defaultInterfaceMonitor.Close()
+		err := defaultInterfaceMonitor.Close()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
