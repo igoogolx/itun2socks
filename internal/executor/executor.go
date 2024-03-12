@@ -32,6 +32,16 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	for {
+		defaultInterface := network_iface.GetDefaultInterfaceName()
+		if len(defaultInterface) != 0 {
+			break
+		}
+		log.Infoln(log.FormatLog(log.InitPrefix, "waiting for default interface name"))
+		time.Sleep(1 * time.Second)
+	}
+
 	config, err := cfg.NewTun(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err

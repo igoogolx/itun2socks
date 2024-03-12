@@ -56,14 +56,14 @@ func StartMonitor() error {
 		return err
 	}
 	defaultInterfaceMonitor.RegisterCallback(func(event int) {
-		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.IPv4Unspecified()))
 	})
-	update(defaultInterfaceMonitor.DefaultInterfaceName(netip.Addr{}))
+	err = defaultInterfaceMonitor.Start()
+	if err != nil {
+		return err
+	}
+	update(defaultInterfaceMonitor.DefaultInterfaceName(netip.IPv4Unspecified()))
 	return nil
-}
-
-func RegisterCallback(callback tun.DefaultInterfaceUpdateCallback) {
-	defaultInterfaceMonitor.RegisterCallback(callback)
 }
 
 func StopMonitor() error {
