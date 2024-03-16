@@ -23,7 +23,8 @@ func ShouldIgnorePacketError(err error) bool {
 }
 
 var (
-	udpQueue = make(chan conn.UdpConnContext, 1024)
+	udpQueue   = make(chan conn.UdpConnContext, 1024)
+	udpTimeout = 5 * time.Second
 )
 
 func UdpQueue() chan conn.UdpConnContext {
@@ -35,7 +36,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 	defer pool.FreeBytes(receivedBuf)
 	for {
 
-		err := rc.SetReadDeadline(time.Now().Add(5 * time.Second))
+		err := rc.SetReadDeadline(time.Now().Add(udpTimeout))
 		if err != nil {
 			return fmt.Errorf("fail to set udp conn read deadline: %v", err)
 		}
@@ -49,7 +50,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 			return fmt.Errorf("fail to read udp from rc:%v", err)
 		}
 
-		err = lc.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		err = lc.SetWriteDeadline(time.Now().Add(udpTimeout))
 		if err != nil {
 			return fmt.Errorf("fail to set udp conn write deadline: %v", err)
 		}

@@ -9,10 +9,12 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 var (
-	tcpQueue = make(chan conn.TcpConnContext, 1024)
+	tcpQueue   = make(chan conn.TcpConnContext, 1024)
+	tcpTimeout = 5 * time.Minute
 )
 
 func TcpQueue() chan conn.TcpConnContext {
@@ -58,7 +60,15 @@ func handleTCPConn(ct conn.TcpConnContext) {
 func copyPacket(lc net.Conn, rc net.Conn) error {
 	buf := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(buf)
-	_, err := io.CopyBuffer(lc, rc, buf)
+	err := lc.SetDeadline(time.Now().Add(tcpTimeout))
+	if err != nil {
+		return err
+	}
+	err = rc.SetDeadline(time.Now().Add(tcpTimeout))
+	if err != nil {
+		return err
+	}
+	_, err = io.CopyBuffer(lc, rc, buf)
 	return err
 }
 
