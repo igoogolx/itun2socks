@@ -55,6 +55,7 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 		}
 		_, err = lc.WriteTo(receivedBuf[:n], addr)
 		if ShouldIgnorePacketError(err) {
+			log.Debugln("ignore packet write to err: %v", err)
 			return nil
 		}
 		if err != nil {
