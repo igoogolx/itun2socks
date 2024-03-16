@@ -6,7 +6,7 @@ toolchain go1.21.0
 
 replace github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => github.com/igoogolx/sysproxy v1.0.3
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.9
+replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.10
 
 require (
 	github.com/Dreamacro/clash v1.18.0
