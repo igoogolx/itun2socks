@@ -24,7 +24,7 @@ func ShouldIgnorePacketError(err error) bool {
 
 var (
 	udpQueue   = make(chan conn.UdpConnContext, 1024)
-	udpTimeout = 5 * time.Second
+	udpTimeout = 5 * time.Minute
 )
 
 func UdpQueue() chan conn.UdpConnContext {
@@ -67,17 +67,29 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 }
 
 func handleUdpConn(ct conn.UdpConnContext) {
+
 	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, remote address: %v"), ct.Metadata().RemoteAddress())
-	defer func() {
+	var once sync.Once
+	var lc conn.UdpConn
+	var err error
+
+	cleanConn := func() {
+		if lc != nil {
+			err := closeConn(lc)
+			if err != nil {
+				log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close local conn,err: %v"), err)
+			}
+		}
 		err := closeConn(ct.Conn())
-		ct.Wg().Done()
 		if err != nil {
 			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote conn,err: %v"), err)
 		}
-		log.Debugln(log.FormatLog(log.UdpPrefix, "close remote conn: %v"), ct.Metadata().RemoteAddress())
+	}
+
+	defer func() {
+		ct.Wg().Done()
+		once.Do(cleanConn)
 	}()
-	var lc conn.UdpConn
-	var err error
 
 	//only tun proxy
 	if ct.Metadata().DstPort.String() == constants.DnsPort {
@@ -95,27 +107,24 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		lc = statistic.NewUDPTracker(localConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
 	}
 
-	defer func() {
-		err = closeConn(lc)
-		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close local conn,err: %v"), err)
-		} else {
-			log.Infoln(log.FormatLog(log.UdpPrefix, "close local conn, remote address: %v"), ct.Metadata().RemoteAddress())
-		}
-	}()
-
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
 	go func() {
-		defer wg.Done()
+		defer func() {
+			wg.Done()
+			once.Do(cleanConn)
+		}()
 		err := copyUdpPacket(lc, ct.Conn())
 		if err != nil {
 			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle output ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}
 	}()
 	go func() {
-		defer wg.Done()
+		defer func() {
+			wg.Done()
+			once.Do(cleanConn)
+		}()
 		err := copyUdpPacket(ct.Conn(), lc)
 		if err != nil {
 			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle input ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
