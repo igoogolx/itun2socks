@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/log"
 	tun "github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/x/list"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/atomic"
 	"net/netip"
@@ -30,6 +31,8 @@ func (e ErrorHandler) NewError(_ context.Context, err error) {
 type Handler struct {
 	Monitor tun.DefaultInterfaceMonitor
 }
+
+var monitorCallback *list.Element[tun.DefaultInterfaceUpdateCallback]
 
 func StartMonitor() error {
 	setting, err := configuration.GetSetting()
@@ -56,7 +59,7 @@ func StartMonitor() error {
 		err = E.Cause(err, "create DefaultInterfaceMonitor")
 		return err
 	}
-	defaultInterfaceMonitor.RegisterCallback(func(event int) {
+	monitorCallback = defaultInterfaceMonitor.RegisterCallback(func(event int) {
 		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.IPv4Unspecified()))
 	})
 	err = defaultInterfaceMonitor.Start()
@@ -71,7 +74,9 @@ func StopMonitor() error {
 	defer func() {
 		defaultInterfaceMonitor = nil
 		networkUpdateMonitor = nil
+		monitorCallback = nil
 	}()
+	defaultInterfaceMonitor.UnregisterCallback(monitorCallback)
 	if networkUpdateMonitor != nil {
 		err := networkUpdateMonitor.Close()
 		if err != nil {
