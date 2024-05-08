@@ -76,7 +76,9 @@ func StopMonitor() error {
 		networkUpdateMonitor = nil
 		monitorCallback = nil
 	}()
-	defaultInterfaceMonitor.UnregisterCallback(monitorCallback)
+	if monitorCallback != nil {
+		defaultInterfaceMonitor.UnregisterCallback(monitorCallback)
+	}
 	if networkUpdateMonitor != nil {
 		err := networkUpdateMonitor.Close()
 		if err != nil {
