@@ -1,5 +1,7 @@
 package constants
 
+import "runtime"
+
 type Policy string
 
 const (
@@ -28,8 +30,15 @@ const (
 
 const DnsPort = "53"
 
+func TunName() string {
+	if runtime.GOOS == "windows" {
+		//It is tricky. Utun is "bigger" than Wi-Fi so that ethernet icon is displayed on the task bar.
+		return "ztun"
+	}
+	return "utun"
+}
+
 const (
-	TunName    = "utun"
 	TunGateway = "10.255.0.1/30"
 	TunMtu     = 1500
 )

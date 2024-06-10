@@ -17,7 +17,7 @@ func New() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	tunInterfaceName := sTun.CalculateInterfaceName(constants.TunName)
+	tunInterfaceName := sTun.CalculateInterfaceName(constants.TunName())
 	return &Config{
 		Name:    tunInterfaceName,
 		Mtu:     constants.TunMtu,
