@@ -15,15 +15,15 @@ require (
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.2.0
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.2
 	github.com/hashicorp/golang-lru v1.0.2
 	github.com/miekg/dns v1.1.59
-	github.com/sagernet/sing v0.3.8
-	github.com/sagernet/sing-tun v0.2.7
+	github.com/sagernet/sing v0.4.1
+	github.com/sagernet/sing-tun v0.3.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	go.uber.org/atomic v1.11.0
-	golang.org/x/sys v0.20.0
+	golang.org/x/sys v0.21.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
@@ -52,8 +52,8 @@ require (
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
-	github.com/sagernet/gvisor v0.0.0-20231209105102-8d27a30e436e // indirect
-	github.com/sagernet/netlink v0.0.0-20220905062125-8043b4a9aa97 // indirect
+	github.com/sagernet/gvisor v0.0.0-20240428053021-e691de28565f // indirect
+	github.com/sagernet/netlink v0.0.0-20240523065131-45e60152f9ba // indirect
 	github.com/samber/lo v1.38.1 // indirect
 	github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923 // indirect
 	github.com/vishvananda/netlink v1.2.1-beta.2.0.20230420174744-55c8b9515a01 // indirect
