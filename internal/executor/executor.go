@@ -13,6 +13,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
+	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
@@ -78,6 +79,7 @@ func newTun() (Client, error) {
 	if config.BlockQuic {
 		matchers = append(matchers, conn.RejectQuicMather)
 	}
+	statistic.UpdateShouldFindProcess(config.ShouldFindProcess)
 	conn.UpdateConnMatcher(matchers)
 	matcher.UpdateDnsMatcher(config.Rule)
 	conn.UpdateProxy(config.Proxy)
@@ -97,6 +99,8 @@ func newSysProxy() (Client, error) {
 		return nil, err
 	}
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
+
+	statistic.UpdateShouldFindProcess(false)
 	conn.UpdateConnMatcher([]conn.Matcher{
 		config.Rule.ConnMatcher,
 	})

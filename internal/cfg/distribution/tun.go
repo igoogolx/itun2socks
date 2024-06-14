@@ -16,7 +16,7 @@ type Config struct {
 func (c Config) getIpRuleFromDns(ip string) (constants.Policy, bool) {
 	cachedDomain, _, ok := GetCachedDnsItem(ip)
 	if ok {
-		rule, err := c.RuleEngine.Match(cachedDomain)
+		rule, err := c.RuleEngine.Match(cachedDomain, constants.DomainRuleTypes)
 		if err == nil {
 			return rule.GetPolicy(), true
 		}
@@ -24,13 +24,19 @@ func (c Config) getIpRuleFromDns(ip string) (constants.Policy, bool) {
 	return constants.PolicyDirect, false
 }
 
-func (c Config) connMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
-	ip := metadata.DstIP.String()
+func (c Config) connMatcher(metadata *C.Metadata, _ constants.Policy) (constants.Policy, error) {
+	process := metadata.ProcessPath
+	if len(process) != 0 {
+		if rule, err := c.RuleEngine.Match(process, constants.ProcessRuleTypes); err == nil {
+			return rule.GetPolicy(), nil
+		}
+	}
 
+	ip := metadata.DstIP.String()
 	if dnsResult, dnsRuleOk := c.getIpRuleFromDns(ip); dnsRuleOk {
 		return dnsResult, nil
 	}
-	if rule, err := c.RuleEngine.Match(ip); err == nil {
+	if rule, err := c.RuleEngine.Match(ip, constants.IpRuleTypes); err == nil {
 		return rule.GetPolicy(), nil
 	}
 	return constants.PolicyProxy, nil
@@ -51,7 +57,7 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (co
 }
 
 func (c Config) GetDnsType(domain string) (constants.DnsType, error) {
-	var rule, err = c.RuleEngine.Match(domain)
+	var rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
 	if err == nil {
 		if rule.GetPolicy() == constants.PolicyDirect {
 			return constants.LocalDns, nil

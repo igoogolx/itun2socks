@@ -10,13 +10,14 @@ import (
 )
 
 type Config struct {
-	Rule        distribution.Config
-	Proxy       constant.Proxy
-	Device      *tun.Config
-	LocalServer local_server.Cfg
-	HijackDns   configuration.HijackDns
-	BlockQuic   bool
-	Stack       string
+	Rule              distribution.Config
+	Proxy             constant.Proxy
+	Device            *tun.Config
+	LocalServer       local_server.Cfg
+	HijackDns         configuration.HijackDns
+	BlockQuic         bool
+	Stack             string
+	ShouldFindProcess bool
 }
 
 func NewTun(defaultInterfaceName string) (*Config, error) {
@@ -64,5 +65,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.HijackDns,
 		rawConfig.Setting.BlockQuic,
 		rawConfig.Setting.Stack,
+		rawConfig.Setting.ShouldFindProcess,
 	}, nil
 }

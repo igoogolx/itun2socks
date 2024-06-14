@@ -69,6 +69,7 @@ func (c *TunClient) Start() error {
 
 func (c *TunClient) Close() error {
 	var err error
+
 	statistic.DefaultManager.CloseAllConnections()
 	if err = c.tun.Close(); err != nil {
 		return err

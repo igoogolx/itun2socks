@@ -25,9 +25,10 @@ type SettingCfg struct {
 		} `json:"server"`
 		CustomizedOptions []string `json:"customizedOptions"`
 	} `json:"dns"`
-	Language  string `json:"language,omitempty"`
-	BlockQuic bool   `json:"blockQuic,omitempty"`
-	Stack     string `json:"stack"`
+	Language          string `json:"language,omitempty"`
+	BlockQuic         bool   `json:"blockQuic,omitempty"`
+	Stack             string `json:"stack"`
+	ShouldFindProcess bool   `json:"shouldFindProcess,omitempty"`
 }
 
 type DnsServer struct {

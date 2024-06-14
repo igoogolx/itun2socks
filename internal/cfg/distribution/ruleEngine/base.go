@@ -4,6 +4,7 @@ import (
 	"fmt"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"slices"
 )
 
 type Rule interface {
@@ -18,13 +19,13 @@ type Engine struct {
 	cache *lru.Cache
 }
 
-func (e *Engine) Match(value string) (Rule, error) {
+func (e *Engine) Match(value string, types []constants.RuleType) (Rule, error) {
 	cachedRule, ok := e.cache.Get(value)
 	if ok {
 		return cachedRule.(Rule), nil
 	}
 	for _, rule := range e.rules {
-		if rule.Match(value) {
+		if slices.Contains(types, rule.Type()) && rule.Match(value) {
 			e.cache.Add(value, rule)
 			return rule, nil
 		}

@@ -46,6 +46,7 @@
     },
     "language": "system",
     "blockQuic": false,
-    "stack": "gvisor"
+    "stack": "gvisor",
+    "shouldFindProcess": false
   }
 }

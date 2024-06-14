@@ -1,9 +1,13 @@
 package statistic
 
 import (
+	P "github.com/Dreamacro/clash/component/process"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
+	"net/netip"
+	"sync"
 	"time"
 
 	C "github.com/Dreamacro/clash/constant"
@@ -11,6 +15,15 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"go.uber.org/atomic"
 )
+
+var defaultShouldFindProcess bool
+var mux sync.RWMutex
+
+func UpdateShouldFindProcess(value bool) {
+	mux.Lock()
+	defer mux.Unlock()
+	defaultShouldFindProcess = value
+}
 
 type tracker interface {
 	ID() string
@@ -25,7 +38,6 @@ type trackerInfo struct {
 	Start         int64            `json:"start"`
 	Rule          constants.Policy `json:"rule"`
 	Domain        string           `json:"domain"`
-	Process       string           `json:"process"`
 }
 
 type TcpTracker struct {
@@ -59,6 +71,21 @@ func (tt *TcpTracker) Close() error {
 	return tt.Conn.Close()
 }
 
+func findProcessPath(metadata C.Metadata) string {
+	srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
+	if ok && metadata.OriginDst.IsValid() {
+		srcIP = srcIP.Unmap()
+		path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
+		if err != nil {
+			log.Debugln("[Process] find process %s: %v", metadata.String(), err)
+		} else {
+			log.Debugln("[Process] %s from process %s", metadata.String(), path)
+			return path
+		}
+	}
+	return ""
+}
+
 func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule constants.Policy) *TcpTracker {
 	uid, _ := uuid.NewV4()
 
@@ -72,9 +99,13 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule c
 			Rule:          rule,
 			UploadTotal:   atomic.NewInt64(0),
 			DownloadTotal: atomic.NewInt64(0),
-			Process:       "unknown",
 		},
 	}
+
+	if defaultShouldFindProcess {
+		metadata.ProcessPath = findProcessPath(*metadata)
+	}
+
 	if cachedDomain, _, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		t.trackerInfo.Domain = cachedDomain
 	} else if metadata.Host != "" {
@@ -130,8 +161,11 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 			Rule:          rule,
 			UploadTotal:   atomic.NewInt64(0),
 			DownloadTotal: atomic.NewInt64(0),
-			Process:       "unknown",
 		},
+	}
+
+	if defaultShouldFindProcess {
+		metadata.ProcessPath = findProcessPath(*metadata)
 	}
 
 	if cachedDomain, _, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {

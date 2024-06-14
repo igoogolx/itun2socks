@@ -26,6 +26,13 @@ const (
 	RuleDomainKeyword RuleType = "DOMAIN-KEYWORD"
 	RuleDomainRegex   RuleType = "DOMAIN-REGEX"
 	RuleDomainSuffix  RuleType = "DOMAIN-SUFFIX"
+	RuleProcess       RuleType = "PROCESS"
+)
+
+var (
+	IpRuleTypes      = []RuleType{RuleIpCidr}
+	DomainRuleTypes  = []RuleType{RuleDomain, RuleDomainSuffix, RuleDomainRegex}
+	ProcessRuleTypes = []RuleType{RuleProcess}
 )
 
 const DnsPort = "53"

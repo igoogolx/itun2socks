@@ -84,6 +84,9 @@ func ParseItem(rawRuleType, value, policy string) (Rule, error) {
 	case constants.RuleDomainRegex:
 		rule, err = NewDomainRule(ruleType, value, policy)
 		break
+	case constants.RuleProcess:
+		rule, err = NewProcessRule(ruleType, value, policy)
+		break
 	default:
 		err = fmt.Errorf("rule type not match: %v", ruleType)
 	}
