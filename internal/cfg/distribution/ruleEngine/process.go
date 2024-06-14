@@ -17,7 +17,7 @@ func (p Process) GetPolicy() constants.Policy {
 }
 
 func (p Process) Type() constants.RuleType {
-	return constants.RuleDomain
+	return constants.RuleProcess
 }
 
 func (p Process) Match(value string) bool {

@@ -25,9 +25,9 @@ func (c Config) getIpRuleFromDns(ip string) (constants.Policy, bool) {
 }
 
 func (c Config) connMatcher(metadata *C.Metadata, _ constants.Policy) (constants.Policy, error) {
-	process := metadata.ProcessPath
-	if len(process) != 0 {
-		if rule, err := c.RuleEngine.Match(process, constants.ProcessRuleTypes); err == nil {
+	processPath := metadata.ProcessPath
+	if len(processPath) != 0 {
+		if rule, err := c.RuleEngine.Match(processPath, constants.ProcessRuleTypes); err == nil {
 			return rule.GetPolicy(), nil
 		}
 	}

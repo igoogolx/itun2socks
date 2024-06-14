@@ -2,10 +2,38 @@ package tunnel
 
 import (
 	"errors"
+	P "github.com/Dreamacro/clash/component/process"
 	"github.com/Dreamacro/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
+	"net/netip"
 	"strconv"
+	"sync"
 )
+
+var defaultShouldFindProcess bool
+var mux sync.RWMutex
+
+func UpdateShouldFindProcess(value bool) {
+	mux.Lock()
+	defer mux.Unlock()
+	defaultShouldFindProcess = value
+}
+
+func findProcessPath(metadata constant.Metadata) string {
+	srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
+	if ok && metadata.OriginDst.IsValid() {
+		srcIP = srcIP.Unmap()
+		path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
+		if err != nil {
+			log.Debugln("[Process] find process %s: %v", metadata.String(), err)
+		} else {
+			log.Debugln("[Process] %s from process %s", metadata.String(), path)
+			return path
+		}
+	}
+	return ""
+}
 
 func CreateUdpMetadata(srcAddr, destAddr net.UDPAddr) constant.Metadata {
 	metadata := constant.Metadata{
@@ -14,6 +42,13 @@ func CreateUdpMetadata(srcAddr, destAddr net.UDPAddr) constant.Metadata {
 		DstIP:   destAddr.IP,
 		DstPort: constant.Port(destAddr.Port),
 		NetWork: constant.UDP,
+	}
+	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
+		metadata.OriginDst = addrPort
+	}
+
+	if defaultShouldFindProcess {
+		metadata.ProcessPath = findProcessPath(metadata)
 	}
 	return metadata
 }
@@ -25,6 +60,12 @@ func CreateTcpMetadata(srcAddr, destAddr net.TCPAddr) constant.Metadata {
 		DstIP:   destAddr.IP,
 		DstPort: constant.Port(destAddr.Port),
 		NetWork: constant.TCP,
+	}
+	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
+		metadata.OriginDst = addrPort
+	}
+	if defaultShouldFindProcess {
+		metadata.ProcessPath = findProcessPath(metadata)
 	}
 	return metadata
 }
@@ -60,9 +101,6 @@ func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*consta
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
 	metadata := &constant.Metadata{
 		SrcIP:   srcIp,
 		SrcPort: constant.Port(metaSrcPort),
