@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
+	"github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
@@ -32,7 +33,7 @@ type Conn interface {
 	WriteTo([]byte, net.Addr) (int, error)
 }
 
-func HandleDnsConn(conn Conn) error {
+func HandleDnsConn(conn Conn, metadata *constant.Metadata) error {
 	var err error
 	data := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(data)
@@ -45,7 +46,7 @@ func HandleDnsConn(conn Conn) error {
 	if err != nil {
 		return fmt.Errorf("fail to unpack dns message: err: %v", err)
 	}
-	res, err := handle(dnsMessage)
+	res, err := handle(dnsMessage, metadata)
 	if err != nil {
 		return fmt.Errorf("fail to hanlde dns message: err: %v", err)
 	}
@@ -84,7 +85,7 @@ func getResponseIp(msg *D.Msg) []net.IP {
 	return ips
 }
 
-func handle(dnsMessage *D.Msg) (*D.Msg, error) {
+func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	mux.Lock()
 	defer mux.Unlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -95,7 +96,7 @@ func handle(dnsMessage *D.Msg) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsType, err := matcher.GetDnsMatcher().GetDnsType(question)
+	dnsType, err := matcher.GetDnsMatcher().GetDnsType(question, metadata)
 	if err != nil {
 		return nil, fmt.Errorf("fail to get dns type, err: %v, question: %v", err, question)
 	}

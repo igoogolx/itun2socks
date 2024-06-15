@@ -1,12 +1,13 @@
 package matcher
 
 import (
+	"github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"sync"
 )
 
 type Dns interface {
-	GetDnsType(question string) (constants.DnsType, error)
+	GetDnsType(question string, metadata *constant.Metadata) (constants.DnsType, error)
 }
 
 var defaultDnsMatcher Dns

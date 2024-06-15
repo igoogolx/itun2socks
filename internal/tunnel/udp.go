@@ -93,7 +93,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 
 	//only tun proxy
 	if ct.Metadata().DstPort.String() == constants.DnsPort {
-		err = dns.HandleDnsConn(ct.Conn())
+		err = dns.HandleDnsConn(ct.Conn(), ct.Metadata())
 		if err != nil {
 			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle dns conn, err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		}

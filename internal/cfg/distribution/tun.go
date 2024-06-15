@@ -56,8 +56,16 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (co
 	return result, err
 }
 
-func (c Config) GetDnsType(domain string) (constants.DnsType, error) {
-	var rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
+func (c Config) GetDnsType(domain string, metadata *C.Metadata) (constants.DnsType, error) {
+	processPath := metadata.ProcessPath
+	var rule ruleEngine.Rule
+	var err error
+	if len(processPath) != 0 {
+		rule, err = c.RuleEngine.Match(processPath, constants.ProcessRuleTypes)
+	}
+	if err == nil {
+		rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
+	}
 	if err == nil {
 		if rule.GetPolicy() == constants.PolicyDirect {
 			return constants.LocalDns, nil
