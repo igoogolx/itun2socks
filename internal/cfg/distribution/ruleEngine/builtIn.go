@@ -13,7 +13,7 @@ type builtIn struct {
 }
 
 func (p builtIn) GetPolicy() constants.Policy {
-	return constants.Policy(p.Policy)
+	return p.Policy
 }
 
 func (p builtIn) Type() constants.RuleType {

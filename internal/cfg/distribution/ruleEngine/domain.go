@@ -17,7 +17,7 @@ func (d Domain) GetPolicy() constants.Policy {
 }
 
 func (d Domain) Type() constants.RuleType {
-	return constants.RuleDomain
+	return d.RuleType
 }
 
 func (d Domain) Match(value string) bool {
