@@ -26,9 +26,9 @@ func findProcessPath(metadata constant.Metadata) string {
 		srcIP = srcIP.Unmap()
 		path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
 		if err != nil {
-			log.Debugln("[Process] find process %s: %v", metadata.String(), err)
+			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), err)
 		} else {
-			log.Debugln("[Process] %s from process %s", metadata.String(), path)
+			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), path)
 			return path
 		}
 	}

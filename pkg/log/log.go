@@ -52,7 +52,7 @@ func FormatLog(prefix Prefix, content string) string {
 	case ConfigurationPrefix:
 		return "[Configuration], " + content
 	case HubPrefix:
-		return "[Hub], " + content
+		return "[HUB], " + content
 	case ExecutorPrefix:
 		return "[EXECUTOR], " + content
 	case DnsPrefix:
