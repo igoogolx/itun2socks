@@ -12,27 +12,27 @@ type SystemProxyConfig struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c SystemProxyConfig) connMatcher(metadata *C.Metadata, _ constants.Policy) (constants.Policy, error) {
+func (c SystemProxyConfig) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 
 	if metadata.Host != "" {
 		var rule, err = c.RuleEngine.Match(metadata.Host, constants.DomainRuleTypes)
 		if err == nil {
-			return rule.GetPolicy(), nil
+			return rule, nil
 		}
 	}
 
 	if metadata.DstIP.String() != "" {
 		rule, err := c.RuleEngine.Match(metadata.DstIP.String(), constants.IpRuleTypes)
 		if err == nil {
-			return rule.GetPolicy(), nil
+			return rule, nil
 		}
 	}
 
-	return constants.PolicyProxy, nil
+	return ruleEngine.BuiltInProxyRule, nil
 
 }
 
-func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
+func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
 	result, err := c.connMatcher(metadata, prevRule)
 	defer func() {
 		target := metadata.String()

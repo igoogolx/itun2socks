@@ -9,7 +9,7 @@ type IpCidr struct {
 	RuleType constants.RuleType `json:"ruleType"`
 	Payload  string             `json:"payload"`
 	prefix   netip.Prefix
-	Policy   string `json:"policy"`
+	Policy   constants.Policy `json:"policy"`
 }
 
 func (d IpCidr) GetPolicy() constants.Policy {
@@ -32,7 +32,7 @@ func (i IpCidr) Value() string {
 	return i.prefix.String()
 }
 
-func NewIpCidrRule(payload string, policy string) (*IpCidr, error) {
+func NewIpCidrRule(payload string, policy constants.Policy) (*IpCidr, error) {
 	prefix, err := netip.ParsePrefix(payload)
 	if err != nil {
 		return nil, err

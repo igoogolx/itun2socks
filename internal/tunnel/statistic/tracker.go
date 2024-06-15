@@ -2,7 +2,7 @@ package statistic
 
 import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
-	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"net"
 	"time"
 
@@ -18,13 +18,13 @@ type tracker interface {
 }
 
 type trackerInfo struct {
-	UUID          uuid.UUID        `json:"id"`
-	Metadata      *C.Metadata      `json:"metadata"`
-	UploadTotal   *atomic.Int64    `json:"upload"`
-	DownloadTotal *atomic.Int64    `json:"download"`
-	Start         int64            `json:"start"`
-	Rule          constants.Policy `json:"rule"`
-	Domain        string           `json:"domain"`
+	UUID          uuid.UUID       `json:"id"`
+	Metadata      *C.Metadata     `json:"metadata"`
+	UploadTotal   *atomic.Int64   `json:"upload"`
+	DownloadTotal *atomic.Int64   `json:"download"`
+	Start         int64           `json:"start"`
+	Rule          ruleEngine.Rule `json:"rule"`
+	Domain        string          `json:"domain"`
 }
 
 type TcpTracker struct {
@@ -40,7 +40,7 @@ func (tt *TcpTracker) ID() string {
 func (tt *TcpTracker) Read(b []byte) (int, error) {
 	n, err := tt.Conn.Read(b)
 	download := int64(n)
-	tt.manager.PushDownloaded(download, tt.Rule)
+	tt.manager.PushDownloaded(download, tt.Rule.GetPolicy())
 	tt.DownloadTotal.Add(download)
 	return n, err
 }
@@ -48,7 +48,7 @@ func (tt *TcpTracker) Read(b []byte) (int, error) {
 func (tt *TcpTracker) Write(b []byte) (int, error) {
 	n, err := tt.Conn.Write(b)
 	upload := int64(n)
-	tt.manager.PushUploaded(upload, tt.Rule)
+	tt.manager.PushUploaded(upload, tt.Rule.GetPolicy())
 	tt.UploadTotal.Add(upload)
 	return n, err
 }
@@ -58,7 +58,7 @@ func (tt *TcpTracker) Close() error {
 	return tt.Conn.Close()
 }
 
-func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule constants.Policy) *TcpTracker {
+func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule ruleEngine.Rule) *TcpTracker {
 	uid, _ := uuid.NewV4()
 
 	t := &TcpTracker{
@@ -98,7 +98,7 @@ func (ut *UdpTracker) ID() string {
 func (ut *UdpTracker) ReadFrom(b []byte) (int, net.Addr, error) {
 	n, addr, err := ut.PacketConn.ReadFrom(b)
 	download := int64(n)
-	ut.manager.PushDownloaded(download, ut.Rule)
+	ut.manager.PushDownloaded(download, ut.Rule.GetPolicy())
 	ut.DownloadTotal.Add(download)
 	return n, addr, err
 }
@@ -106,7 +106,7 @@ func (ut *UdpTracker) ReadFrom(b []byte) (int, net.Addr, error) {
 func (ut *UdpTracker) WriteTo(b []byte, addr net.Addr) (int, error) {
 	n, err := ut.PacketConn.WriteTo(b, addr)
 	upload := int64(n)
-	ut.manager.PushUploaded(upload, ut.Rule)
+	ut.manager.PushUploaded(upload, ut.Rule.GetPolicy())
 	ut.UploadTotal.Add(upload)
 	return n, err
 }
@@ -116,7 +116,7 @@ func (ut *UdpTracker) Close() error {
 	return ut.PacketConn.Close()
 }
 
-func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, rule constants.Policy) *UdpTracker {
+func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, rule ruleEngine.Rule) *UdpTracker {
 	uid, _ := uuid.NewV4()
 
 	ut := &UdpTracker{

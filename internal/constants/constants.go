@@ -27,6 +27,7 @@ const (
 	RuleDomainRegex   RuleType = "DOMAIN-REGEX"
 	RuleDomainSuffix  RuleType = "DOMAIN-SUFFIX"
 	RuleProcess       RuleType = "PROCESS"
+	RuleBuiltIn       RuleType = "BUILT-IN"
 )
 
 var (

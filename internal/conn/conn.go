@@ -5,6 +5,7 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/Dreamacro/clash/adapter/outbound"
 	C "github.com/Dreamacro/clash/constant"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"strings"
@@ -16,14 +17,14 @@ var (
 	mux     sync.RWMutex
 )
 
-type Matcher func(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error)
+type Matcher func(metadata *C.Metadata, rule ruleEngine.Rule) (ruleEngine.Rule, error)
 
-func RejectQuicMather(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
-	if prevRule == constants.PolicyProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
+func RejectQuicMather(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
+	if prevRule.GetPolicy() == constants.PolicyProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
 		log.Debugln("reject quic conn:%v", metadata.RemoteAddress())
-		return constants.PolicyReject, nil
+		return ruleEngine.BuiltInRejectRule, nil
 	}
-	return constants.PolicyProxy, fmt.Errorf("not quic")
+	return nil, fmt.Errorf("not quic")
 }
 
 func UpdateProxy(remoteProxy C.Proxy) {

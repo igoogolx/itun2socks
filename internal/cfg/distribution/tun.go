@@ -13,22 +13,22 @@ type Config struct {
 	RuleEngine *ruleEngine.Engine
 }
 
-func (c Config) getIpRuleFromDns(ip string) (constants.Policy, bool) {
+func (c Config) getIpRuleFromDns(ip string) (ruleEngine.Rule, bool) {
 	cachedDomain, _, ok := GetCachedDnsItem(ip)
 	if ok {
 		rule, err := c.RuleEngine.Match(cachedDomain, constants.DomainRuleTypes)
 		if err == nil {
-			return rule.GetPolicy(), true
+			return rule, true
 		}
 	}
-	return constants.PolicyDirect, false
+	return nil, false
 }
 
-func (c Config) connMatcher(metadata *C.Metadata, _ constants.Policy) (constants.Policy, error) {
+func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 	processPath := metadata.ProcessPath
 	if len(processPath) != 0 {
 		if rule, err := c.RuleEngine.Match(processPath, constants.ProcessRuleTypes); err == nil {
-			return rule.GetPolicy(), nil
+			return rule, nil
 		}
 	}
 
@@ -37,12 +37,12 @@ func (c Config) connMatcher(metadata *C.Metadata, _ constants.Policy) (constants
 		return dnsResult, nil
 	}
 	if rule, err := c.RuleEngine.Match(ip, constants.IpRuleTypes); err == nil {
-		return rule.GetPolicy(), nil
+		return rule, nil
 	}
-	return constants.PolicyProxy, nil
+	return ruleEngine.BuiltInProxyRule, nil
 }
 
-func (c Config) ConnMatcher(metadata *C.Metadata, prevRule constants.Policy) (constants.Policy, error) {
+func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
 	result, err := c.connMatcher(metadata, prevRule)
 	ip := metadata.DstIP.String()
 	domain := "unknown"

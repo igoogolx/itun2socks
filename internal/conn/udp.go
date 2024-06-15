@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"net"
 	"sync"
 	"time"
@@ -23,7 +23,7 @@ type UdpConnContext struct {
 	ctx      context.Context
 	metadata *C.Metadata
 	conn     UdpConn
-	rule     constants.Policy
+	rule     ruleEngine.Rule
 	wg       *sync.WaitGroup
 }
 
@@ -35,7 +35,7 @@ func (u *UdpConnContext) Ctx() context.Context {
 	return u.ctx
 }
 
-func (u *UdpConnContext) Rule() constants.Policy {
+func (u *UdpConnContext) Rule() ruleEngine.Rule {
 	return u.rule
 }
 
@@ -52,7 +52,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, 
 		ctx,
 		metadata,
 		conn,
-		constants.PolicyProxy,
+		ruleEngine.BuiltInProxyRule,
 		wg,
 	}
 
@@ -65,8 +65,8 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, 
 	return connContext, nil
 }
 
-func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule constants.Policy, defaultInterface string) (net.PacketConn, error) {
-	connDialer, err := GetProxy(rule)
+func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule ruleEngine.Rule, defaultInterface string) (net.PacketConn, error) {
+	connDialer, err := GetProxy(rule.GetPolicy())
 	if err != nil {
 		return nil, err
 	}

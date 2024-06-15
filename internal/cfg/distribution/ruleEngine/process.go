@@ -9,11 +9,11 @@ import (
 type Process struct {
 	RuleType constants.RuleType `json:"ruleType"`
 	Payload  string             `json:"payload"`
-	Policy   string             `json:"policy"`
+	Policy   constants.Policy   `json:"policy"`
 }
 
 func (p Process) GetPolicy() constants.Policy {
-	return constants.Policy(p.Policy)
+	return p.Policy
 }
 
 func (p Process) Type() constants.RuleType {
@@ -28,6 +28,6 @@ func (p Process) Value() string {
 	return p.Payload
 }
 
-func NewProcessRule(ruleType constants.RuleType, payload, policy string) (*Process, error) {
+func NewProcessRule(ruleType constants.RuleType, payload string, policy constants.Policy) (*Process, error) {
 	return &Process{ruleType, payload, policy}, nil
 }

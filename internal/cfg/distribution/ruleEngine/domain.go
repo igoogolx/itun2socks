@@ -9,11 +9,11 @@ import (
 type Domain struct {
 	RuleType constants.RuleType `json:"ruleType"`
 	Payload  string             `json:"payload"`
-	Policy   string             `json:"policy"`
+	Policy   constants.Policy   `json:"policy"`
 }
 
 func (d Domain) GetPolicy() constants.Policy {
-	return constants.Policy(d.Policy)
+	return d.Policy
 }
 
 func (d Domain) Type() constants.RuleType {
@@ -28,7 +28,7 @@ func (d Domain) Value() string {
 	return d.Payload
 }
 
-func NewDomainRule(ruleType constants.RuleType, payload, policy string) (*Domain, error) {
+func NewDomainRule(ruleType constants.RuleType, payload string, policy constants.Policy) (*Domain, error) {
 	return &Domain{ruleType, payload, policy}, nil
 }
 

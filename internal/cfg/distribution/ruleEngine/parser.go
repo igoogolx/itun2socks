@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/list"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"io/fs"
+	"slices"
 	"strings"
 )
 
@@ -63,11 +64,17 @@ func ParseRawValue(line string) (Rule, error) {
 
 }
 
-func ParseItem(rawRuleType, value, policy string) (Rule, error) {
+func ParseItem(rawRuleType, value, rawPolicy string) (Rule, error) {
 	ruleType := constants.RuleType(rawRuleType)
 
 	var rule Rule
 	var err error
+	policy := constants.Policy(rawPolicy)
+	if !slices.Contains([]constants.Policy{constants.PolicyDirect, constants.PolicyReject, constants.PolicyProxy}, policy) {
+		err = fmt.Errorf("policy not match: %v", ruleType)
+		return nil, err
+	}
+
 	switch ruleType {
 	case constants.RuleIpCidr:
 		rule, err = NewIpCidrRule(value, policy)
