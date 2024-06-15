@@ -44,6 +44,9 @@ func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine
 
 func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
 	result, err := c.connMatcher(metadata, prevRule)
+	if err != nil {
+		return result, err
+	}
 	ip := metadata.DstIP.String()
 	domain := "unknown"
 	dnsRule := "unknown"
@@ -52,7 +55,7 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (rul
 		domain = cacheDomain
 		dnsRule = string(cachedRule)
 	}
-	log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), ip, result, domain, dnsRule)
+	log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), ip, result.GetPolicy(), domain, dnsRule)
 	return result, err
 }
 

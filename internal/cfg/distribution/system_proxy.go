@@ -34,9 +34,12 @@ func (c SystemProxyConfig) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) 
 
 func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
 	result, err := c.connMatcher(metadata, prevRule)
+	if err != nil {
+		return result, err
+	}
 	defer func() {
 		target := metadata.String()
-		log.Infoln(log.FormatLog(log.RulePrefix, "host: %v, rule: %v"), target, result)
+		log.Infoln(log.FormatLog(log.RulePrefix, "host: %v, rule: %v"), target, result.GetPolicy())
 	}()
 	return result, err
 }
