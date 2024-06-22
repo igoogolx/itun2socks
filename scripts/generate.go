@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -108,6 +109,9 @@ func unarchiveFile(archiveFilePath string) error {
 		}
 		if err != nil {
 			return err
+		}
+		if strings.Contains(header.Name, "..") {
+			return fmt.Errorf("invalid file name: %s", header.Name)
 		}
 		outputPath := filepath.Join(parentDir, header.Name)
 		err = os.RemoveAll(outputPath)
