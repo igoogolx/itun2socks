@@ -39,7 +39,7 @@ func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine
 	if rule, err := c.RuleEngine.Match(ip, constants.IpRuleTypes); err == nil {
 		return rule, nil
 	}
-	return ruleEngine.BuiltInProxyRule, nil
+	return nil, fmt.Errorf("no rule found")
 }
 
 func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
@@ -56,7 +56,7 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (rul
 		dnsRule = string(cachedRule)
 	}
 	log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), ip, result.GetPolicy(), domain, dnsRule)
-	return result, err
+	return result, nil
 }
 
 func (c Config) GetDnsType(domain string, metadata *C.Metadata) (constants.DnsType, error) {

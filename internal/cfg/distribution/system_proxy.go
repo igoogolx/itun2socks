@@ -28,7 +28,7 @@ func (c SystemProxyConfig) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) 
 		}
 	}
 
-	return ruleEngine.BuiltInProxyRule, nil
+	return nil, fmt.Errorf("no rule found")
 
 }
 
@@ -41,7 +41,7 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine
 		target := metadata.String()
 		log.Infoln(log.FormatLog(log.RulePrefix, "host: %v, rule: %v"), target, result.GetPolicy())
 	}()
-	return result, err
+	return result, nil
 }
 
 func (c SystemProxyConfig) GetDnsType(domain string, _ *C.Metadata) (constants.DnsType, error) {
