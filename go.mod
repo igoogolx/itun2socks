@@ -16,7 +16,7 @@ require (
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.2.0
 	github.com/gorilla/websocket v1.5.2
-	github.com/hashicorp/golang-lru v1.0.2
+	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.59
 	github.com/sagernet/sing v0.4.1
 	github.com/sagernet/sing-tun v0.3.2
@@ -44,7 +44,6 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20231016090811-6a2c8fbdcc1c // indirect
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect

@@ -1,12 +1,12 @@
 package distribution
 
 import (
-	lru "github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
-var dnsDomainCache, _ = lru.New(4 * 1024)
-var dnsRuleCache, _ = lru.New(4 * 1024)
+var dnsDomainCache, _ = lru.New[string, string](4 * 1024)
+var dnsRuleCache, _ = lru.New[string, constants.DnsType](4 * 1024)
 
 func ResetCache() {
 	dnsDomainCache.Purge()
@@ -22,7 +22,7 @@ func GetCachedDnsItem(ip string) (string, constants.DnsType, bool) {
 	if !ok {
 		return "", constants.LocalDns, false
 	}
-	return rawCachedDomain.(string), rawCachedRule.(constants.DnsType), true
+	return rawCachedDomain, rawCachedRule, true
 }
 
 func AddCachedDnsItem(ip, domain string, rule constants.DnsType) {

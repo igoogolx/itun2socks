@@ -2,7 +2,7 @@ package ruleEngine
 
 import (
 	"fmt"
-	lru "github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"slices"
 )
@@ -16,13 +16,13 @@ type Rule interface {
 
 type Engine struct {
 	rules []Rule
-	cache *lru.Cache
+	cache *lru.Cache[string, Rule]
 }
 
 func (e *Engine) Match(value string, types []constants.RuleType) (Rule, error) {
 	cachedRule, ok := e.cache.Get(value)
 	if ok {
-		return cachedRule.(Rule), nil
+		return cachedRule, nil
 	}
 	for _, rule := range e.rules {
 		if slices.Contains(types, rule.Type()) && rule.Match(value) {
@@ -38,7 +38,7 @@ func New(name string, extraRules []string) (*Engine, error) {
 	if err != nil {
 		return nil, err
 	}
-	cache, err := lru.New(1024)
+	cache, err := lru.New[string, Rule](1024)
 	if err != nil {
 		return nil, err
 	}
