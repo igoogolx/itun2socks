@@ -1,18 +1,29 @@
 package statistic
 
 import (
+	"github.com/hashicorp/golang-lru/v2"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"sync"
-	"time"
-
 	"go.uber.org/atomic"
+	"time"
 )
 
 var DefaultManager *Manager
 
 func init() {
+	cache, err := lru.NewWithEvict[string, tracker](128, func(key string, value tracker) {
+		log.Infoln(log.FormatLog(log.ExecutorPrefix, "close connection on evicted: "))
+		err := value.Close()
+		if err != nil {
+			log.Warnln(log.FormatLog(log.ExecutorPrefix, "fail to close connection on evicted, err: %v"), err)
+			return
+		}
+	})
+	if err != nil {
+		log.Fatalln(log.FormatLog(log.ExecutorPrefix, "fail to init cache in statistic, err: %v"), err)
+	}
 	DefaultManager = &Manager{
+		connections: cache,
 		proxy: &Statistic{
 			uploadTemp:    atomic.NewInt64(0),
 			downloadTemp:  atomic.NewInt64(0),
@@ -45,17 +56,17 @@ type Statistic struct {
 }
 
 type Manager struct {
-	connections sync.Map
+	connections *lru.Cache[string, tracker]
 	proxy       *Statistic
 	direct      *Statistic
 }
 
 func (m *Manager) Join(c tracker) {
-	m.connections.Store(c.ID(), c)
+	m.connections.Add(c.ID(), c)
 }
 
 func (m *Manager) Leave(c tracker) {
-	m.connections.Delete(c.ID())
+	m.connections.Remove(c.ID())
 }
 
 func (m *Manager) getStatistic(rule constants.Policy) *Statistic {
@@ -68,7 +79,8 @@ func (m *Manager) getStatistic(rule constants.Policy) *Statistic {
 	return nil
 }
 
-func (m *Manager) PushUploaded(size int64, rule constants.Policy) {
+func (m *Manager) PushUploaded(size int64, rule constants.Policy, t tracker) {
+	m.connections.Get(t.ID())
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.uploadTemp.Add(size)
@@ -76,7 +88,8 @@ func (m *Manager) PushUploaded(size int64, rule constants.Policy) {
 	}
 }
 
-func (m *Manager) PushDownloaded(size int64, rule constants.Policy) {
+func (m *Manager) PushDownloaded(size int64, rule constants.Policy, t tracker) {
+	m.connections.Get(t.ID())
 	s := m.getStatistic(rule)
 	if s != nil {
 		s.downloadTemp.Add(size)
@@ -93,14 +106,7 @@ func (m *Manager) Now(rule constants.Policy) (up int64, down int64) {
 }
 
 func (m *Manager) Connections() []tracker {
-	var connections []tracker
-	connections = []tracker{}
-	m.connections.Range(func(key, value interface{}) bool {
-		connections = append(connections, value.(tracker))
-		return true
-	})
-
-	return connections
+	return m.connections.Values()
 }
 
 func (m *Manager) CloseAllConnections() {

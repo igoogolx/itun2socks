@@ -40,7 +40,7 @@ func (tt *TcpTracker) ID() string {
 func (tt *TcpTracker) Read(b []byte) (int, error) {
 	n, err := tt.Conn.Read(b)
 	download := int64(n)
-	tt.manager.PushDownloaded(download, tt.Rule.GetPolicy())
+	tt.manager.PushDownloaded(download, tt.Rule.GetPolicy(), tt)
 	tt.DownloadTotal.Add(download)
 	return n, err
 }
@@ -48,7 +48,7 @@ func (tt *TcpTracker) Read(b []byte) (int, error) {
 func (tt *TcpTracker) Write(b []byte) (int, error) {
 	n, err := tt.Conn.Write(b)
 	upload := int64(n)
-	tt.manager.PushUploaded(upload, tt.Rule.GetPolicy())
+	tt.manager.PushUploaded(upload, tt.Rule.GetPolicy(), tt)
 	tt.UploadTotal.Add(upload)
 	return n, err
 }
@@ -98,7 +98,7 @@ func (ut *UdpTracker) ID() string {
 func (ut *UdpTracker) ReadFrom(b []byte) (int, net.Addr, error) {
 	n, addr, err := ut.PacketConn.ReadFrom(b)
 	download := int64(n)
-	ut.manager.PushDownloaded(download, ut.Rule.GetPolicy())
+	ut.manager.PushDownloaded(download, ut.Rule.GetPolicy(), ut)
 	ut.DownloadTotal.Add(download)
 	return n, addr, err
 }
@@ -106,7 +106,7 @@ func (ut *UdpTracker) ReadFrom(b []byte) (int, net.Addr, error) {
 func (ut *UdpTracker) WriteTo(b []byte, addr net.Addr) (int, error) {
 	n, err := ut.PacketConn.WriteTo(b, addr)
 	upload := int64(n)
-	ut.manager.PushUploaded(upload, ut.Rule.GetPolicy())
+	ut.manager.PushUploaded(upload, ut.Rule.GetPolicy(), ut)
 	ut.UploadTotal.Add(upload)
 	return n, err
 }
