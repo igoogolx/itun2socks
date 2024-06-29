@@ -59,24 +59,32 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (rul
 	return result, nil
 }
 
+func convertRulePolicyToDnsType(rule ruleEngine.Rule) (constants.DnsType, error) {
+	if rule.GetPolicy() == constants.PolicyDirect {
+		return constants.LocalDns, nil
+	} else if rule.GetPolicy() == constants.PolicyProxy {
+		return constants.RemoteDns, nil
+	} else if rule.GetPolicy() == constants.PolicyReject {
+		return constants.LocalDns, fmt.Errorf("reject dns")
+	}
+
+	return constants.RemoteDns, nil
+}
+
 func (c Config) GetDnsType(domain string, metadata *C.Metadata) (constants.DnsType, error) {
 	processPath := metadata.ProcessPath
 	var rule ruleEngine.Rule
 	var err error
 	if len(processPath) != 0 {
 		rule, err = c.RuleEngine.Match(processPath, constants.ProcessRuleTypes)
-	}
-	if err == nil {
-		rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
-	}
-	if err == nil {
-		if rule.GetPolicy() == constants.PolicyDirect {
-			return constants.LocalDns, nil
-		} else if rule.GetPolicy() == constants.PolicyProxy {
-			return constants.RemoteDns, nil
-		} else if rule.GetPolicy() == constants.PolicyReject {
-			return constants.LocalDns, fmt.Errorf("reject dns")
+		if err == nil {
+			return convertRulePolicyToDnsType(rule)
 		}
+	}
+
+	rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
+	if err == nil {
+		return convertRulePolicyToDnsType(rule)
 	}
 
 	return constants.RemoteDns, nil
