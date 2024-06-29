@@ -1,7 +1,7 @@
 package ruleEngine
 
 import (
-	"fmt"
+	"errors"
 	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"slices"
@@ -19,6 +19,8 @@ type Engine struct {
 	cache *lru.Cache[string, Rule]
 }
 
+var ErrNotFound = errors.New("not found")
+
 func (e *Engine) Match(value string, types []constants.RuleType) (Rule, error) {
 	cachedRule, ok := e.cache.Get(value)
 	if ok {
@@ -30,7 +32,7 @@ func (e *Engine) Match(value string, types []constants.RuleType) (Rule, error) {
 			return rule, nil
 		}
 	}
-	return nil, fmt.Errorf("not found")
+	return nil, ErrNotFound
 }
 
 func New(name string, extraRules []string) (*Engine, error) {
