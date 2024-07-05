@@ -5,6 +5,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
@@ -14,12 +15,9 @@ type Config struct {
 }
 
 func (c Config) getIpRuleFromDns(ip string) (ruleEngine.Rule, bool) {
-	cachedDomain, _, ok := GetCachedDnsItem(ip)
+	_, cachedDomainRule, ok := GetCachedDnsItem(ip)
 	if ok {
-		rule, err := c.RuleEngine.Match(cachedDomain, constants.DomainRuleTypes)
-		if err == nil {
-			return rule, true
-		}
+		return cachedDomainRule, true
 	}
 	return nil, false
 }
@@ -27,7 +25,7 @@ func (c Config) getIpRuleFromDns(ip string) (ruleEngine.Rule, bool) {
 func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 	processPath := metadata.ProcessPath
 	if len(processPath) != 0 {
-		if rule, err := c.RuleEngine.Match(processPath, constants.ProcessRuleTypes); err == nil {
+		if rule, err := matcher.GetRule().Match(processPath, constants.ProcessRuleTypes); err == nil {
 			return rule, nil
 		}
 	}
@@ -36,7 +34,7 @@ func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine
 	if dnsResult, dnsRuleOk := c.getIpRuleFromDns(ip); dnsRuleOk {
 		return dnsResult, nil
 	}
-	if rule, err := c.RuleEngine.Match(ip, constants.IpRuleTypes); err == nil {
+	if rule, err := matcher.GetRule().Match(ip, constants.IpRuleTypes); err == nil {
 		return rule, nil
 	}
 	return nil, fmt.Errorf("no rule found")
@@ -53,7 +51,7 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (rul
 	cacheDomain, cachedRule, ok := GetCachedDnsItem(ip)
 	if ok {
 		domain = cacheDomain
-		dnsRule = string(cachedRule)
+		dnsRule = string(cachedRule.GetPolicy())
 	}
 	log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), ip, result.GetPolicy(), domain, dnsRule)
 	return result, nil
@@ -76,13 +74,13 @@ func (c Config) GetDnsType(domain string, metadata *C.Metadata) (constants.DnsTy
 	var rule ruleEngine.Rule
 	var err error
 	if len(processPath) != 0 {
-		rule, err = c.RuleEngine.Match(processPath, constants.ProcessRuleTypes)
+		rule, err = matcher.GetRule().Match(processPath, constants.ProcessRuleTypes)
 		if err == nil {
 			return convertRulePolicyToDnsType(rule)
 		}
 	}
 
-	rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
+	rule, err = matcher.GetRule().Match(domain, constants.DomainRuleTypes)
 	if err == nil {
 		return convertRulePolicyToDnsType(rule)
 	}

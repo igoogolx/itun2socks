@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
-	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
@@ -80,9 +79,9 @@ func newTun() (Client, error) {
 	}
 	tunnel.UpdateShouldFindProcess(config.ShouldFindProcess)
 	conn.UpdateConnMatcher(matchers)
-	matcher.UpdateDnsMatcher(config.Rule)
+	matcher.UpdateRule(config.Rule.RuleEngine)
 	conn.UpdateProxy(config.Proxy)
-	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client, config.Rule.Dns.Boost.Client)
+	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
 
 	return &TunClient{
 		stack:       stack,
@@ -103,7 +102,7 @@ func newSysProxy() (Client, error) {
 	conn.UpdateConnMatcher([]conn.Matcher{
 		config.Rule.ConnMatcher,
 	})
-	matcher.UpdateDnsMatcher(config.Rule)
+	matcher.UpdateRule(config.Rule.RuleEngine)
 	conn.UpdateProxy(config.Proxy)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
@@ -124,9 +123,4 @@ func New() (Client, error) {
 		return newSysProxy()
 	}
 	return nil, fmt.Errorf("invalid proxy mode: %v", rawConfig.Setting.Mode)
-}
-
-type RuntimeConfig struct {
-	dnsMatcher matcher.Dns
-	C.Proxy
 }

@@ -6,6 +6,7 @@ import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -17,15 +18,14 @@ import (
 	"time"
 )
 
-var dnsMap = map[constants.DnsType]cResolver.Resolver{}
-var mux sync.Mutex
+var dnsMap = map[constants.Policy]cResolver.Resolver{}
+var mux sync.RWMutex
 
-func UpdateDnsMap(local, remote, boost cResolver.Resolver) {
+func UpdateDnsMap(local, remote cResolver.Resolver) {
 	mux.Lock()
 	defer mux.Unlock()
-	dnsMap[constants.LocalDns] = local
-	dnsMap[constants.RemoteDns] = remote
-	dnsMap[constants.BoostDns] = boost
+	dnsMap[constants.PolicyDirect] = local
+	dnsMap[constants.PolicyProxy] = remote
 }
 
 type Conn interface {
@@ -85,9 +85,35 @@ func getResponseIp(msg *D.Msg) []net.IP {
 	return ips
 }
 
+func convertRulePolicyToResolver(rule ruleEngine.Rule) (ruleEngine.Rule, error) {
+	if rule.GetPolicy() == constants.PolicyReject {
+		return nil, fmt.Errorf("reject dns")
+	}
+	return rule, nil
+}
+
+func getDnsResovler(domain string, metadata *constant.Metadata) (ruleEngine.Rule, error) {
+	processPath := metadata.ProcessPath
+	var rule ruleEngine.Rule
+	var err error
+	if len(processPath) != 0 {
+		rule, err = matcher.GetRule().Match(processPath, constants.ProcessRuleTypes)
+		if err == nil {
+			return convertRulePolicyToResolver(rule)
+		}
+	}
+
+	rule, err = matcher.GetRule().Match(domain, constants.DomainRuleTypes)
+	if err == nil {
+		return convertRulePolicyToResolver(rule)
+	}
+
+	return ruleEngine.BuiltInProxyRule, nil
+}
+
 func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
-	mux.Lock()
-	defer mux.Unlock()
+	mux.RLock()
+	defer mux.RLock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	start := time.Now()
@@ -96,11 +122,11 @@ func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
-	dnsType, err := matcher.GetDnsMatcher().GetDnsType(question, metadata)
+	dnsRule, err := getDnsResovler(question, metadata)
 	if err != nil {
-		return nil, fmt.Errorf("fail to get dns type, err: %v, question: %v", err, question)
+		return nil, fmt.Errorf("fail to get dns resolver, err: %v, question: %v", err, question)
 	}
-	res, err := dnsMap[dnsType].ExchangeContext(ctx, dnsMessage)
+	res, err := dnsMap[dnsRule.GetPolicy()].ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
 	} else if res == nil {
@@ -109,8 +135,8 @@ func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
-			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsType)
-			distribution.AddCachedDnsItem(resIp.String(), question, dnsType)
+			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule.GetPolicy())
+			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}
 	elapsed := time.Since(start).Milliseconds()

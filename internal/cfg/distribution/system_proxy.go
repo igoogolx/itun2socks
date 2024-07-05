@@ -44,20 +44,6 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine
 	return result, nil
 }
 
-func (c SystemProxyConfig) GetDnsType(domain string, _ *C.Metadata) (constants.DnsType, error) {
-	var rule, err = c.RuleEngine.Match(domain, constants.DomainRuleTypes)
-	if err == nil {
-		if rule.GetPolicy() == constants.PolicyDirect {
-			return constants.LocalDns, nil
-		} else if rule.GetPolicy() == constants.PolicyProxy {
-			return constants.RemoteDns, nil
-		} else if rule.GetPolicy() == constants.PolicyReject {
-			return constants.LocalDns, fmt.Errorf("reject dns")
-		}
-	}
-	return constants.RemoteDns, nil
-}
-
 func NewSystemProxy(
 	ruleId string,
 	rules []string,
