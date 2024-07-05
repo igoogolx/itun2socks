@@ -18,7 +18,7 @@ import (
 )
 
 var dnsMap = map[constants.DnsType]cResolver.Resolver{}
-var mux sync.Mutex
+var mux sync.RWMutex
 
 func UpdateDnsMap(local, remote, boost cResolver.Resolver) {
 	mux.Lock()
@@ -86,8 +86,8 @@ func getResponseIp(msg *D.Msg) []net.IP {
 }
 
 func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
-	mux.Lock()
-	defer mux.Unlock()
+	mux.RLock()
+	defer mux.RUnlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	start := time.Now()
