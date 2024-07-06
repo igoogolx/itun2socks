@@ -36,11 +36,11 @@ func resolveMetadata(metadata *C.Metadata) ruleEngine.Rule {
 		logType = log.UdpPrefix
 	}
 	remoteAddr := metadata.DstIP.String()
-	var domain = "unknown-domain"
 	cachedDomain, _, ok := dns.GetCachedDnsItem(remoteAddr)
 	if ok {
-		domain = cachedDomain
+		log.Infoln(log.FormatLog(logType, " %s --> %s(%s) using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), cachedDomain, rule.GetPolicy())
+	} else {
+		log.Infoln(log.FormatLog(logType, " %s --> %s using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), rule.GetPolicy())
 	}
-	log.Infoln(log.FormatLog(logType, " %s --> %s(%s) using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), domain, rule.GetPolicy())
 	return rule
 }
