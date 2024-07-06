@@ -31,7 +31,7 @@ func resolveMetadata(metadata *C.Metadata) ruleEngine.Rule {
 			rule = tempRule
 		}
 	}
-	var logType = log.TunPrefix
+	var logType = log.TcpPrefix
 	if metadata.NetWork == C.UDP {
 		logType = log.UdpPrefix
 	}
