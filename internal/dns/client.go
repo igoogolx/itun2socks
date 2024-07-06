@@ -112,7 +112,7 @@ func getDnsResovler(domain string, metadata *constant.Metadata) (ruleEngine.Rule
 
 func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	mux.RLock()
-	defer mux.RLock()
+	defer mux.RUnlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	start := time.Now()
