@@ -75,7 +75,6 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
 	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
 		Context:    context.Background(),
 		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
@@ -88,6 +87,8 @@ func newTun() (Client, error) {
 		return nil, err
 	}
 
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
+
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 	var matchers = []conn.Matcher{
 		config.Rule.ConnMatcher,
@@ -97,9 +98,13 @@ func newTun() (Client, error) {
 	}
 	tunnel.UpdateShouldFindProcess(config.ShouldFindProcess)
 	conn.UpdateConnMatcher(matchers)
+
 	conn.UpdateProxy(config.Proxy)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set dns"))
 	err = UpdateRule()
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set rule"))
 	if err != nil {
 		return nil, err
 	}
