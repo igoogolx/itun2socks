@@ -27,21 +27,21 @@ type Client interface {
 	RuntimeDetail() (interface{}, error)
 }
 
-func UpdateRule() error {
+func UpdateRule() (string, error) {
 	rawConfig, err := configuration.Read()
 	if err != nil {
-		return err
+		return "", err
 	}
 	selectedRule, err := configuration.GetSelectedRule()
 	if err != nil {
-		return err
+		return "", err
 	}
 	rEngine, err := ruleEngine.New(selectedRule, rawConfig.Rules)
 	if err != nil {
-		return err
+		return "", err
 	}
 	matcher.UpdateRule(rEngine)
-	return nil
+	return selectedRule, nil
 }
 
 func newTun() (Client, error) {
@@ -87,7 +87,7 @@ func newTun() (Client, error) {
 		return nil, err
 	}
 
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "network stack: %v"), config.Stack)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Set network stack: %v"), config.Stack)
 
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 	var matchers = []conn.Matcher{
@@ -100,11 +100,11 @@ func newTun() (Client, error) {
 	conn.UpdateConnMatcher(matchers)
 
 	conn.UpdateProxy(config.Proxy)
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Set proxy: %v"), config.Proxy.Name())
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set dns"))
-	err = UpdateRule()
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set rule"))
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Set dns, local: %v, remote: %v"), config.Rule.Dns.Local.Addresses, config.Rule.Dns.Remote.Addresses)
+	ruleName, err := UpdateRule()
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Set rule: %v"), ruleName)
 	if err != nil {
 		return nil, err
 	}
@@ -129,10 +129,13 @@ func newSysProxy() (Client, error) {
 		config.Rule.ConnMatcher,
 	})
 	conn.UpdateProxy(config.Proxy)
-	err = UpdateRule()
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Set proxy: %v"), config.Proxy.Name())
+	ruleName, err := UpdateRule()
 	if err != nil {
 		return nil, err
 	}
+
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Set rule: %v"), ruleName)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
 		config:      config,
