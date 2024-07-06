@@ -5,6 +5,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 )
 
@@ -13,7 +14,7 @@ type Config struct {
 }
 
 func (c Config) getIpRuleFromDns(ip string) (ruleEngine.Rule, bool) {
-	_, cachedDomainRule, ok := GetCachedDnsItem(ip)
+	_, cachedDomainRule, ok := dns.GetCachedDnsItem(ip)
 	if ok {
 		return cachedDomainRule, true
 	}
@@ -48,12 +49,12 @@ func NewTun(
 	if len(boostDns) == 0 || len(remoteDns) == 0 || len(localDns) == 0 {
 		return Config{}, fmt.Errorf("dns can't be empty")
 	}
-	ResetCache()
-	dns, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName, disableCache)
+	dns.ResetCache()
+	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName, disableCache)
 	if err != nil {
 		return Config{}, err
 	}
 	return Config{
-		dns,
+		dnsConfig,
 	}, nil
 }

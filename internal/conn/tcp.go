@@ -43,17 +43,9 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata,
 		ctx,
 		metadata,
 		conn,
-		ruleEngine.BuiltInProxyRule,
+		resolveMetadata(metadata),
 		wg,
 	}
-
-	for _, matcher := range GetConnMatcher() {
-		rule, err := matcher(metadata, connContext.rule)
-		if err == nil {
-			connContext.rule = rule
-		}
-	}
-
 	return connContext, nil
 
 }

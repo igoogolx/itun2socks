@@ -5,6 +5,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 )
 
@@ -32,6 +33,6 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, _ ruleEngine.Rule) 
 }
 
 func NewSystemProxy() (SystemProxyConfig, error) {
-	ResetCache()
+	dns.ResetCache()
 	return SystemProxyConfig{}, nil
 }

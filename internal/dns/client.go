@@ -5,7 +5,6 @@ import (
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/Dreamacro/clash/constant"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
@@ -136,7 +135,7 @@ func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	for _, resIp := range resIps {
 		if resIp != nil {
 			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule.GetPolicy())
-			distribution.AddCachedDnsItem(resIp.String(), question, dnsRule)
+			AddCachedDnsItem(resIp.String(), question, dnsRule)
 		}
 	}
 	elapsed := time.Since(start).Milliseconds()

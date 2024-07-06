@@ -43,6 +43,7 @@ const (
 	TcpPrefix
 	TunPrefix
 	UdpPrefix
+	CachePrefix
 )
 
 func FormatLog(prefix Prefix, content string) string {
@@ -65,6 +66,8 @@ func FormatLog(prefix Prefix, content string) string {
 		return "[TUN], " + content
 	case UdpPrefix:
 		return "[UDP], " + content
+	case CachePrefix:
+		return "[CACHE], " + content
 	}
 	return "[UNKNOWN]"
 }

@@ -1,8 +1,8 @@
 package statistic
 
 import (
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/dns"
 	"net"
 	"time"
 
@@ -74,7 +74,7 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule r
 		},
 	}
 
-	if cachedDomain, _, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
+	if cachedDomain, _, ok := dns.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		t.trackerInfo.Domain = cachedDomain
 	} else if metadata.Host != "" {
 		t.trackerInfo.Domain = metadata.Host
@@ -132,7 +132,7 @@ func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, 
 		},
 	}
 
-	if cachedDomain, _, ok := distribution.GetCachedDnsItem(metadata.DstIP.String()); ok {
+	if cachedDomain, _, ok := dns.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		ut.trackerInfo.Domain = cachedDomain
 	} else if metadata.Host != "" {
 		ut.trackerInfo.Domain = metadata.Host
