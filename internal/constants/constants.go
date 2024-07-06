@@ -15,7 +15,6 @@ type DnsType string
 const (
 	LocalDns  DnsType = "local"
 	RemoteDns DnsType = "remote"
-	BoostDns  DnsType = "boost"
 )
 
 type RuleType string
