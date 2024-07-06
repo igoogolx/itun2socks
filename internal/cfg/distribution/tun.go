@@ -20,7 +20,7 @@ func (c Config) getIpRuleFromDns(ip string) (ruleEngine.Rule, bool) {
 	return nil, false
 }
 
-func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
+func (c Config) ConnMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 	processPath := metadata.ProcessPath
 	if len(processPath) != 0 {
 		if rule, err := matcher.GetRule().Match(processPath, constants.ProcessRuleTypes); err == nil {
@@ -36,14 +36,6 @@ func (c Config) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine
 		return rule, nil
 	}
 	return nil, fmt.Errorf("no rule found")
-}
-
-func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (ruleEngine.Rule, error) {
-	result, err := c.connMatcher(metadata, prevRule)
-	if err != nil {
-		return result, err
-	}
-	return result, nil
 }
 
 func NewTun(
