@@ -67,8 +67,6 @@ func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
 }
 
 func handleUdpConn(ct conn.UdpConnContext) {
-
-	log.Debugln(log.FormatLog(log.UdpPrefix, "handle udp conn, remote address: %v"), ct.Metadata().RemoteAddress())
 	var once sync.Once
 	var lc conn.UdpConn
 	var err error
