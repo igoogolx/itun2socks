@@ -6,7 +6,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
-	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 type Config struct {
@@ -44,15 +43,6 @@ func (c Config) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine.Rule) (rul
 	if err != nil {
 		return result, err
 	}
-	ip := metadata.DstIP.String()
-	domain := "unknown"
-	dnsRule := "unknown"
-	cacheDomain, cachedRule, ok := GetCachedDnsItem(ip)
-	if ok {
-		domain = cacheDomain
-		dnsRule = string(cachedRule.GetPolicy())
-	}
-	log.Infoln(log.FormatLog(log.RulePrefix, "ip:%v, rule:%v; domain:%v, rule:%v"), ip, result.GetPolicy(), domain, dnsRule)
 	return result, nil
 }
 
