@@ -5,6 +5,7 @@ import (
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -24,6 +25,23 @@ type Client interface {
 	Start() error
 	Close() error
 	RuntimeDetail() (interface{}, error)
+}
+
+func UpdateRule() error {
+	rawConfig, err := configuration.Read()
+	if err != nil {
+		return err
+	}
+	selectedRule, err := configuration.GetSelectedRule()
+	if err != nil {
+		return err
+	}
+	rEngine, err := ruleEngine.New(selectedRule, rawConfig.Rules)
+	if err != nil {
+		return err
+	}
+	matcher.UpdateRule(rEngine)
+	return nil
 }
 
 func newTun() (Client, error) {
@@ -79,9 +97,12 @@ func newTun() (Client, error) {
 	}
 	tunnel.UpdateShouldFindProcess(config.ShouldFindProcess)
 	conn.UpdateConnMatcher(matchers)
-	matcher.UpdateRule(config.Rule.RuleEngine)
 	conn.UpdateProxy(config.Proxy)
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
+	err = UpdateRule()
+	if err != nil {
+		return nil, err
+	}
 
 	return &TunClient{
 		stack:       stack,
@@ -102,8 +123,11 @@ func newSysProxy() (Client, error) {
 	conn.UpdateConnMatcher([]conn.Matcher{
 		config.Rule.ConnMatcher,
 	})
-	matcher.UpdateRule(config.Rule.RuleEngine)
 	conn.UpdateProxy(config.Proxy)
+	err = UpdateRule()
+	if err != nil {
+		return nil, err
+	}
 	return &SystemProxyClient{
 		localserver: newLocalServer,
 		config:      config,

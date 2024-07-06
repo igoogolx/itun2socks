@@ -25,10 +25,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	selectedRule, err := configuration.GetSelectedRule()
-	if err != nil {
-		return nil, err
-	}
 	device, err := tun.New()
 	if err != nil {
 		return nil, err
@@ -37,8 +33,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.Dns.Server.Boost,
 		rawConfig.Setting.Dns.Server.Remote,
 		rawConfig.Setting.Dns.Server.Local,
-		selectedRule,
-		rawConfig.Rules,
 		defaultInterfaceName,
 		rawConfig.Setting.Dns.DisableCache,
 	)

@@ -5,24 +5,24 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 type SystemProxyConfig struct {
-	RuleEngine *ruleEngine.Engine
 }
 
 func (c SystemProxyConfig) connMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 
 	if metadata.Host != "" {
-		var rule, err = c.RuleEngine.Match(metadata.Host, constants.DomainRuleTypes)
+		var rule, err = matcher.GetRule().Match(metadata.Host, constants.DomainRuleTypes)
 		if err == nil {
 			return rule, nil
 		}
 	}
 
 	if metadata.DstIP.String() != "" {
-		rule, err := c.RuleEngine.Match(metadata.DstIP.String(), constants.IpRuleTypes)
+		rule, err := matcher.GetRule().Match(metadata.DstIP.String(), constants.IpRuleTypes)
 		if err == nil {
 			return rule, nil
 		}
@@ -44,16 +44,7 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, prevRule ruleEngine
 	return result, nil
 }
 
-func NewSystemProxy(
-	ruleId string,
-	rules []string,
-) (SystemProxyConfig, error) {
+func NewSystemProxy() (SystemProxyConfig, error) {
 	ResetCache()
-	rEngine, err := ruleEngine.New(ruleId, rules)
-	if err != nil {
-		return SystemProxyConfig{}, err
-	}
-	return SystemProxyConfig{
-		RuleEngine: rEngine,
-	}, nil
+	return SystemProxyConfig{}, nil
 }

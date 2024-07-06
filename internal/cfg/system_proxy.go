@@ -19,16 +19,8 @@ func NewSystemProxy() (*SystemProxyConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	selectedRule, err := configuration.GetSelectedRule()
-	if err != nil {
-		return nil, err
-	}
 
-	rule, err := distribution.NewSystemProxy(
-		selectedRule,
-		rawConfig.Rules,
-	)
-
+	rule, err := distribution.NewSystemProxy()
 	if err != nil {
 		return nil, err
 	}
