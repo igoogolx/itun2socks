@@ -1,6 +1,7 @@
 package ruleEngine
 
 import (
+	"fmt"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net/netip"
 )
@@ -14,6 +15,14 @@ type IpCidr struct {
 
 func (i IpCidr) GetPolicy() constants.Policy {
 	return i.Policy
+}
+
+func (i IpCidr) Valid() bool {
+	_, err := netip.ParsePrefix(i.Payload)
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func (i IpCidr) Type() constants.RuleType {
@@ -35,7 +44,7 @@ func (i IpCidr) Value() string {
 func NewIpCidrRule(payload string, policy constants.Policy) (*IpCidr, error) {
 	prefix, err := netip.ParsePrefix(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid ipcidr payload: %s, err:%s", payload, err)
 	}
 
 	return &IpCidr{constants.RuleIpCidr, payload, prefix, policy}, nil

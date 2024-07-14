@@ -1,6 +1,7 @@
 package ruleEngine
 
 import (
+	"fmt"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"path/filepath"
 	"strings"
@@ -28,8 +29,16 @@ func (p builtIn) Value() string {
 	return p.Payload
 }
 
+func (p builtIn) Valid() bool {
+	return true
+}
+
 func newBuiltIn(payload string, policy constants.Policy) (*builtIn, error) {
-	return &builtIn{constants.RuleBuiltIn, payload, policy}, nil
+	rule := &builtIn{constants.RuleBuiltIn, payload, policy}
+	if !rule.Valid() {
+		return nil, fmt.Errorf("invalid builtin rule")
+	}
+	return rule, nil
 }
 
 var (

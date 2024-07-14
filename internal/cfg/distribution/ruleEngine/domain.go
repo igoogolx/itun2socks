@@ -1,6 +1,7 @@
 package ruleEngine
 
 import (
+	"fmt"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"regexp"
 	"strings"
@@ -28,8 +29,18 @@ func (d Domain) Value() string {
 	return d.Payload
 }
 
+func (d Domain) Valid() bool {
+	return len(d.Payload) != 0
+}
+
 func NewDomainRule(ruleType constants.RuleType, payload string, policy constants.Policy) (*Domain, error) {
-	return &Domain{ruleType, payload, policy}, nil
+	rule := &Domain{ruleType, payload, policy}
+
+	if !rule.Valid() {
+		return nil, fmt.Errorf("invalid domain rule")
+	}
+
+	return rule, nil
 }
 
 func isContainsDomain(rType constants.RuleType, value string, s string) bool {
