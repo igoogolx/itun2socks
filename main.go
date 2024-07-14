@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"runtime/debug"
 	"syscall"
 )
 
@@ -25,7 +24,6 @@ var packageName = "itun2socks"
 
 //go:generate go run scripts/generate.go
 func main() {
-	debug.SetMemoryLimit(32 * 1024 * 1024)
 
 	userConfigDir, _ := os.UserConfigDir()
 	defaultHomeDir := filepath.Join(userConfigDir, packageName)
