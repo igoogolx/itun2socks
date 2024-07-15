@@ -35,7 +35,7 @@ func (p Process) Valid() bool {
 
 func NewProcessRule(ruleType constants.RuleType, payload string, policy constants.Policy) (*Process, error) {
 	rule := &Process{ruleType, payload, policy}
-	if rule.Valid() {
+	if !rule.Valid() {
 		return nil, fmt.Errorf("invalid process rule")
 	}
 	return rule, nil
