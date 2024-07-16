@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"runtime/debug"
 	"sync"
 )
 
@@ -45,8 +44,6 @@ func Start() error {
 func Close() error {
 	mux.Lock()
 	defer mux.Unlock()
-	//Pay attention to this because it may lead to performance problem
-	debug.FreeOSMemory()
 	if client != nil {
 		err := client.Close()
 		client = nil
