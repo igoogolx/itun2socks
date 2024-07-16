@@ -12,6 +12,7 @@ type Rule interface {
 	Value() string
 	GetPolicy() constants.Policy
 	Type() constants.RuleType
+	Valid() bool
 }
 
 type Engine struct {
