@@ -9,7 +9,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"net"
 	"strings"
@@ -30,31 +29,6 @@ func UpdateDnsMap(local, remote cResolver.Resolver) {
 type Conn interface {
 	ReadFrom([]byte) (int, net.Addr, error)
 	WriteTo([]byte, net.Addr) (int, error)
-}
-
-func HandleDnsConn(conn Conn, metadata *constant.Metadata) error {
-	var err error
-	data := pool.NewBytes(pool.BufSize)
-	defer pool.FreeBytes(data)
-	_, addr, err := conn.ReadFrom(data)
-	if err != nil {
-		return fmt.Errorf("fail to read dns message: err: %v", err)
-	}
-	dnsMessage := new(D.Msg)
-	err = dnsMessage.Unpack(data)
-	if err != nil {
-		return fmt.Errorf("fail to unpack dns message: err: %v", err)
-	}
-	res, err := handle(dnsMessage, metadata)
-	if err != nil {
-		return fmt.Errorf("fail to hanlde dns message: err: %v", err)
-	}
-	resData, err := res.Pack()
-	if err != nil {
-		return fmt.Errorf("fail to pack dns message: err: %v", err)
-	}
-	_, err = conn.WriteTo(resData, addr)
-	return err
 }
 
 func getDnsQuestion(msg *D.Msg) (string, error) {
@@ -110,7 +84,7 @@ func getDnsResovler(domain string, metadata *constant.Metadata) (ruleEngine.Rule
 	return ruleEngine.BuiltInProxyRule, nil
 }
 
-func handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
+func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	mux.RLock()
 	defer mux.RUnlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
