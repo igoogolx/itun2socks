@@ -10,6 +10,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"net/http"
+	"strconv"
+	"sync"
 	"time"
 )
 
@@ -28,6 +30,8 @@ func logRouter() http.Handler {
 }
 
 func getLogs(w http.ResponseWriter, r *http.Request) {
+	var mux sync.Mutex
+	logs := make([]Log, 0)
 	levelText := r.URL.Query().Get("level")
 	if levelText == "" {
 		levelText = "info"
@@ -58,25 +62,38 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 	defer log.UnSubscribe(sub)
 	buf := &bytes.Buffer{}
 	var err error
-	for elm := range sub {
-		buf.Reset()
-		logEvent, ok := elm.(log.Event)
-		if !ok {
-			break
+	go func() {
+		for elm := range sub {
+			func() {
+				mux.Lock()
+				defer mux.Unlock()
+				buf.Reset()
+				logEvent, ok := elm.(log.Event)
+				if !ok {
+					return
+				}
+				if logEvent.LogLevel < level {
+					return
+				}
+				uid, _ := uuid.NewV4()
+				logs = append(logs, Log{
+					UUID:    uid,
+					Time:    time.Now().UnixNano() / int64(time.Millisecond),
+					Type:    logEvent.Type(),
+					Payload: logEvent.Payload,
+				})
+			}()
 		}
-		if logEvent.LogLevel < level {
-			continue
+	}()
+
+	sendLogs := func() error {
+		mux.Lock()
+		defer mux.Unlock()
+		if err := json.NewEncoder(buf).Encode(logs); err != nil {
+			return err
 		}
 
-		uid, _ := uuid.NewV4()
-		if err := json.NewEncoder(buf).Encode(Log{
-			UUID:    uid,
-			Time:    time.Now().UnixNano() / int64(time.Millisecond),
-			Type:    logEvent.Type(),
-			Payload: logEvent.Payload,
-		}); err != nil {
-			break
-		}
+		logs = make([]Log, 0)
 
 		if wsConn == nil {
 			_, err = w.Write(buf.Bytes())
@@ -86,6 +103,28 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	intervalStr := r.URL.Query().Get("interval")
+	interval := 1000
+	if intervalStr != "" {
+		t, err := strconv.Atoi(intervalStr)
+		if err != nil {
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, ErrBadRequest)
+			return
+		}
+
+		interval = t
+	}
+
+	tick := time.NewTicker(time.Millisecond * time.Duration(interval))
+	defer tick.Stop()
+	for range tick.C {
+		if err := sendLogs(); err != nil {
 			break
 		}
 	}
