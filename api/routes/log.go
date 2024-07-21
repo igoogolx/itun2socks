@@ -60,14 +60,12 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 
 	sub := log.Subscribe()
 	defer log.UnSubscribe(sub)
-	buf := &bytes.Buffer{}
 	var err error
 	go func() {
 		for elm := range sub {
 			func() {
 				mux.Lock()
 				defer mux.Unlock()
-				buf.Reset()
 				logEvent, ok := elm.(log.Event)
 				if !ok {
 					return
@@ -86,9 +84,12 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	buf := &bytes.Buffer{}
 	sendLogs := func() error {
 		mux.Lock()
 		defer mux.Unlock()
+
+		buf.Reset()
 		if err := json.NewEncoder(buf).Encode(logs); err != nil {
 			return err
 		}
