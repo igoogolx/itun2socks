@@ -3,7 +3,6 @@ package routes
 import (
 	"context"
 	"github.com/Dreamacro/clash/adapter"
-	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -13,7 +12,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"io"
 	"net/http"
 	"time"
 )
@@ -28,39 +26,13 @@ func proxyRouter() http.Handler {
 	r.Get("/", getProxies)
 	r.Get("/cur-proxy", getCurProxy)
 	r.Put("/", addProxy)
-	r.Put("/clash-url", addProxiesFromClashUrl)
+	r.Put("/subscription-url", addProxiesFromSubscriptionUrl)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
 	return r
-}
-
-func ParseProxiesFromClashUrl(url string) ([]map[string]any, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Debugln(log.FormatLog(log.HubPrefix, "parse clash url: fail to close body"))
-		}
-	}(res.Body)
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	return ParseProxiesFromClashConfig(body)
-}
-
-func ParseProxiesFromClashConfig(content []byte) ([]map[string]any, error) {
-	rawConfig, err := config.UnmarshalRawConfig(content)
-	if err != nil {
-		return nil, err
-	}
-	return rawConfig.Proxy, err
 }
 
 func testProxyUdp(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +64,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	pc, _ := p.ListenPacketContext(context.Background(), metadata)
+	pc, err := p.ListenPacketContext(context.Background(), metadata)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -247,20 +219,23 @@ func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
 	render.NoContent(w, r)
 }
 
-func addProxiesFromClashUrl(w http.ResponseWriter, r *http.Request) {
-	var req map[string]string
+func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Proxies         []map[string]interface{} `json:"proxies"`
+		SubscriptionUrl string                   `json:"subscriptionUrl"`
+	}
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	proxies, err := ParseProxiesFromClashUrl(req["url"])
-	if err != nil {
+	proxies := req.Proxies
+	if proxies == nil {
 		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
+		render.JSON(w, r, NewError("invalid proxies"))
 		return
 	}
-	newProxies, err := configuration.AddProxies(proxies, req["url"])
+	newProxies, err := configuration.AddProxies(proxies, req.SubscriptionUrl)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
