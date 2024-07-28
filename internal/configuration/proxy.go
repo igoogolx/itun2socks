@@ -5,6 +5,7 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
 	"slices"
+	"sync"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {
@@ -125,7 +126,11 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map
 	return data.Proxy, nil
 }
 
+var addMux sync.Mutex
+
 func AddProxy(proxy map[string]interface{}) (string, error) {
+	addMux.Lock()
+	defer addMux.Unlock()
 	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
 		return "", fmt.Errorf("fail to parse proxy,error:%v", err)
