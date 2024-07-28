@@ -12,6 +12,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	"io"
 	"net/http"
 	"time"
 )
@@ -25,6 +26,7 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Get("/cur-proxy", getCurProxy)
+	r.Post("/url", getResFromUrl)
 	r.Put("/", addProxy)
 	r.Put("/subscription-url", addProxiesFromSubscriptionUrl)
 	r.Delete("/all", deleteAllProxies)
@@ -33,6 +35,36 @@ func proxyRouter() http.Handler {
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
 	return r
+}
+
+func getResFromUrl(w http.ResponseWriter, r *http.Request) {
+	var req map[string]string
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	res, err := http.Get(req["url"])
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Debugln(log.FormatLog(log.HubPrefix, "get res from url: fail to close body"))
+		}
+	}(res.Body)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.JSON(w, r, render.M{
+		"data": string(body),
+	})
 }
 
 func testProxyUdp(w http.ResponseWriter, r *http.Request) {
