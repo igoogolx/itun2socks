@@ -22,6 +22,7 @@ require (
 	github.com/sagernet/sing-tun v0.3.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
+	github.com/stretchr/testify v1.9.0
 	go.uber.org/atomic v1.11.0
 	golang.org/x/sys v0.21.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -30,6 +31,7 @@ require (
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20230911123819-0bbf144b9b9a // indirect
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/getlantern/byteexec v0.0.0-20220903141943-7db46f110fbc // indirect
@@ -52,6 +54,7 @@ require (
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sagernet/gvisor v0.0.0-20240428053021-e691de28565f // indirect
 	github.com/sagernet/netlink v0.0.0-20240523065131-45e60152f9ba // indirect
 	github.com/samber/lo v1.38.1 // indirect

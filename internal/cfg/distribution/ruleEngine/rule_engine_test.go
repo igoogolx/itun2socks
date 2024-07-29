@@ -1,8 +1,8 @@
 package ruleEngine
 
 import (
-	"errors"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -14,168 +14,96 @@ var PROXY_DOMAIN = "google.com"
 
 func TestProxyAll(t *testing.T) {
 	engine, err := New("proxy_all", []string{})
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
+
 	//not found
 	_, err = engine.Match(BYPASS_IP, constants.IpRuleTypes)
-	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			t.Fatal(err)
-		}
-	}
+	assert.Equal(t, ErrNotFound, err)
 
 	//not found
 	_, err = engine.Match(BYPASS_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			t.Fatal(err)
-		}
-	}
+	assert.Equal(t, ErrNotFound, err)
 
 	//not found
 	_, err = engine.Match(PROXY_IP, constants.IpRuleTypes)
-	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			t.Fatal(err)
-		}
-	}
+	assert.Equal(t, ErrNotFound, err)
 
 	//not found
 	_, err = engine.Match(PROXY_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			t.Fatal(err)
-		}
-	}
+	assert.Equal(t, ErrNotFound, err)
 
 }
 
 func TestBypassAll(t *testing.T) {
 	engine, err := New("bypass_all", []string{})
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	//bypass
 	bypassIpRes, err := engine.Match(BYPASS_IP, constants.IpRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if bypassIpRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("bypassIp in bypass_all failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, bypassIpRes.GetPolicy(), constants.PolicyDirect)
 
 	//bypass
 	bypassDomainRes, err := engine.Match(BYPASS_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if bypassDomainRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("bypassDomain in bypass_all failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, bypassDomainRes.GetPolicy(), constants.PolicyDirect)
 
 	//bypass
 	proxyIpRes, err := engine.Match(PROXY_IP, constants.IpRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if proxyIpRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("proxyIp in bypass_all failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, proxyIpRes.GetPolicy(), constants.PolicyDirect)
 
 	//bypass
 	proxyDomainRes, err := engine.Match(PROXY_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if proxyDomainRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("proxyDomain in bypass_all failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, proxyDomainRes.GetPolicy(), constants.PolicyDirect)
 }
 
 func TestBypassCn(t *testing.T) {
 	engine, err := New("bypass_cn", []string{})
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	//bypass
 	bypassIpRes, err := engine.Match(BYPASS_IP, constants.IpRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if bypassIpRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("bypassIp in bypass_cn failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, bypassIpRes.GetPolicy(), constants.PolicyDirect)
 
 	//bypass
 	bypassDomainRes, err := engine.Match(BYPASS_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if bypassDomainRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("bypassDomain in bypass_cn failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, bypassDomainRes.GetPolicy(), constants.PolicyDirect)
 
 	//not found
 	_, err = engine.Match(PROXY_IP, constants.IpRuleTypes)
-	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			t.Fatal(err)
-		}
-	}
+	assert.Equal(t, ErrNotFound, err)
 
 	//not found
 	_, err = engine.Match(PROXY_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			t.Fatal(err)
-		}
-	}
+	assert.Equal(t, ErrNotFound, err)
+
 }
 
 func TestProxyGfw(t *testing.T) {
 	engine, err := New("proxy_gfw", []string{})
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	//bypass
 	bypassIpRes, err := engine.Match(BYPASS_IP, constants.IpRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if bypassIpRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("bypassIp in proxy_gfw failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, bypassIpRes.GetPolicy(), constants.PolicyDirect)
 
 	//bypass
 	bypassDomainRes, err := engine.Match(BYPASS_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if bypassDomainRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("bypassDomain in proxy_gfw failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, bypassDomainRes.GetPolicy(), constants.PolicyDirect)
 
 	//bypass
 	proxyIpRes, err := engine.Match(PROXY_IP, constants.IpRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if proxyIpRes.GetPolicy() != constants.PolicyDirect {
-		t.Fatal("proxyIpRes in proxy_gfw failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, proxyIpRes.GetPolicy(), constants.PolicyDirect)
 
 	//proxy
 	proxyDomainRes, err := engine.Match(PROXY_DOMAIN, constants.DomainRuleTypes)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if proxyDomainRes.GetPolicy() != constants.PolicyProxy {
-		t.Fatal("proxyDomain in proxy_gfw failed")
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, proxyDomainRes.GetPolicy(), constants.PolicyProxy)
 }
