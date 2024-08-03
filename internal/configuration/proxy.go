@@ -5,6 +5,7 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
 	"slices"
+	"sync"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {
@@ -89,7 +90,7 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 	return nil
 }
 
-func AddProxies(proxies []map[string]interface{}, clashYamlUrl string) ([]map[string]interface{}, error) {
+func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map[string]interface{}, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
@@ -97,7 +98,7 @@ func AddProxies(proxies []map[string]interface{}, clashYamlUrl string) ([]map[st
 
 	newProxy := make([]map[string]interface{}, 0)
 	for _, v := range data.Proxy {
-		if v["clashYamlUrl"] != clashYamlUrl {
+		if v["subscriptionUrl"] != subscriptionUrl {
 			newProxy = append(newProxy, v)
 		}
 	}
@@ -114,7 +115,7 @@ func AddProxies(proxies []map[string]interface{}, clashYamlUrl string) ([]map[st
 			return nil, err
 		}
 		proxy["id"] = id.String()
-		proxy["clashYamlUrl"] = clashYamlUrl
+		proxy["subscriptionUrl"] = subscriptionUrl
 		data.Proxy = append(data.Proxy, proxy)
 	}
 
@@ -125,7 +126,11 @@ func AddProxies(proxies []map[string]interface{}, clashYamlUrl string) ([]map[st
 	return data.Proxy, nil
 }
 
+var addMux sync.Mutex
+
 func AddProxy(proxy map[string]interface{}) (string, error) {
+	addMux.Lock()
+	defer addMux.Unlock()
 	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
 		return "", fmt.Errorf("fail to parse proxy,error:%v", err)

@@ -2,6 +2,7 @@ package resolver
 
 import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
+	_ "github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/dns"
 	_ "unsafe"
