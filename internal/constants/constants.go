@@ -31,7 +31,7 @@ const (
 
 var (
 	IpRuleTypes      = []RuleType{RuleIpCidr}
-	DomainRuleTypes  = []RuleType{RuleDomain, RuleDomainSuffix, RuleDomainRegex}
+	DomainRuleTypes  = []RuleType{RuleDomain, RuleDomainSuffix, RuleDomainRegex, RuleDomainKeyword}
 	ProcessRuleTypes = []RuleType{RuleProcess}
 )
 
