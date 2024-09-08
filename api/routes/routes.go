@@ -24,6 +24,7 @@ func Start(addr string) error {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+	r.Use(middleware.Heartbeat("/ping"))
 	r.Mount("/debug", middleware.Profiler())
 	r.Group(func(r chi.Router) {
 		r.Mount("/traffic", trafficRouter())
