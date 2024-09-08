@@ -24,7 +24,6 @@ func Start(addr string) error {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
-	r.Use(middleware.Heartbeat("/ping"))
 	r.Mount("/debug", middleware.Profiler())
 	r.Group(func(r chi.Router) {
 		r.Mount("/traffic", trafficRouter())
@@ -38,6 +37,7 @@ func Start(addr string) error {
 		r.Mount("/runtime-detail", runtimeDetailRouter())
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
+		r.Mount("/heartbeat", heartbeatRouter())
 	})
 	go FileServer(r)
 	err := http.ListenAndServe(addr, r)
