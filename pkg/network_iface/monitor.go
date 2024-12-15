@@ -6,6 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	tun "github.com/sagernet/sing-tun"
+	"github.com/sagernet/sing/common/control"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sirupsen/logrus"
@@ -54,7 +55,13 @@ func StartMonitor() error {
 		return err
 	}
 
-	defaultInterfaceMonitor, err = tun.NewDefaultInterfaceMonitor(networkUpdateMonitor, logrus.StandardLogger(), tun.DefaultInterfaceMonitorOptions{OverrideAndroidVPN: true})
+	defaultInterfaceMonitor, err = tun.NewDefaultInterfaceMonitor(
+		networkUpdateMonitor,
+		logrus.StandardLogger(),
+		tun.DefaultInterfaceMonitorOptions{
+			OverrideAndroidVPN: true,
+			InterfaceFinder:    control.NewDefaultInterfaceFinder(),
+		})
 	if err != nil {
 		err = E.Cause(err, "create DefaultInterfaceMonitor")
 		return err
