@@ -4,13 +4,13 @@ go 1.21
 
 toolchain go1.21.0
 
-replace github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => github.com/igoogolx/sysproxy v1.0.3
+replace github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b => github.com/igoogolx/sysproxy v1.0.4
 
 replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.10
 
 require (
 	github.com/Dreamacro/clash v1.18.0
-	github.com/getlantern/sysproxy v0.0.0-20230319110552-63a8cacb7b9b
+	github.com/getlantern/sysproxy v0.0.0-20240711003440-384834c7b4cb
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
@@ -36,6 +36,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/getlantern/byteexec v0.0.0-20220903141943-7db46f110fbc // indirect
 	github.com/getlantern/context v0.0.0-20190109183933-c447772a6520 // indirect
+	github.com/getlantern/elevate v0.0.0-20220903142053-479ab992b264 // indirect
 	github.com/getlantern/errors v1.0.1 // indirect
 	github.com/getlantern/filepersist v0.0.0-20210901195658-ed29a1cb0b7c // indirect
 	github.com/getlantern/golog v0.0.0-20211223150227-d4d95a44d873 // indirect
