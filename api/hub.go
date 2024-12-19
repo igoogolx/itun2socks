@@ -6,10 +6,10 @@ import (
 	"strconv"
 )
 
-func Start(port int) {
+func Start(port int, secret string) {
 	go func() {
-		log.Infoln(log.FormatLog(log.ExecutorPrefix, "hub is running on: http://localhost:%v"), port)
-		err := routes.Start("localhost:" + strconv.Itoa(port))
+		log.Infoln(log.FormatLog(log.ExecutorPrefix, "hub is running on: http://localhost:%v?token=%v"), port, secret)
+		err := routes.Start("localhost:"+strconv.Itoa(port), secret)
 		if err != nil {
 			log.Fatalln(log.FormatLog(log.ExecutorPrefix, "fail to start hub: %v"), err)
 		}
