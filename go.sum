@@ -15,8 +15,6 @@ github.com/getlantern/byteexec v0.0.0-20220903141943-7db46f110fbc h1:npKLx1Gx+m6
 github.com/getlantern/byteexec v0.0.0-20220903141943-7db46f110fbc/go.mod h1:oD9q9NB1LNBLHk3WAwza4tivxV7tm7jKFlCNCAv3+M8=
 github.com/getlantern/context v0.0.0-20190109183933-c447772a6520 h1:NRUJuo3v3WGC/g5YiyF790gut6oQr5f3FBI88Wv0dx4=
 github.com/getlantern/context v0.0.0-20190109183933-c447772a6520/go.mod h1:L+mq6/vvYHKjCX2oez0CgEAJmbq1fbb/oNJIWQkBybY=
-github.com/getlantern/elevate v0.0.0-20220903142053-479ab992b264 h1:q50MSzoIIKotG7apUYaDME/bNGhOJMjG33Fpfc7KPWM=
-github.com/getlantern/elevate v0.0.0-20220903142053-479ab992b264/go.mod h1:2VB8zy/kMNX347i5fdusJbPNAZE26u8qoHJDy7CWP9A=
 github.com/getlantern/errors v1.0.1 h1:XukU2whlh7OdpxnkXhNH9VTLVz0EVPGKDV5K0oWhvzw=
 github.com/getlantern/errors v1.0.1/go.mod h1:l+xpFBrCtDLpK9qNjxs+cHU6+BAdlBaxHqikB6Lku3A=
 github.com/getlantern/filepersist v0.0.0-20210901195658-ed29a1cb0b7c h1:mcz27xtAkb1OuOLBct/uFfL1p3XxAIcFct82GbT+UZM=
@@ -29,8 +27,6 @@ github.com/getlantern/hidden v0.0.0-20190325191715-f02dbb02be55 h1:XYzSdCbkzOC0F
 github.com/getlantern/hidden v0.0.0-20190325191715-f02dbb02be55/go.mod h1:6mmzY2kW1TOOrVy+r41Za2MxXM+hhqTtY3oBKd2AgFA=
 github.com/getlantern/ops v0.0.0-20190325191751-d70cb0d6f85f h1:wrYrQttPS8FHIRSlsrcuKazukx/xqO/PpLZzZXsF+EA=
 github.com/getlantern/ops v0.0.0-20190325191751-d70cb0d6f85f/go.mod h1:D5ao98qkA6pxftxoqzibIBBrLSUli+kYnJqrgBf9cIA=
-github.com/getlantern/sysproxy v0.0.0-20240711003440-384834c7b4cb h1:9eaFCu1MZ5yp1vpg6KNOkjTzQnfo2MAbgqOqL/AnmAw=
-github.com/getlantern/sysproxy v0.0.0-20240711003440-384834c7b4cb/go.mod h1:sIaf1EQGv8d+l71iPiFYiLJtBp9fRy5wgO3mTFXSPzM=
 github.com/go-chi/chi/v5 v5.1.0 h1:acVI1TYaD+hhedDJ3r54HyA6sExp3HfXq7QWEEY/xMw=
 github.com/go-chi/chi/v5 v5.1.0/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/go-chi/cors v1.2.1 h1:xEC8UT3Rlp2QuWNEr4Fs/c2EAGVKBwy/1vHx3bppil4=
@@ -53,6 +49,8 @@ github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
 github.com/igoogolx/clash v1.19.11 h1:D80keITYMSzkptYNm1Q8U1BrUxyKpyt9k0ZnxvlpKl4=
 github.com/igoogolx/clash v1.19.11/go.mod h1:mcr/HVUlxi5S7oHQjxmG+WabMIGx/IUl1YWTkiOirVc=
+github.com/igoogolx/sysproxy v1.0.5 h1:bR3ThpCLAo2/hJdUO3V6nsEEYdBS+yaIK4o6ezjXiVM=
+github.com/igoogolx/sysproxy v1.0.5/go.mod h1:Ivr0fT7jxcG4mfruV+nNoW0IacTjENzztXcM4lQ91as=
 github.com/insomniacslk/dhcp v0.0.0-20241203100832-a481575ed0ef h1:NzQKDfd5ZOPnuZYf9MnRee8x2qecsVqzsnaLjEZiBko=
 github.com/insomniacslk/dhcp v0.0.0-20241203100832-a481575ed0ef/go.mod h1:KclMyHxX06VrVr0DJmeFSUb1ankt7xTfoOA35pCkoic=
 github.com/josharian/native v1.0.1-0.20221213033349-c1e37c09b531/go.mod h1:7X/raswPFr05uY3HiLlYeyQntB6OO7E/d2Cu7qoaN2w=
