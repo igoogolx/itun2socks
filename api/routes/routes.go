@@ -74,10 +74,10 @@ func Start(addr string, secret string) error {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
-	r.Use(authentication)
 	r.Use(middleware.Heartbeat("/ping"))
 	r.Mount("/debug", middleware.Profiler())
 	r.Group(func(r chi.Router) {
+		r.Use(authentication)
 		r.Mount("/traffic", trafficRouter())
 		r.Mount("/proxies", proxyRouter())
 		r.Mount("/rules", ruleRouter())
