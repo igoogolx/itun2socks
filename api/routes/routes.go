@@ -64,7 +64,6 @@ func authentication(next http.Handler) http.Handler {
 func Start(addr string, secret string) error {
 	serverSecret = secret
 	r := chi.NewRouter()
-	r.Use(authentication)
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 		AllowedOrigins: []string{"https://*", "http://*", "ws://*"},
@@ -75,6 +74,7 @@ func Start(addr string, secret string) error {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+	r.Use(authentication)
 	r.Use(middleware.Heartbeat("/ping"))
 	r.Mount("/debug", middleware.Profiler())
 	r.Group(func(r chi.Router) {
