@@ -18,6 +18,7 @@ var (
 	homeDir string
 	version bool
 	port    int
+	secret  string
 )
 
 var packageName = "itun2socks"
@@ -31,6 +32,7 @@ func main() {
 	flag.IntVar(&port, "port", constants.DefaultHubPort, "set running port")
 	flag.StringVar(&homeDir, "home_dir", defaultHomeDir, "set configuration directory")
 	flag.BoolVar(&version, "version", false, "print current version of itun2socks")
+	flag.StringVar(&secret, "secret", "", "set secret")
 	flag.Parse()
 
 	if version {
@@ -47,7 +49,7 @@ func main() {
 	log.InitLog()
 	log.Infoln(log.FormatLog(log.InitPrefix, "using config: %v"), constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
-	api.Start(port)
+	api.Start(port, secret)
 	defer func() {
 		if p := recover(); p != nil {
 			log.Errorln(log.FormatLog(log.InitPrefix, "internal error: %v"), p)

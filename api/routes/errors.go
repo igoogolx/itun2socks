@@ -1,7 +1,8 @@
 package routes
 
 var (
-	ErrBadRequest = NewError("Body invalid")
+	ErrBadRequest   = NewError("Body invalid")
+	ErrUnauthorized = NewError("Unauthorized")
 )
 
 // HTTPError is custom HTTP error for API
