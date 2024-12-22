@@ -14,5 +14,7 @@ jobs:
           cache: true
       - name: Install dependencies
         run: go mod tidy
+      - name: Generate
+        run: go generate
       - name: Test with the Go CLI
         run: go test ./...
