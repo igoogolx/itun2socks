@@ -96,29 +96,46 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map
 		return nil, err
 	}
 
-	newProxy := make([]map[string]interface{}, 0)
-	for _, v := range data.Proxy {
-		if v["subscriptionUrl"] != subscriptionUrl {
-			newProxy = append(newProxy, v)
-		}
-	}
-	data.Proxy = newProxy
-
+	newProxyWithIds := make([]map[string]interface{}, 0)
+	idNs := uuid.NewV5(uuid.Nil, subscriptionUrl)
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
 			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
 
-		id, err := uuid.NewV4()
-		if err != nil {
-			return nil, err
+		if proxyName, ok := proxy["name"].(string); ok {
+			id := uuid.NewV5(idNs, proxyName)
+			proxy["id"] = id.String()
+		} else {
+			id, err := uuid.NewV4()
+			if err != nil {
+				return nil, err
+			}
+			proxy["id"] = id.String()
 		}
-		proxy["id"] = id.String()
 		proxy["subscriptionUrl"] = subscriptionUrl
-		data.Proxy = append(data.Proxy, proxy)
+		newProxyWithIds = append(newProxyWithIds, proxy)
 	}
 
+	targetIndex := slices.IndexFunc(data.Proxy, func(p map[string]interface{}) bool {
+		return p["subscriptionUrl"] == subscriptionUrl
+	})
+
+	newProxy := make([]map[string]interface{}, 0)
+
+	for _, v := range data.Proxy {
+		if v["subscriptionUrl"] != subscriptionUrl {
+			newProxy = append(newProxy, v)
+		}
+	}
+
+	if targetIndex < len(newProxy) {
+		newProxy = slices.Insert(newProxy, targetIndex, newProxyWithIds...)
+	} else {
+		newProxy = append(newProxy, newProxyWithIds...)
+	}
+	data.Proxy = newProxy
 	err = Write(data)
 	if err != nil {
 		return nil, err
