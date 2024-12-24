@@ -6,6 +6,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -272,6 +273,26 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
+	}
+	rawConfig, err := configuration.Read()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	if manager.GetIsStarted() && rawConfig.Setting.AutoMode.Enabled {
+		outboundOption := outbound.Option{
+			AutoMode:      rawConfig.Setting.AutoMode,
+			Proxies:       rawConfig.Proxy,
+			SelectedProxy: rawConfig.Selected.Proxy,
+		}
+		proxy, err := outbound.New(outboundOption)
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
+		conn.UpdateProxy(proxy)
 	}
 	render.JSON(w, r, render.M{"proxies": newProxies})
 }
