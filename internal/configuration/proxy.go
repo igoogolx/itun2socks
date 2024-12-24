@@ -5,6 +5,7 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
 	"slices"
+	"strings"
 	"sync"
 )
 
@@ -90,6 +91,17 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 	return nil
 }
 
+func checkIsValidStr(value interface{}) (string, bool) {
+	str, ok := value.(string)
+	if !ok {
+		return "", false
+	}
+	if len(strings.TrimSpace(str)) == 0 {
+		return "", false
+	}
+	return str, true
+}
+
 func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map[string]interface{}, error) {
 	data, err := Read()
 	if err != nil {
@@ -104,16 +116,19 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map
 			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
 
-		if proxyName, ok := proxy["name"].(string); ok {
+		if proxyName, ok := checkIsValidStr(proxy["name"]); ok {
 			id := uuid.NewV5(idNs, proxyName)
 			proxy["id"] = id.String()
-		} else {
+		}
+
+		if _, ok := checkIsValidStr(proxy["id"]); !ok {
 			id, err := uuid.NewV4()
 			if err != nil {
 				return nil, err
 			}
 			proxy["id"] = id.String()
 		}
+
 		proxy["subscriptionUrl"] = subscriptionUrl
 		newProxyWithIds = append(newProxyWithIds, proxy)
 	}
