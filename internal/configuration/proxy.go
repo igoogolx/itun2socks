@@ -5,6 +5,7 @@ import (
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
 	"slices"
+	"strings"
 	"sync"
 )
 
@@ -22,7 +23,7 @@ func GetProxy(id string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	for _, v := range data.Proxy {
-		if v["id"] == id {
+		if v["id"] == id && v != nil {
 			return v, nil
 		}
 	}
@@ -90,35 +91,66 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 	return nil
 }
 
+func checkIsValidStr(value interface{}) (string, bool) {
+	str, ok := value.(string)
+	if !ok {
+		return "", false
+	}
+	if len(strings.TrimSpace(str)) == 0 {
+		return "", false
+	}
+	return str, true
+}
+
 func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map[string]interface{}, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
 	}
 
-	newProxy := make([]map[string]interface{}, 0)
-	for _, v := range data.Proxy {
-		if v["subscriptionUrl"] != subscriptionUrl {
-			newProxy = append(newProxy, v)
-		}
-	}
-	data.Proxy = newProxy
-
+	newProxyWithIds := make([]map[string]interface{}, 0)
+	idNs := uuid.NewV5(uuid.Nil, subscriptionUrl)
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
 			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
 
-		id, err := uuid.NewV4()
-		if err != nil {
-			return nil, err
+		if proxyName, ok := checkIsValidStr(proxy["name"]); ok {
+			id := uuid.NewV5(idNs, proxyName)
+			proxy["id"] = id.String()
 		}
-		proxy["id"] = id.String()
+
+		if _, ok := checkIsValidStr(proxy["id"]); !ok {
+			id, err := uuid.NewV4()
+			if err != nil {
+				return nil, err
+			}
+			proxy["id"] = id.String()
+		}
+
 		proxy["subscriptionUrl"] = subscriptionUrl
-		data.Proxy = append(data.Proxy, proxy)
+		newProxyWithIds = append(newProxyWithIds, proxy)
 	}
 
+	targetIndex := slices.IndexFunc(data.Proxy, func(p map[string]interface{}) bool {
+		return p["subscriptionUrl"] == subscriptionUrl
+	})
+
+	newProxy := make([]map[string]interface{}, 0)
+
+	for _, v := range data.Proxy {
+		if v["subscriptionUrl"] != subscriptionUrl {
+			newProxy = append(newProxy, v)
+		}
+	}
+
+	if targetIndex < len(newProxy) {
+		newProxy = slices.Insert(newProxy, targetIndex, newProxyWithIds...)
+	} else {
+		newProxy = append(newProxy, newProxyWithIds...)
+	}
+	data.Proxy = newProxy
 	err = Write(data)
 	if err != nil {
 		return nil, err

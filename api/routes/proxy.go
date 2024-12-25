@@ -6,6 +6,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -25,7 +26,7 @@ var (
 func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
-	r.Get("/cur-proxy", getCurProxy)
+	r.Get("/cur-proxy", handleGetProxy)
 	r.Post("/url", getResFromUrl)
 	r.Put("/", addProxy)
 	r.Put("/subscription-url", addProxiesFromSubscriptionUrl)
@@ -181,18 +182,13 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func getCurProxy(w http.ResponseWriter, r *http.Request) {
+func getCurProxy() (string, string) {
 	name := ""
 	addr := ""
 
 	if manager.GetIsStarted() {
 		curAutoProxy, err := conn.GetProxy(constants.PolicyProxy)
-		if err != nil {
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, NewError(err.Error()))
-			return
-		}
-		if curAutoProxy != nil {
+		if err == nil {
 			if curAutoProxy.Type() == C.URLTest || curAutoProxy.Type() == C.Fallback {
 				curAutoProxy = curAutoProxy.Unwrap(&C.Metadata{})
 			}
@@ -201,7 +197,24 @@ func getCurProxy(w http.ResponseWriter, r *http.Request) {
 			name = curAutoProxy.Name()
 			addr = curAutoProxy.Addr()
 		}
+	} else {
+		curSelectedProxy, err := configuration.GetSelectedProxy()
+		if err == nil {
+			if proxyName, ok := curSelectedProxy["name"].(string); ok {
+				name = proxyName
+			}
+			if proxyAddr, ok := curSelectedProxy["server"].(string); ok {
+				addr = proxyAddr
+			}
+		}
 	}
+
+	return name, addr
+
+}
+
+func handleGetProxy(w http.ResponseWriter, r *http.Request) {
+	name, addr := getCurProxy()
 	render.JSON(w, r, render.M{
 		"name": name,
 		"addr": addr,
@@ -272,6 +285,26 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
+	}
+	rawConfig, err := configuration.Read()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	if manager.GetIsStarted() && rawConfig.Setting.AutoMode.Enabled {
+		outboundOption := outbound.Option{
+			AutoMode:      rawConfig.Setting.AutoMode,
+			Proxies:       rawConfig.Proxy,
+			SelectedProxy: rawConfig.Selected.Proxy,
+		}
+		proxy, err := outbound.New(outboundOption)
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
+		conn.UpdateProxy(proxy)
 	}
 	render.JSON(w, r, render.M{"proxies": newProxies})
 }
