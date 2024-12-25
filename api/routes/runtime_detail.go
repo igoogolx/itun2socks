@@ -23,8 +23,7 @@ func getOs(w http.ResponseWriter, r *http.Request) {
 
 func getDetail(w http.ResponseWriter, r *http.Request) {
 	if !manager.GetIsStarted() {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError("the client is not started"))
+		render.JSON(w, r, nil)
 		return
 	}
 	detail, err := manager.RuntimeDetail()
