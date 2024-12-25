@@ -23,7 +23,7 @@ func GetProxy(id string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	for _, v := range data.Proxy {
-		if v["id"] == id {
+		if v["id"] == id && v != nil {
 			return v, nil
 		}
 	}

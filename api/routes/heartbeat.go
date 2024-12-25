@@ -2,12 +2,9 @@ package routes
 
 import (
 	"encoding/json"
-	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/gorilla/websocket"
-	"github.com/igoogolx/itun2socks/internal/conn"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"net/http"
 	"time"
@@ -97,25 +94,7 @@ type RuntimeStatus struct {
 }
 
 func getRuntimeStatus() (*RuntimeStatus, error) {
-	name := ""
-	addr := ""
 	isStarted := manager.GetIsStarted()
-	if isStarted {
-		curAutoProxy, err := conn.GetProxy(constants.PolicyProxy)
-		if err != nil {
-			return nil, err
-		}
-		if curAutoProxy != nil {
-			if curAutoProxy.Type() == C.URLTest || curAutoProxy.Type() == C.Fallback {
-				curAutoProxy = curAutoProxy.Unwrap(&C.Metadata{})
-			}
-		}
-		if curAutoProxy != nil {
-			name = curAutoProxy.Name()
-			addr = curAutoProxy.Addr()
-		}
-	}
-
+	name, addr := getCurProxy()
 	return &RuntimeStatus{name, addr, isStarted}, nil
-
 }
