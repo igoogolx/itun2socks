@@ -57,8 +57,8 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		device,
 		newLocalServer,
 		rawConfig.Setting.HijackDns,
-		rawConfig.Setting.BlockQuic,
+		*rawConfig.Setting.BlockQuic,
 		rawConfig.Setting.Stack,
-		rawConfig.Setting.ShouldFindProcess,
+		*rawConfig.Setting.ShouldFindProcess,
 	}, nil
 }
