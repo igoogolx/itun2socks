@@ -145,7 +145,7 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map
 		}
 	}
 
-	if targetIndex < len(newProxy) {
+	if targetIndex != -1 && targetIndex < len(newProxy) {
 		newProxy = slices.Insert(newProxy, targetIndex, newProxyWithIds...)
 	} else {
 		newProxy = append(newProxy, newProxyWithIds...)
