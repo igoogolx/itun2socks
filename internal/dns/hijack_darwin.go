@@ -4,6 +4,7 @@ package dns
 
 import (
 	"fmt"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
 	"os/exec"
 	"strings"
@@ -34,8 +35,7 @@ func Hijack(networkService string) error {
 	if err != nil {
 		return err
 	}
-	dnsServer := "8.8.8.8"
-	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
+	cmd := exec.Command("networksetup", "-setdnsservers", networkService, constants.HijackedDns)
 	_, err = cmd.Output()
 	if err != nil {
 		return fmt.Errorf("failed to hajack DNS servers: %v", err)
