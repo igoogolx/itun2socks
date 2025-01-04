@@ -31,16 +31,27 @@ type Conn interface {
 	WriteTo([]byte, net.Addr) (int, error)
 }
 
-func getDnsQuestion(msg *D.Msg) (string, string, error) {
+func handleMsgWithEmptyAnswer(r *D.Msg) *D.Msg {
+	msg := &D.Msg{}
+	msg.Answer = []D.RR{}
+
+	msg.SetRcode(r, D.RcodeSuccess)
+	msg.Authoritative = true
+	msg.RecursionAvailable = true
+
+	return msg
+}
+
+func getDnsQuestion(msg *D.Msg) (string, uint16, error) {
 	if len(msg.Question) == 0 {
-		return "", "", fmt.Errorf("no dns question")
+		return "", D.TypeNone, fmt.Errorf("no dns question")
 	}
 	name := msg.Question[0].Name
 	if strings.HasSuffix(name, ".") {
 		name = name[:len(name)-1]
 	}
 	qType := msg.Question[0].Qtype
-	return name, D.TypeToString[qType], nil
+	return name, qType, nil
 }
 
 func getResponseIp(msg *D.Msg) []net.IP {
@@ -96,6 +107,12 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid dns question, err: %v", err)
 	}
+
+	switch qType {
+	case D.TypeAAAA, D.TypeSVCB, D.TypeHTTPS:
+		return handleMsgWithEmptyAnswer(dnsMessage), nil
+	}
+
 	dnsRule, err := getDnsResovler(question, metadata)
 	if err != nil {
 		return nil, fmt.Errorf("fail to get dns resolver, err: %v, question: %v", err, question)
@@ -114,6 +131,6 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 		}
 	}
 	elapsed := time.Since(start).Milliseconds()
-	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, type: %v, time: %v ms, result: %v"), question, qType, elapsed, resIps)
+	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, type: %v, time: %v ms, result: %v"), question, D.TypeToString[qType], elapsed, resIps)
 	return res, err
 }
