@@ -15,7 +15,11 @@ func NewDnsDistribution(
 	defaultInterfaceName string,
 	disableCache bool,
 ) (DnsDistribution, error) {
+
 	var err error
+	dd := DnsDistribution{}
+
+	//Boost
 	var bootDnsServers []string
 	for _, server := range bootDns {
 		bootDnsServers = append(bootDnsServers, server+"#"+defaultInterfaceName)
@@ -26,9 +30,15 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
+	dd.Boost = SubDnsDistribution{
+		Client:    boostDnsClient,
+		Addresses: bootDnsServers,
+	}
+
+	//Local
 	var localDnsServers []string
-	for _, server := range bootDns {
-		localDnsServers = append(localDns, server+"#"+defaultInterfaceName)
+	for _, server := range localDns {
+		localDnsServers = append(localDnsServers, server+"#"+defaultInterfaceName)
 	}
 	localDnsClient, err := resolver.New(localDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
@@ -36,12 +46,12 @@ func NewDnsDistribution(
 	if err != nil {
 		return DnsDistribution{}, err
 	}
-	dd := DnsDistribution{}
 	dd.Local = SubDnsDistribution{
 		Addresses: localDnsServers,
 		Client:    localDnsClient,
 	}
 
+	//Remote
 	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyProxy)
 	}, disableCache)
@@ -51,11 +61,6 @@ func NewDnsDistribution(
 	dd.Remote = SubDnsDistribution{
 		Client:    remoteDnsClient,
 		Addresses: remoteDns,
-	}
-
-	dd.Boost = SubDnsDistribution{
-		Client:    boostDnsClient,
-		Addresses: bootDnsServers,
 	}
 
 	cResolver.DefaultResolver = boostDnsClient
