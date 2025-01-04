@@ -4,7 +4,7 @@ go 1.22.0
 
 toolchain go1.22.5
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.11
+replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.12
 
 require (
 	github.com/Dreamacro/clash v1.18.0
@@ -46,7 +46,7 @@ require (
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/insomniacslk/dhcp v0.0.0-20241219180459-a662cc47d412 // indirect
+	github.com/insomniacslk/dhcp v0.0.0-20241224095048-b56fa0d5f25d // indirect
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
