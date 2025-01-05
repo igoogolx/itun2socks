@@ -20,11 +20,7 @@ func NewDnsDistribution(
 	dd := DnsDistribution{}
 
 	//Boost
-	var bootDnsServers []string
-	for _, server := range bootDns {
-		bootDnsServers = append(bootDnsServers, server+"#"+defaultInterfaceName)
-	}
-	boostDnsClient, err := resolver.New(bootDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
+	boostDnsClient, err := resolver.New(bootDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
 	}, disableCache)
 	if err != nil {
@@ -32,22 +28,18 @@ func NewDnsDistribution(
 	}
 	dd.Boost = SubDnsDistribution{
 		Client:    boostDnsClient,
-		Addresses: bootDnsServers,
+		Addresses: bootDns,
 	}
 
 	//Local
-	var localDnsServers []string
-	for _, server := range localDns {
-		localDnsServers = append(localDnsServers, server+"#"+defaultInterfaceName)
-	}
-	localDnsClient, err := resolver.New(localDnsServers, defaultInterfaceName, func() (C.Proxy, error) {
+	localDnsClient, err := resolver.New(localDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
 	}, disableCache)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
 	dd.Local = SubDnsDistribution{
-		Addresses: localDnsServers,
+		Addresses: localDns,
 		Client:    localDnsClient,
 	}
 
