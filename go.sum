@@ -60,8 +60,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
-github.com/igoogolx/clash v1.19.12 h1:u1WaxmBwDplm4bcuaLaVAs9r6HAN/58iz4qsuSOXCxE=
-github.com/igoogolx/clash v1.19.12/go.mod h1:NUvOLI+cnhLGoYPrwOd5gQoKiJVO0/8V41nWx0EUBqs=
+github.com/igoogolx/clash v1.20.0 h1:7PEpuOiCcSP3ugM+IMzizrsnIRvYUz5BDruwWzynLsg=
+github.com/igoogolx/clash v1.20.0/go.mod h1:Arf9PoQB4kHCtTVUXsTAq8Z99y11Y+XRHUJplDcYbMY=
 github.com/igoogolx/sysproxy v1.0.5 h1:bR3ThpCLAo2/hJdUO3V6nsEEYdBS+yaIK4o6ezjXiVM=
 github.com/igoogolx/sysproxy v1.0.5/go.mod h1:Ivr0fT7jxcG4mfruV+nNoW0IacTjENzztXcM4lQ91as=
 github.com/insomniacslk/dhcp v0.0.0-20241224095048-b56fa0d5f25d h1:VkCNWh6tuQLgDBc6KrUOz/L1mCUQGnR1Ujj8uTgpwwk=
@@ -183,8 +183,8 @@ golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.1.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.2.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.10.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.28.0 h1:Fksou7UEQUWlKvIdsqzJmUmCX3cZuD2+P3XyyzwMhlA=
-golang.org/x/sys v0.28.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
+golang.org/x/sys v0.29.0 h1:TPYlXGxvx1MGTn2GiZDhnjPA9wZzZeGKHHmKhHYvgaU=
+golang.org/x/sys v0.29.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.3/go.mod h1:5Zoc/QRtKVWzQhOtBMvqHzDpF6irO9z98xDceosuGiQ=
