@@ -4,7 +4,7 @@ go 1.22.0
 
 toolchain go1.22.5
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.19.12
+replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.20.0
 
 require (
 	github.com/Dreamacro/clash v1.18.0
@@ -22,7 +22,7 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/atomic v1.11.0
-	golang.org/x/sys v0.28.0
+	golang.org/x/sys v0.29.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
