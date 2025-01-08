@@ -4,7 +4,6 @@ package dns
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
 	"os/exec"
 	"strings"
@@ -29,18 +28,18 @@ func getOriginalDnsServers(networkService string) ([]string, error) {
 	return dnsServers, nil
 }
 
-func Hijack(networkService string) error {
+func Hijack(networkService string, dnsServer string) ([]string, error) {
 	var err error
 	originalDnsServers, err = getOriginalDnsServers(networkService)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	cmd := exec.Command("networksetup", "-setdnsservers", networkService, constants.HijackedDns)
+	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
 	_, err = cmd.Output()
 	if err != nil {
-		return fmt.Errorf("failed to hajack DNS servers: %v", err)
+		return nil, fmt.Errorf("failed to hajack DNS servers: %v", err)
 	}
-	return nil
+	return originalDnsServers, nil
 }
 
 func Resume(networkService string) error {
@@ -48,7 +47,7 @@ func Resume(networkService string) error {
 	defer func() {
 		originalDnsServers = []string{}
 	}()
-	dnsServer := "Empty"
+	dnsServer := "empty"
 	if len(originalDnsServers) != 0 {
 		dnsServer = strings.Join(originalDnsServers, " ")
 	}
