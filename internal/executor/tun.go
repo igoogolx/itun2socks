@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/iface"
 	"github.com/igoogolx/itun2socks/internal/cfg"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
@@ -55,7 +56,7 @@ func (c *TunClient) Start() error {
 	}
 	if c.config.HijackDns.Enabled {
 
-		err := dns.Hijack(c.config.HijackDns.NetworkService)
+		_, err := dns.Hijack(c.config.HijackDns.NetworkService, constants.HijackedDns)
 		if err != nil {
 			return err
 		}
