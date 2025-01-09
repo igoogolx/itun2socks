@@ -40,7 +40,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.Dns.Server.Local,
 		defaultInterfaceName,
 		disableDnsCache,
-		rawConfig.Setting.NetworkService,
 	)
 
 	if err != nil {
