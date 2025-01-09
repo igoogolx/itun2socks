@@ -7,7 +7,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
-	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 type Config struct {
@@ -46,25 +45,9 @@ func NewTun(
 	localDns []string,
 	defaultInterfaceName string,
 	disableCache bool,
-	networkService string,
 ) (Config, error) {
 	if len(boostDns) == 0 || len(remoteDns) == 0 || len(localDns) == 0 {
 		return Config{}, fmt.Errorf("dns can't be empty")
-	}
-	originalDnsServers, err := dns.Hijack(networkService, "empty")
-	if err != nil {
-		return Config{}, err
-	}
-	if len(originalDnsServers) != 0 {
-		log.Infoln(log.FormatLog(log.ExecutorPrefix, "current dns servers %v: %v"), networkService, originalDnsServers)
-		defer func(networkService string) {
-			err := dns.Resume(networkService)
-			if err != nil {
-				log.Warnln(log.FormatLog(log.ExecutorPrefix, "fail to resume dns: %v"), err)
-			} else {
-				log.Infoln(log.FormatLog(log.ExecutorPrefix, "resume dns to: %v"), originalDnsServers)
-			}
-		}(networkService)
 	}
 
 	dns.ResetCache()
