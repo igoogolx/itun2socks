@@ -101,6 +101,7 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	defer mux.RUnlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	var err error
 	start := time.Now()
 	question, qType, err := getDnsQuestion(dnsMessage)
 
@@ -117,6 +118,15 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail to get dns resolver, err: %v, question: %v", err, question)
 	}
+
+	defer func() {
+		if err != nil {
+			countFailQuery(dnsRule.GetPolicy())
+		} else {
+			countSuccessQuery(dnsRule.GetPolicy())
+		}
+	}()
+
 	res, err := dnsMap[dnsRule.GetPolicy()].ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
