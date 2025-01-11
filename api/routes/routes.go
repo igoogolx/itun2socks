@@ -90,6 +90,7 @@ func Start(addr string, secret string) error {
 		r.Mount("/manager", managerRouter())
 		r.Mount("/is-admin", isAdminRouter())
 		r.Mount("/heartbeat", heartbeatRouter())
+		r.Mount("/dns", dnsRouter())
 	})
 	go FileServer(r)
 	err := http.ListenAndServe(addr, r)

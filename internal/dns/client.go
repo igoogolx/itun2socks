@@ -101,6 +101,15 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	defer mux.RUnlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	var err error
+	defer func() {
+		if err != nil {
+			countFailQuery()
+		} else {
+			countSuccessQuery()
+		}
+	}()
+
 	start := time.Now()
 	question, qType, err := getDnsQuestion(dnsMessage)
 
