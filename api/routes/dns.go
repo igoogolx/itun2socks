@@ -43,10 +43,7 @@ func getDnsStatistic(w http.ResponseWriter, r *http.Request) {
 	var err error
 	for range tick.C {
 		buf.Reset()
-		if err := json.NewEncoder(buf).Encode(Dns{
-			Success: dns.GetSuccessQueryCount(),
-			Fail:    dns.GetFailQueryCount(),
-		}); err != nil {
+		if err := json.NewEncoder(buf).Encode(dns.GetStatistic()); err != nil {
 			break
 		}
 
