@@ -9,7 +9,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -23,8 +22,7 @@ var (
 
 func trafficRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/now", getNow)
-	r.Get("/total", getTotal)
+	r.Get("/", getTraffic)
 	return r
 }
 
@@ -33,12 +31,17 @@ type TrafficItem struct {
 	Down int64 `json:"download"`
 }
 
-type Traffic struct {
+type Speed struct {
 	Proxy  TrafficItem `json:"proxy"`
 	Direct TrafficItem `json:"direct"`
 }
 
-func getNow(w http.ResponseWriter, r *http.Request) {
+type Traffic struct {
+	Speed Speed           `json:"speed"`
+	Total statistic.Total `json:"total"`
+}
+
+func getTraffic(w http.ResponseWriter, r *http.Request) {
 	var wsConn *websocket.Conn
 	if websocket.IsWebSocketUpgrade(r) {
 		var err error
@@ -63,8 +66,11 @@ func getNow(w http.ResponseWriter, r *http.Request) {
 		proxyUp, proxyDown := t.Now(constants.PolicyProxy)
 		directUp, directDown := t.Now(constants.PolicyDirect)
 		if err := json.NewEncoder(buf).Encode(Traffic{
-			TrafficItem{proxyUp, proxyDown},
-			TrafficItem{directUp, directDown},
+			Speed: Speed{
+				TrafficItem{proxyUp, proxyDown},
+				TrafficItem{directUp, directDown},
+			},
+			Total: *t.GetTotal(),
 		}); err != nil {
 			break
 		}
@@ -77,55 +83,6 @@ func getNow(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
-			break
-		}
-	}
-}
-
-func getTotal(w http.ResponseWriter, r *http.Request) {
-	if !websocket.IsWebSocketUpgrade(r) {
-		snapshot := statistic.DefaultManager.Connections()
-		render.JSON(w, r, snapshot)
-		return
-	}
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		return
-	}
-
-	intervalStr := r.URL.Query().Get("interval")
-	interval := 1000
-	if intervalStr != "" {
-		t, err := strconv.Atoi(intervalStr)
-		if err != nil {
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, ErrBadRequest)
-			return
-		}
-
-		interval = t
-	}
-
-	buf := &bytes.Buffer{}
-	sendTotal := func() error {
-		buf.Reset()
-		total := statistic.DefaultManager.GetTotal()
-		if err := json.NewEncoder(buf).Encode(total); err != nil {
-			return err
-		}
-
-		return conn.WriteMessage(websocket.TextMessage, buf.Bytes())
-	}
-
-	if err := sendTotal(); err != nil {
-		return
-	}
-
-	tick := time.NewTicker(time.Millisecond * time.Duration(interval))
-	defer tick.Stop()
-	for range tick.C {
-		if err := sendTotal(); err != nil {
 			break
 		}
 	}
