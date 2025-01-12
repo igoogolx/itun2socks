@@ -28,11 +28,13 @@ func getOriginalDnsServers(networkService string) ([]string, error) {
 	return dnsServers, nil
 }
 
-func Hijack(networkService string, dnsServer string) ([]string, error) {
+func Hijack(networkService string, dnsServer string, shouldReset bool) ([]string, error) {
 	var err error
-	originalDnsServers, err = getOriginalDnsServers(networkService)
-	if err != nil {
-		return nil, err
+	if !shouldReset {
+		originalDnsServers, err = getOriginalDnsServers(networkService)
+		if err != nil {
+			return nil, err
+		}
 	}
 	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
 	_, err = cmd.Output()
@@ -42,13 +44,13 @@ func Hijack(networkService string, dnsServer string) ([]string, error) {
 	return originalDnsServers, nil
 }
 
-func Resume(networkService string) error {
+func Resume(networkService string, shouldReset bool) error {
 	var err error
 	defer func() {
 		originalDnsServers = []string{}
 	}()
 	dnsServer := "empty"
-	if len(originalDnsServers) != 0 {
+	if !shouldReset && len(originalDnsServers) != 0 {
 		dnsServer = strings.Join(originalDnsServers, " ")
 	}
 	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)

@@ -38,7 +38,8 @@
     },
     "hijackDns": {
       "enabled": true,
-      "networkService": "Wi-Fi"
+      "networkService": "Wi-Fi",
+      "alwaysReset": true
     },
     "language": "system",
     "blockQuic": false,

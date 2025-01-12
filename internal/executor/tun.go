@@ -56,7 +56,7 @@ func (c *TunClient) Start() error {
 	}
 	if c.config.HijackDns.Enabled {
 
-		_, err := dns.Hijack(c.config.HijackDns.NetworkService, constants.HijackedDns)
+		_, err := dns.Hijack(c.config.HijackDns.NetworkService, constants.HijackedDns, c.config.HijackDns.AlwaysReset)
 		if err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ func (c *TunClient) Close() error {
 		return err
 	}
 	if c.config.HijackDns.Enabled {
-		err := dns.Resume(c.config.HijackDns.NetworkService)
+		err := dns.Resume(c.config.HijackDns.NetworkService, c.config.HijackDns.AlwaysReset)
 		if err != nil {
 			return err
 		}

@@ -50,4 +50,5 @@ type AutoMode struct {
 type HijackDns struct {
 	Enabled        bool   `json:"enabled"`
 	NetworkService string `json:"networkService"`
+	AlwaysReset    bool   `json:"alwaysReset,omitempty"`
 }

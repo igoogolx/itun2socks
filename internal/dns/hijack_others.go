@@ -2,10 +2,10 @@
 
 package dns
 
-func Hijack(_ string, server string) ([]string, error) {
+func Hijack(_ string, server string, shouldReset bool) ([]string, error) {
 	return []string{}, nil
 }
 
-func Resume(_ string) error {
+func Resume(_ string, shouldReset bool) error {
 	return nil
 }
