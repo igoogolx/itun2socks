@@ -71,6 +71,12 @@ func (c *TunClient) Start() error {
 func (c *TunClient) Close() error {
 	var err error
 
+	if c.config.HijackDns.Enabled {
+		err := dns.Resume(c.config.HijackDns.NetworkService, c.config.HijackDns.AlwaysReset)
+		if err != nil {
+			return err
+		}
+	}
 	statistic.DefaultManager.CloseAllConnections()
 	if err = c.tun.Close(); err != nil {
 		return err
@@ -79,12 +85,7 @@ func (c *TunClient) Close() error {
 	if err != nil {
 		return err
 	}
-	if c.config.HijackDns.Enabled {
-		err := dns.Resume(c.config.HijackDns.NetworkService, c.config.HijackDns.AlwaysReset)
-		if err != nil {
-			return err
-		}
-	}
+
 	if err = c.localserver.Close(); err != nil {
 		return err
 	}
