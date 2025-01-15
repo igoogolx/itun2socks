@@ -1,6 +1,11 @@
 package configuration
 
-import "github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+import (
+	"fmt"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"slices"
+	"strings"
+)
 
 func GetSelectedRule() (string, error) {
 	c, err := Read()
@@ -20,11 +25,16 @@ func AddCustomizedRule(rules []string) error {
 		return err
 	}
 	for _, rule := range rules {
-		_, err = ruleEngine.ParseRawValue(rule)
+		formatedRule := strings.TrimSpace(rule)
+		targetIndex := slices.Index(c.Rules, formatedRule)
+		if targetIndex != -1 {
+			return fmt.Errorf("duplicated rule: %v", rule)
+		}
+		_, err = ruleEngine.ParseRawValue(formatedRule)
 		if err != nil {
 			return err
 		}
-		c.Rules = append(c.Rules, rule)
+		c.Rules = append(c.Rules, formatedRule)
 	}
 
 	return Write(c)
@@ -64,6 +74,18 @@ func GetCustomizedRules() ([]ruleEngine.Rule, error) {
 		}
 	}
 	return items, nil
+}
+
+func EditCustomizedRule(oldRule string, newRule string) error {
+	c, err := Read()
+	if err != nil {
+		return err
+	}
+	targetIndex := slices.Index(c.Rules, oldRule)
+	if targetIndex != -1 {
+		slices.Replace(c.Rules, targetIndex, targetIndex+1, newRule)
+	}
+	return Write(c)
 }
 
 func GetBuiltInRules(id string) ([]ruleEngine.Rule, error) {
