@@ -4,7 +4,7 @@ go 1.22.0
 
 toolchain go1.22.5
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.21.1
+replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.21.2
 
 require (
 	github.com/Dreamacro/clash v1.18.0
