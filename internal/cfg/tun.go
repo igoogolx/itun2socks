@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/cfg/tun"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"runtime"
 )
 
 type Config struct {
@@ -30,6 +31,9 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		return nil, err
 	}
 	disableDnsCache := rawConfig.Setting.Dns.DisableCache
+	if runtime.GOOS == "darwin" {
+		disableDnsCache = true
+	}
 	rule, err := distribution.NewTun(
 		rawConfig.Setting.Dns.Server.Boost,
 		rawConfig.Setting.Dns.Server.Remote,
