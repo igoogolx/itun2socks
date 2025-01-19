@@ -31,6 +31,7 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		return nil, err
 	}
 	disableDnsCache := rawConfig.Setting.Dns.DisableCache
+	//FIXME: dns cache can't be always disabled
 	if runtime.GOOS == "darwin" {
 		disableDnsCache = true
 	}

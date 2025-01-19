@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
-	"github.com/skratchdot/open-golang/open"
 	"net"
 	"net/http"
 	"os"
@@ -17,7 +16,6 @@ func settingRouter() http.Handler {
 	r.Get("/interfaces", getInterfaces)
 	r.Get("/config-file-dir-path", getConfigDirPath)
 	r.Get("/executable-path", getExecutablePath)
-	r.Get("/open-config-file-dir", openConfigDir)
 	r.Put("/", setSetting)
 	r.Put("/reset-config", resetConfig)
 	return r
@@ -86,24 +84,6 @@ func getExecutablePath(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, render.M{
 		"path": executablePath,
 	})
-}
-
-func openConfigDir(w http.ResponseWriter, r *http.Request) {
-	configFilePath, err := configuration2.GetConfigFilePath()
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-
-	dirPath := filepath.Dir(configFilePath)
-	err = open.Run(dirPath)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-	render.JSON(w, r, render.M{})
 }
 
 func resetConfig(w http.ResponseWriter, r *http.Request) {
