@@ -60,8 +60,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
-github.com/igoogolx/clash v1.21.2 h1:2cDehKhxK535HRHPjpx80vYt+C6YHDJkpwkFUiis/EA=
-github.com/igoogolx/clash v1.21.2/go.mod h1:7bRDpjHRQFWOCpzWcKgXOKr1Ed7GSeIRTGIBS9u1HbE=
+github.com/igoogolx/clash v1.21.3 h1:MulUawTnYoL3pPKtYbH2i/2uIOpUhG1Mgvcg3vfCx+E=
+github.com/igoogolx/clash v1.21.3/go.mod h1:7bRDpjHRQFWOCpzWcKgXOKr1Ed7GSeIRTGIBS9u1HbE=
 github.com/igoogolx/sysproxy v1.0.5 h1:bR3ThpCLAo2/hJdUO3V6nsEEYdBS+yaIK4o6ezjXiVM=
 github.com/igoogolx/sysproxy v1.0.5/go.mod h1:Ivr0fT7jxcG4mfruV+nNoW0IacTjENzztXcM4lQ91as=
 github.com/insomniacslk/dhcp v0.0.0-20250109001534-8abf58130905 h1:q3OEI9RaN/wwcx+qgGo6ZaoJkCiDYe/gjDLfq7lQQF4=

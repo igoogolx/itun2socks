@@ -5,8 +5,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
-	"github.com/igoogolx/itun2socks/pkg/pool"
-	"io"
+	"github.com/sagernet/sing/common/bufio"
 	"net"
 	"sync"
 	"time"
@@ -57,8 +56,6 @@ func handleTCPConn(ct conn.TcpConnContext) {
 }
 
 func copyPacket(lc net.Conn, rc net.Conn) error {
-	buf := pool.NewBytes(pool.BufSize)
-	defer pool.FreeBytes(buf)
 	err := lc.SetDeadline(time.Now().Add(tcpTimeout))
 	if err != nil {
 		return err
@@ -67,7 +64,7 @@ func copyPacket(lc net.Conn, rc net.Conn) error {
 	if err != nil {
 		return err
 	}
-	_, err = io.CopyBuffer(lc, rc, buf)
+	_, err = bufio.Copy(lc, rc)
 	return err
 }
 
