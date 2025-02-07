@@ -10,18 +10,9 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"github.com/sagernet/sing/common/bufio"
-	E "github.com/sagernet/sing/common/exceptions"
 	"sync"
 	"time"
 )
-
-func ShouldIgnorePacketError(err error) bool {
-	// ignore simple error
-	if E.IsTimeout(err) || E.IsClosed(err) || E.IsCanceled(err) {
-		return true
-	}
-	return false
-}
 
 var (
 	udpQueue   = make(chan conn.UdpConnContext, 1024)

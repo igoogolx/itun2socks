@@ -2,10 +2,13 @@ package conn
 
 import (
 	"context"
+	"fmt"
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/pkg/pool"
 	"github.com/sagernet/sing/common/buf"
+	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
 	"net"
@@ -68,14 +71,34 @@ type CopyableUdpConn struct {
 	net.PacketConn
 }
 
-func (c *CopyableUdpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
-	var rawData []byte
-	n, addr, err := c.ReadFrom(rawData)
-	if err != nil {
-		return M.Socksaddr{}, err
+func ShouldIgnorePacketError(err error) bool {
+	// ignore simple error
+	if E.IsTimeout(err) || E.IsClosed(err) || E.IsCanceled(err) {
+		return true
 	}
-	_, err = buffer.Write(rawData[0:n])
-	return M.SocksaddrFromNet(addr), err
+	return false
+}
+
+func (c *CopyableUdpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
+	receivedBuf := pool.NewBytes(pool.BufSize)
+	defer pool.FreeBytes(receivedBuf)
+	for {
+		err := c.SetReadDeadline(time.Now().Add(5 * time.Second))
+		if err != nil {
+			return M.Socksaddr{}, fmt.Errorf("fail to set udp conn read deadline: %v", err)
+		}
+		n, addr, err := c.ReadFrom(receivedBuf)
+		if ShouldIgnorePacketError(err) {
+			return M.SocksaddrFromNet(addr), nil
+		}
+		if err != nil {
+			return M.Socksaddr{}, fmt.Errorf("fail to read udp from copyable conn:%v", err)
+		}
+		_, err = buffer.Write(receivedBuf[:n])
+		if err != nil {
+			return M.Socksaddr{}, fmt.Errorf("fail to write udp to bufffer:%v", err)
+		}
+	}
 }
 
 func (c *CopyableUdpConn) WritePacket(buffer *buf.Buffer, destination M.Socksaddr) error {
