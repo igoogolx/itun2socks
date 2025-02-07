@@ -8,6 +8,8 @@ import (
 	"github.com/Dreamacro/clash/listener/socks"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
+	"github.com/sagernet/sing/common/buf"
+	M "github.com/sagernet/sing/common/metadata"
 	"net"
 	"sync"
 	"time"
@@ -17,30 +19,40 @@ type udpConn struct {
 	C.UDPPacket
 }
 
-func (uc udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
-	n := copy(data, uc.Data())
-	return n, uc.LocalAddr(), nil
+func (u udpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
+	_, addr, err := u.ReadFrom(buffer.Bytes())
+	return M.SocksaddrFromNet(addr), err
 }
 
-func (uc udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
-	n, err := uc.WriteBack(data, addr)
+func (u udpConn) WritePacket(buffer *buf.Buffer, destination M.Socksaddr) error {
+	_, err := u.WriteTo(buffer.Bytes(), destination)
+	return err
+}
+
+func (u udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
+	n := copy(data, u.Data())
+	return n, u.LocalAddr(), nil
+}
+
+func (u udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
+	n, err := u.WriteBack(data, addr)
 	return n, err
 }
 
-func (uc udpConn) Close() error {
-	uc.Drop()
+func (u udpConn) Close() error {
+	u.Drop()
 	return nil
 }
 
-func (uc udpConn) SetDeadline(t time.Time) error {
+func (u udpConn) SetDeadline(t time.Time) error {
 	return nil
 }
 
-func (uc udpConn) SetReadDeadline(t time.Time) error {
+func (u udpConn) SetReadDeadline(t time.Time) error {
 	return nil
 }
 
-func (uc udpConn) SetWriteDeadline(t time.Time) error {
+func (u udpConn) SetWriteDeadline(t time.Time) error {
 	return nil
 }
 

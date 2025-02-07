@@ -14,6 +14,9 @@ import (
 	"sync"
 )
 
+type PacketConn struct {
+}
+
 type udpConn struct {
 	network.PacketConn
 }
