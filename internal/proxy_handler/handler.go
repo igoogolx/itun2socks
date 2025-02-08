@@ -70,14 +70,18 @@ type ConnHandler struct {
 	udpIn chan conn.UdpConnContext
 }
 
-func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metadata M.Metadata) error {
-	local, err := net.ResolveTCPAddr("tcp", metadata.Source.String())
+func (uc ConnHandler) PrepareConnection(network string, source M.Socksaddr, destination M.Socksaddr) error {
+	return nil
+}
+
+func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, source M.Socksaddr, destination M.Socksaddr, _ network.CloseHandlerFunc) {
+	local, err := net.ResolveTCPAddr("tcp", source.String())
 	if err != nil {
-		return err
+		return
 	}
-	remote, err := net.ResolveTCPAddr("tcp", metadata.Destination.String())
+	remote, err := net.ResolveTCPAddr("tcp", destination.String())
 	if err != nil {
-		return err
+		return
 	}
 
 	m := tunnel.CreateTcpMetadata(*local, *remote)
@@ -85,21 +89,20 @@ func (uc ConnHandler) NewConnection(ctx context.Context, netConn net.Conn, metad
 	wg.Add(1)
 	ct, err := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
 	if err != nil {
-		return err
+		return
 	}
 	uc.tcpIn <- *ct
 	wg.Wait()
-	return nil
 }
 
-func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn network.PacketConn, metadata M.Metadata) error {
-	local, err := net.ResolveUDPAddr("udp", metadata.Source.String())
+func (uc ConnHandler) NewPacketConnectionEx(ctx context.Context, packetConn network.PacketConn, source M.Socksaddr, destination M.Socksaddr, onClose network.CloseHandlerFunc) {
+	local, err := net.ResolveUDPAddr("udp", source.String())
 	if err != nil {
-		return err
+		return
 	}
-	remote, err := net.ResolveUDPAddr("udp", metadata.Destination.String())
+	remote, err := net.ResolveUDPAddr("udp", destination.String())
 	if err != nil {
-		return err
+		return
 	}
 	m := tunnel.CreateUdpMetadata(*local, *remote)
 
@@ -112,11 +115,10 @@ func (uc ConnHandler) NewPacketConnection(ctx context.Context, packetConn networ
 
 	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
 	if err != nil {
-		return err
+		return
 	}
 	uc.udpIn <- *ct
 	wg.Wait()
-	return nil
 }
 
 func (uc ConnHandler) NewError(_ context.Context, err error) {

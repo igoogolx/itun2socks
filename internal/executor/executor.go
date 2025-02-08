@@ -75,12 +75,16 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = tun.UpdateRouteOptions(tunOptions)
+	if err != nil {
+		return nil, err
+	}
 	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
 		Context:    context.Background(),
 		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		TunOptions: tunOptions,
 		Tun:        tun,
-		UDPTimeout: int64(5 * time.Second),
+		UDPTimeout: 5 * time.Second,
 		Logger:     logrus.StandardLogger(),
 	})
 	if err != nil {

@@ -11,7 +11,6 @@ import (
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/atomic"
-	"net/netip"
 )
 
 var defaultInterfaceName = atomic.NewString("")
@@ -66,14 +65,14 @@ func StartMonitor() error {
 		err = E.Cause(err, "create DefaultInterfaceMonitor")
 		return err
 	}
-	monitorCallback = defaultInterfaceMonitor.RegisterCallback(func(event int) {
-		update(defaultInterfaceMonitor.DefaultInterfaceName(netip.IPv4Unspecified()))
+	monitorCallback = defaultInterfaceMonitor.RegisterCallback(func(defaultInterface *control.Interface, flags int) {
+		update(defaultInterface.Name)
 	})
 	err = defaultInterfaceMonitor.Start()
 	if err != nil {
 		return err
 	}
-	update(defaultInterfaceMonitor.DefaultInterfaceName(netip.IPv4Unspecified()))
+	update(defaultInterfaceMonitor.DefaultInterface().Name)
 	return nil
 }
 

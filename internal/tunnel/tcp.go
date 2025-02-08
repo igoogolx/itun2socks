@@ -8,12 +8,10 @@ import (
 	"github.com/sagernet/sing/common/bufio"
 	"net"
 	"sync"
-	"time"
 )
 
 var (
-	tcpQueue   = make(chan conn.TcpConnContext, 1024)
-	tcpTimeout = 5 * time.Minute
+	tcpQueue = make(chan conn.TcpConnContext, 1024)
 )
 
 func TcpQueue() chan conn.TcpConnContext {
@@ -56,15 +54,7 @@ func handleTCPConn(ct conn.TcpConnContext) {
 }
 
 func copyPacket(lc net.Conn, rc net.Conn) error {
-	err := lc.SetDeadline(time.Now().Add(tcpTimeout))
-	if err != nil {
-		return err
-	}
-	err = rc.SetDeadline(time.Now().Add(tcpTimeout))
-	if err != nil {
-		return err
-	}
-	_, err = bufio.Copy(lc, rc)
+	_, err := bufio.Copy(lc, rc)
 	return err
 }
 

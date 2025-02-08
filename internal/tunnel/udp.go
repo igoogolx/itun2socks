@@ -11,12 +11,10 @@ import (
 	D "github.com/miekg/dns"
 	"github.com/sagernet/sing/common/bufio"
 	"sync"
-	"time"
 )
 
 var (
-	udpQueue   = make(chan conn.UdpConnContext, 1024)
-	udpTimeout = 5 * time.Minute
+	udpQueue = make(chan conn.UdpConnContext, 1024)
 )
 
 func UdpQueue() chan conn.UdpConnContext {
@@ -121,7 +119,6 @@ func handleDnsConn(ct conn.UdpConnContext) {
 	_, err = ct.Conn().WriteTo(resData, addr)
 	if err != nil {
 		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to write back dns message: err: %v"), err)
-		return
 	}
 }
 
