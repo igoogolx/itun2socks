@@ -66,13 +66,18 @@ func StartMonitor() error {
 		return err
 	}
 	monitorCallback = defaultInterfaceMonitor.RegisterCallback(func(defaultInterface *control.Interface, flags int) {
-		update(defaultInterface.Name)
+		//FIXME: flags?
+		if defaultInterface != nil {
+			update(defaultInterface.Name)
+		}
 	})
 	err = defaultInterfaceMonitor.Start()
 	if err != nil {
 		return err
 	}
-	update(defaultInterfaceMonitor.DefaultInterface().Name)
+	if defaultInterfaceMonitor.DefaultInterface() != nil {
+		update(defaultInterfaceMonitor.DefaultInterface().Name)
+	}
 	return nil
 }
 
