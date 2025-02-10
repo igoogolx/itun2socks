@@ -1,7 +1,6 @@
 package tunnel
 
 import (
-	"fmt"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -10,22 +9,12 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
-	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/bufio"
 	"sync"
-	"time"
 )
 
-func ShouldIgnorePacketError(err error) bool {
-	// ignore simple error
-	if E.IsTimeout(err) || E.IsClosed(err) || E.IsCanceled(err) {
-		return true
-	}
-	return false
-}
-
 var (
-	udpQueue   = make(chan conn.UdpConnContext, 1024)
-	udpTimeout = 5 * time.Minute
+	udpQueue = make(chan conn.UdpConnContext, 1024)
 )
 
 func UdpQueue() chan conn.UdpConnContext {
@@ -33,38 +22,8 @@ func UdpQueue() chan conn.UdpConnContext {
 }
 
 func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
-	receivedBuf := pool.NewBytes(pool.BufSize)
-	defer pool.FreeBytes(receivedBuf)
-	for {
-
-		err := rc.SetReadDeadline(time.Now().Add(udpTimeout))
-		if err != nil {
-			return fmt.Errorf("fail to set udp conn read deadline: %v", err)
-		}
-
-		n, addr, err := rc.ReadFrom(receivedBuf)
-		if ShouldIgnorePacketError(err) {
-			log.Debugln("ignore packet read from err: %v", err)
-			return nil
-		}
-		if err != nil {
-			return fmt.Errorf("fail to read udp from rc:%v", err)
-		}
-
-		err = lc.SetWriteDeadline(time.Now().Add(udpTimeout))
-		if err != nil {
-			return fmt.Errorf("fail to set udp conn write deadline: %v", err)
-		}
-		_, err = lc.WriteTo(receivedBuf[:n], addr)
-		if ShouldIgnorePacketError(err) {
-			log.Debugln("ignore packet write to err: %v", err)
-			return nil
-		}
-		if err != nil {
-			return fmt.Errorf("fail to write udp to lc:%v", err)
-		}
-	}
-
+	_, err := bufio.CopyPacket(lc, rc)
+	return err
 }
 
 func handleUdpConn(ct conn.UdpConnContext) {
@@ -95,7 +54,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		log.Warnln(log.FormatLog(log.UdpPrefix, "fail to get udp conn, err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		return
 	}
-	lc = statistic.NewUDPTracker(localConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
+	lc = statistic.NewUDPTracker(*localConn, statistic.DefaultManager, ct.Metadata(), ct.Rule())
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
@@ -160,7 +119,6 @@ func handleDnsConn(ct conn.UdpConnContext) {
 	_, err = ct.Conn().WriteTo(resData, addr)
 	if err != nil {
 		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to write back dns message: err: %v"), err)
-		return
 	}
 }
 

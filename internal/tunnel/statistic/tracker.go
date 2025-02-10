@@ -2,6 +2,7 @@ package statistic
 
 import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"net"
 	"time"
@@ -86,7 +87,7 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule r
 }
 
 type UdpTracker struct {
-	net.PacketConn `json:"-"`
+	conn.CopyableUdpConn `json:"-"`
 	*trackerInfo
 	manager *Manager
 }
@@ -116,12 +117,12 @@ func (ut *UdpTracker) Close() error {
 	return ut.PacketConn.Close()
 }
 
-func NewUDPTracker(conn net.PacketConn, manager *Manager, metadata *C.Metadata, rule ruleEngine.Rule) *UdpTracker {
+func NewUDPTracker(conn conn.CopyableUdpConn, manager *Manager, metadata *C.Metadata, rule ruleEngine.Rule) *UdpTracker {
 	uid, _ := uuid.NewV4()
 
 	ut := &UdpTracker{
-		PacketConn: conn,
-		manager:    manager,
+		CopyableUdpConn: conn,
+		manager:         manager,
 		trackerInfo: &trackerInfo{
 			UUID:          uid,
 			Start:         time.Now().UnixNano() / int64(time.Millisecond),

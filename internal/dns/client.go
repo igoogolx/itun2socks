@@ -130,8 +130,6 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	res, err := dnsMap[dnsRule.GetPolicy()].ExchangeContext(ctx, dnsMessage)
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
-	} else if res == nil {
-		return nil, fmt.Errorf("fail to exchange dns message, err: msg is nil, question: %v", question)
 	}
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
