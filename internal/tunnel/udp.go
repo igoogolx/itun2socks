@@ -93,7 +93,7 @@ func handleDnsConn(ct conn.UdpConnContext) {
 		ct.Wg().Done()
 		err := closeConn(remoteConn)
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote conn,err: %v"), err)
+			log.Warnln(log.FormatLog(log.DnsPrefix, "fail to close remote conn,err: %v"), err)
 		}
 	}()
 
