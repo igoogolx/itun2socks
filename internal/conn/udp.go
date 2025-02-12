@@ -16,21 +16,10 @@ import (
 	"time"
 )
 
-type UdpConn interface {
-	network.PacketReader
-	network.PacketWriter
-	ReadFrom([]byte) (int, net.Addr, error)
-	WriteTo([]byte, net.Addr) (int, error)
-	Close() error
-	SetDeadline(t time.Time) error
-	SetReadDeadline(t time.Time) error
-	SetWriteDeadline(t time.Time) error
-}
-
 type UdpConnContext struct {
 	ctx      context.Context
 	metadata *C.Metadata
-	conn     UdpConn
+	conn     network.PacketConn
 	rule     ruleEngine.Rule
 	wg       *sync.WaitGroup
 }
@@ -51,11 +40,11 @@ func (u *UdpConnContext) Metadata() *C.Metadata {
 	return u.metadata
 }
 
-func (u *UdpConnContext) Conn() UdpConn {
+func (u *UdpConnContext) Conn() network.PacketConn {
 	return u.conn
 }
 
-func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
+func NewUdpConnContext(ctx context.Context, conn network.PacketConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 	var connContext = &UdpConnContext{
 		ctx,
 		metadata,
@@ -67,7 +56,7 @@ func NewUdpConnContext(ctx context.Context, conn UdpConn, metadata *C.Metadata, 
 	return connContext, nil
 }
 
-type CopyableUdpConn struct {
+type CopyablePacketConn struct {
 	net.PacketConn
 }
 
@@ -79,7 +68,7 @@ func ShouldIgnorePacketError(err error) bool {
 	return false
 }
 
-func (c *CopyableUdpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
+func (c *CopyablePacketConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
 	receivedBuf := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(receivedBuf)
 	for {
@@ -101,12 +90,50 @@ func (c *CopyableUdpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksadd
 	}
 }
 
-func (c *CopyableUdpConn) WritePacket(buffer *buf.Buffer, destination M.Socksaddr) error {
+func (c *CopyablePacketConn) WritePacket(buffer *buf.Buffer, destination M.Socksaddr) error {
 	_, err := c.WriteTo(buffer.Bytes(), destination)
 	return err
 }
 
-func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule ruleEngine.Rule, defaultInterface string) (*CopyableUdpConn, error) {
+type CopyableReaderWriterConn struct {
+	network.PacketConn
+}
+
+func (uc *CopyableReaderWriterConn) ReadFrom(data []byte) (int, net.Addr, error) {
+
+	var err error
+	var dest M.Socksaddr
+
+	buff := buf.NewPacket()
+
+	defer buff.Release()
+	dest, err = uc.ReadPacket(buff)
+
+	if err != nil {
+		return 0, nil, err
+	}
+
+	n, err := buff.Read(data)
+
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return n, dest, nil
+}
+
+func (uc *CopyableReaderWriterConn) WriteTo(data []byte, addr net.Addr) (int, error) {
+	newBuf := buf.NewPacket()
+	defer newBuf.Release()
+	_, err := newBuf.Write(data)
+	if err != nil {
+		return 0, err
+	}
+	err = uc.WritePacket(newBuf, M.SocksaddrFromNet(addr))
+	return len(data), err
+}
+
+func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule ruleEngine.Rule, defaultInterface string) (*CopyablePacketConn, error) {
 	connDialer, err := GetProxy(rule.GetPolicy())
 	if err != nil {
 		return nil, err
@@ -115,5 +142,5 @@ func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule ruleEngine.Rule,
 	if err != nil {
 		return nil, err
 	}
-	return &CopyableUdpConn{rawConn}, nil
+	return &CopyablePacketConn{rawConn}, nil
 }

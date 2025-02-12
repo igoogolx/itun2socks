@@ -20,21 +20,21 @@ type udpConn struct {
 }
 
 func (u udpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
-	_, addr, err := u.ReadFrom(buffer.Bytes())
+	_, addr, err := u.readFrom(buffer.Bytes())
 	return M.SocksaddrFromNet(addr), err
 }
 
 func (u udpConn) WritePacket(buffer *buf.Buffer, destination M.Socksaddr) error {
-	_, err := u.WriteTo(buffer.Bytes(), destination)
+	_, err := u.writeTo(buffer.Bytes(), destination)
 	return err
 }
 
-func (u udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
+func (u udpConn) readFrom(data []byte) (int, net.Addr, error) {
 	n := copy(data, u.Data())
 	return n, u.LocalAddr(), nil
 }
 
-func (u udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
+func (u udpConn) writeTo(data []byte, addr net.Addr) (int, error) {
 	n, err := u.WriteBack(data, addr)
 	return n, err
 }
@@ -44,15 +44,15 @@ func (u udpConn) Close() error {
 	return nil
 }
 
-func (u udpConn) SetDeadline(t time.Time) error {
+func (u udpConn) SetDeadline(_ time.Time) error {
 	return nil
 }
 
-func (u udpConn) SetReadDeadline(t time.Time) error {
+func (u udpConn) SetReadDeadline(_ time.Time) error {
 	return nil
 }
 
-func (u udpConn) SetWriteDeadline(t time.Time) error {
+func (u udpConn) SetWriteDeadline(_ time.Time) error {
 	return nil
 }
 

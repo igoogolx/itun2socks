@@ -5,7 +5,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
 	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
@@ -14,63 +13,12 @@ import (
 	"sync"
 )
 
-type PacketConn struct {
-}
-
-type udpConn struct {
-	network.PacketConn
-}
-
-func (uc *udpConn) ReadFrom(data []byte) (int, net.Addr, error) {
-
-	var err error
-	var buff *buf.Buffer
-	var dest M.Socksaddr
-
-	defer func() {
-		if buff != nil {
-			buff.Release()
-		}
-
-	}()
-
-	newBuffer := func() *buf.Buffer {
-		buff = buf.NewPacket() // do not use stack buffer
-		return buff
-	}
-
-	dest, err = uc.ReadPacket(newBuffer())
-
-	if err != nil {
-		return 0, nil, err
-	}
-
-	n, err := buff.Read(data)
-
-	if err != nil {
-		return 0, nil, err
-	}
-
-	return n, dest, nil
-}
-
-func (uc *udpConn) WriteTo(data []byte, addr net.Addr) (int, error) {
-	newBuf := buf.NewPacket()
-	defer newBuf.Release()
-	_, err := newBuf.Write(data)
-	if err != nil {
-		return 0, err
-	}
-	err = uc.WritePacket(newBuf, M.SocksaddrFromNet(addr))
-	return len(data), err
-}
-
 type ConnHandler struct {
 	tcpIn chan conn.TcpConnContext
 	udpIn chan conn.UdpConnContext
 }
 
-func (uc ConnHandler) PrepareConnection(network string, source M.Socksaddr, destination M.Socksaddr) error {
+func (uc ConnHandler) PrepareConnection(_ string, _ M.Socksaddr, _ M.Socksaddr) error {
 	return nil
 }
 
@@ -95,7 +43,7 @@ func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, sou
 	wg.Wait()
 }
 
-func (uc ConnHandler) NewPacketConnectionEx(ctx context.Context, packetConn network.PacketConn, source M.Socksaddr, destination M.Socksaddr, onClose network.CloseHandlerFunc) {
+func (uc ConnHandler) NewPacketConnectionEx(ctx context.Context, packetConn network.PacketConn, source M.Socksaddr, destination M.Socksaddr, _ network.CloseHandlerFunc) {
 	local, err := net.ResolveUDPAddr("udp", source.String())
 	if err != nil {
 		return
@@ -113,7 +61,7 @@ func (uc ConnHandler) NewPacketConnectionEx(ctx context.Context, packetConn netw
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	ct, err := conn.NewUdpConnContext(ctx, &udpConn{PacketConn: packetConn}, &m, &wg)
+	ct, err := conn.NewUdpConnContext(ctx, packetConn, &m, &wg)
 	if err != nil {
 		return
 	}
