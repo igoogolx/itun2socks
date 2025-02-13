@@ -80,7 +80,7 @@ func ParseItem(rawRuleType, value, rawPolicy string) (Rule, error) {
 		rule, err = NewIpCidrRule(value, policy)
 		break
 	case constants.RuleDomain:
-		rule, err = NewDomainRule(ruleType, value, policy)
+		rule, err = NewDomainRule(ruleType, strings.ToLower(value), policy)
 		break
 	case constants.RuleDomainKeyword:
 		rule, err = NewDomainRule(ruleType, strings.ToLower(value), policy)
