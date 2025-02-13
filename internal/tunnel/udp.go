@@ -93,7 +93,7 @@ func handleDnsConn(ct conn.UdpConnContext) {
 		ct.Wg().Done()
 		err := closeConn(remoteConn)
 		if err != nil {
-			log.Warnln(log.FormatLog(log.DnsPrefix, "fail to close remote conn,err: %v"), err)
+			log.Debugln(log.FormatLog(log.DnsPrefix, "fail to close remote conn,err: %v"), err)
 		}
 	}()
 
@@ -101,7 +101,7 @@ func handleDnsConn(ct conn.UdpConnContext) {
 	defer pool.FreeBytes(data)
 	_, addr, err := remoteConn.ReadFrom(data)
 	if err != nil {
-		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to read dns message: err: %v"), err)
+		log.Debugln(log.FormatLog(log.DnsPrefix, "fail to read dns message: err: %v"), err)
 		return
 	}
 	dnsMessage := new(D.Msg)
@@ -122,7 +122,7 @@ func handleDnsConn(ct conn.UdpConnContext) {
 	}
 	_, err = remoteConn.WriteTo(resData, addr)
 	if err != nil {
-		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to write back dns message: err: %v"), err)
+		log.Debugln(log.FormatLog(log.DnsPrefix, "fail to write back dns message: err: %v"), err)
 	}
 }
 
