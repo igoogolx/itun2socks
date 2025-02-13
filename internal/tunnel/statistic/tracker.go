@@ -87,7 +87,7 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule r
 }
 
 type UdpTracker struct {
-	conn.CopyableUdpConn `json:"-"`
+	conn.CopyablePacketConn `json:"-"`
 	*trackerInfo
 	manager *Manager
 }
@@ -117,12 +117,12 @@ func (ut *UdpTracker) Close() error {
 	return ut.PacketConn.Close()
 }
 
-func NewUDPTracker(conn conn.CopyableUdpConn, manager *Manager, metadata *C.Metadata, rule ruleEngine.Rule) *UdpTracker {
+func NewUDPTracker(conn conn.CopyablePacketConn, manager *Manager, metadata *C.Metadata, rule ruleEngine.Rule) *UdpTracker {
 	uid, _ := uuid.NewV4()
 
 	ut := &UdpTracker{
-		CopyableUdpConn: conn,
-		manager:         manager,
+		CopyablePacketConn: conn,
+		manager:            manager,
 		trackerInfo: &trackerInfo{
 			UUID:          uid,
 			Start:         time.Now().UnixNano() / int64(time.Millisecond),

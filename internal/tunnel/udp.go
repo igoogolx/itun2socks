@@ -10,6 +10,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"github.com/sagernet/sing/common/bufio"
+	"github.com/sagernet/sing/common/network"
 	"sync"
 )
 
@@ -21,14 +22,14 @@ func UdpQueue() chan conn.UdpConnContext {
 	return udpQueue
 }
 
-func copyUdpPacket(lc conn.UdpConn, rc conn.UdpConn) error {
+func copyUdpPacket(lc network.PacketConn, rc network.PacketConn) error {
 	_, err := bufio.CopyPacket(lc, rc)
 	return err
 }
 
 func handleUdpConn(ct conn.UdpConnContext) {
 	var once sync.Once
-	var lc conn.UdpConn
+	var lc network.PacketConn
 	var err error
 
 	cleanConn := func() {
@@ -85,19 +86,22 @@ func handleUdpConn(ct conn.UdpConnContext) {
 
 func handleDnsConn(ct conn.UdpConnContext) {
 	var err error
+
+	remoteConn := conn.CopyableReaderWriterConn{PacketConn: ct.Conn()}
+
 	defer func() {
 		ct.Wg().Done()
-		err := closeConn(ct.Conn())
+		err := closeConn(remoteConn)
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to close remote conn,err: %v"), err)
+			log.Debugln(log.FormatLog(log.DnsPrefix, "fail to close remote conn,err: %v"), err)
 		}
 	}()
 
 	data := pool.NewBytes(pool.BufSize)
 	defer pool.FreeBytes(data)
-	_, addr, err := ct.Conn().ReadFrom(data)
+	_, addr, err := remoteConn.ReadFrom(data)
 	if err != nil {
-		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to read dns message: err: %v"), err)
+		log.Debugln(log.FormatLog(log.DnsPrefix, "fail to read dns message: err: %v"), err)
 		return
 	}
 	dnsMessage := new(D.Msg)
@@ -116,9 +120,9 @@ func handleDnsConn(ct conn.UdpConnContext) {
 		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to pack dns message: err: %v"), err)
 		return
 	}
-	_, err = ct.Conn().WriteTo(resData, addr)
+	_, err = remoteConn.WriteTo(resData, addr)
 	if err != nil {
-		log.Warnln(log.FormatLog(log.DnsPrefix, "fail to write back dns message: err: %v"), err)
+		log.Debugln(log.FormatLog(log.DnsPrefix, "fail to write back dns message: err: %v"), err)
 	}
 }
 

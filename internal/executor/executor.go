@@ -75,7 +75,7 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = tun.UpdateRouteOptions(tunOptions)
+	err = tun.Start()
 	if err != nil {
 		return nil, err
 	}
