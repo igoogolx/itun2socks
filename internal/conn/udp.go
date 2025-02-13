@@ -6,6 +6,7 @@ import (
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	"github.com/sagernet/sing/common/buf"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -60,12 +61,20 @@ type CopyablePacketConn struct {
 	net.PacketConn
 }
 
-func ShouldIgnorePacketError(err error) bool {
+func shouldIgnorePacketError(err error) bool {
 	// ignore simple error
 	if E.IsTimeout(err) || E.IsClosed(err) || E.IsCanceled(err) {
 		return true
 	}
 	return false
+}
+
+func PrintPacketError(err error, msg string) {
+	printLog := log.Warnln
+	if shouldIgnorePacketError(err) {
+		printLog = log.Debugln
+	}
+	printLog(msg)
 }
 
 func (c *CopyablePacketConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
@@ -77,7 +86,7 @@ func (c *CopyablePacketConn) ReadPacket(buffer *buf.Buffer) (destination M.Socks
 			return M.Socksaddr{}, fmt.Errorf("fail to set udp conn read deadline: %v", err)
 		}
 		n, addr, err := c.ReadFrom(receivedBuf)
-		if ShouldIgnorePacketError(err) {
+		if shouldIgnorePacketError(err) {
 			return M.SocksaddrFromNet(addr), nil
 		}
 		if err != nil {

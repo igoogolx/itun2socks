@@ -1,6 +1,7 @@
 package tunnel
 
 import (
+	"fmt"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -40,21 +41,13 @@ func handleTCPConn(ct conn.TcpConnContext) {
 	go func() {
 		defer wg.Done()
 		if err := copyPacket(ct.Conn(), remoteConn); err != nil {
-			printLog := log.Warnln
-			if conn.ShouldIgnorePacketError(err) {
-				printLog = log.Debugln
-			}
-			printLog(log.FormatLog(log.TcpPrefix, "fail to input: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
+			conn.PrintPacketError(err, fmt.Sprintf(log.FormatLog(log.TcpPrefix, "fail to input: %v, remote address: %v"), err, ct.Metadata().RemoteAddress()))
 		}
 	}()
 	go func() {
 		defer wg.Done()
 		if err := copyPacket(remoteConn, ct.Conn()); err != nil {
-			printLog := log.Warnln
-			if conn.ShouldIgnorePacketError(err) {
-				printLog = log.Debugln
-			}
-			printLog(log.FormatLog(log.TcpPrefix, "fail to output: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
+			conn.PrintPacketError(err, fmt.Sprintf(log.FormatLog(log.TcpPrefix, "fail to output: %v, remote address: %v"), err, ct.Metadata().RemoteAddress()))
 		}
 	}()
 	wg.Wait()

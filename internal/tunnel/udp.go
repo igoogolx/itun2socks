@@ -1,6 +1,7 @@
 package tunnel
 
 import (
+	"fmt"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -67,7 +68,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		}()
 		err := copyUdpPacket(lc, ct.Conn())
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle output ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
+			conn.PrintPacketError(err, fmt.Sprintf(log.FormatLog(log.UdpPrefix, "fail to output ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress()))
 		}
 	}()
 	go func() {
@@ -77,7 +78,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		}()
 		err := copyUdpPacket(ct.Conn(), lc)
 		if err != nil {
-			log.Warnln(log.FormatLog(log.UdpPrefix, "fail to handle input ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
+			conn.PrintPacketError(err, fmt.Sprintf(log.FormatLog(log.UdpPrefix, "fail to input ,err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress()))
 		}
 	}()
 
