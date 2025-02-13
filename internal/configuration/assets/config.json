@@ -44,6 +44,6 @@
     "language": "system",
     "blockQuic": false,
     "stack": "gvisor",
-    "shouldFindProcess": false
+    "shouldFindProcess": true
   }
 }
