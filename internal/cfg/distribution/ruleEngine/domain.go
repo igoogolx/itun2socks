@@ -59,7 +59,7 @@ func isContainsDomain(rType constants.RuleType, value string, s string) bool {
 		}
 		return len(s) == len(value) || s[len(s)-len(value)-1] == '.'
 	case constants.RuleDomain:
-		return value == s
+		return strings.EqualFold(value, s)
 	}
 	return false
 }
