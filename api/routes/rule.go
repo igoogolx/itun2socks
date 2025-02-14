@@ -144,5 +144,14 @@ func editCustomizedRule(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
+	if manager.GetIsStarted() {
+		_, err := executor.UpdateRule()
+		statistic.DefaultManager.CloseAllConnections()
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
+	}
 	render.NoContent(w, r)
 }
