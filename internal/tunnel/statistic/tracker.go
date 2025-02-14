@@ -75,7 +75,7 @@ func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule r
 		},
 	}
 
-	if cachedDomain, _, ok := dns.GetCachedDnsItem(metadata.DstIP.String()); ok {
+	if cachedDomain, ok := dns.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		t.trackerInfo.Domain = cachedDomain
 	} else if metadata.Host != "" {
 		t.trackerInfo.Domain = metadata.Host
@@ -133,7 +133,7 @@ func NewUDPTracker(conn conn.CopyablePacketConn, manager *Manager, metadata *C.M
 		},
 	}
 
-	if cachedDomain, _, ok := dns.GetCachedDnsItem(metadata.DstIP.String()); ok {
+	if cachedDomain, ok := dns.GetCachedDnsItem(metadata.DstIP.String()); ok {
 		ut.trackerInfo.Domain = cachedDomain
 	} else if metadata.Host != "" {
 		ut.trackerInfo.Domain = metadata.Host

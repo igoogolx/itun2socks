@@ -5,17 +5,17 @@ import (
 	"sync"
 )
 
-var defaultRule *ruleEngine.Engine
+var defaultRuleEngine *ruleEngine.Engine
 var mux sync.RWMutex
 
-func UpdateRule(e *ruleEngine.Engine) {
+func UpdateRuleEngine(e *ruleEngine.Engine) {
 	mux.Lock()
 	defer mux.Unlock()
-	defaultRule = e
+	defaultRuleEngine = e
 }
 
-func GetRule() *ruleEngine.Engine {
+func GetRuleEngine() *ruleEngine.Engine {
 	mux.RLock()
 	defer mux.RUnlock()
-	return defaultRule
+	return defaultRuleEngine
 }

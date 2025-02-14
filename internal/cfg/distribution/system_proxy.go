@@ -15,14 +15,14 @@ type SystemProxyConfig struct {
 func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 
 	if metadata.Host != "" {
-		var rule, err = matcher.GetRule().Match(metadata.Host, constants.DomainRuleTypes)
+		var rule, err = matcher.GetRuleEngine().Match(metadata.Host, constants.DomainRuleTypes)
 		if err == nil {
 			return rule, nil
 		}
 	}
 
 	if metadata.DstIP.String() != "" {
-		rule, err := matcher.GetRule().Match(metadata.DstIP.String(), constants.IpRuleTypes)
+		rule, err := matcher.GetRuleEngine().Match(metadata.DstIP.String(), constants.IpRuleTypes)
 		if err == nil {
 			return rule, nil
 		}

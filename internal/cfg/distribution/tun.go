@@ -13,27 +13,16 @@ type Config struct {
 	Dns DnsDistribution
 }
 
-func (c Config) getIpRuleFromDns(ip string) (ruleEngine.Rule, bool) {
-	_, cachedDomainRule, ok := dns.GetCachedDnsItem(ip)
-	if ok {
-		return cachedDomainRule, true
-	}
-	return nil, false
-}
-
 func (c Config) ConnMatcher(metadata *C.Metadata, _ ruleEngine.Rule) (ruleEngine.Rule, error) {
 	processPath := metadata.ProcessPath
 	if len(processPath) != 0 {
-		if rule, err := matcher.GetRule().Match(processPath, constants.ProcessRuleTypes); err == nil {
+		if rule, err := matcher.GetRuleEngine().Match(processPath, constants.ProcessRuleTypes); err == nil {
 			return rule, nil
 		}
 	}
 
 	ip := metadata.DstIP.String()
-	if dnsResult, dnsRuleOk := c.getIpRuleFromDns(ip); dnsRuleOk {
-		return dnsResult, nil
-	}
-	if rule, err := matcher.GetRule().Match(ip, constants.IpRuleTypes); err == nil {
+	if rule, err := matcher.GetRuleEngine().Match(ip, constants.IpRuleTypes); err == nil {
 		return rule, nil
 	}
 	return nil, fmt.Errorf("no rule found")

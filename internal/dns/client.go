@@ -77,18 +77,18 @@ func convertRulePolicyToResolver(rule ruleEngine.Rule) (ruleEngine.Rule, error) 
 	return rule, nil
 }
 
-func getDnsResovler(domain string, metadata *constant.Metadata) (ruleEngine.Rule, error) {
+func getDnsResolver(domain string, metadata *constant.Metadata, curRuleEngine *ruleEngine.Engine) (ruleEngine.Rule, error) {
 	processPath := metadata.ProcessPath
 	var rule ruleEngine.Rule
 	var err error
 	if len(processPath) != 0 {
-		rule, err = matcher.GetRule().Match(processPath, constants.ProcessRuleTypes)
+		rule, err = curRuleEngine.Match(processPath, constants.ProcessRuleTypes)
 		if err == nil {
 			return convertRulePolicyToResolver(rule)
 		}
 	}
 
-	rule, err = matcher.GetRule().Match(domain, constants.DomainRuleTypes)
+	rule, err = curRuleEngine.Match(domain, constants.DomainRuleTypes)
 	if err == nil {
 		return convertRulePolicyToResolver(rule)
 	}
@@ -114,7 +114,8 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 		return handleMsgWithEmptyAnswer(dnsMessage), nil
 	}
 
-	dnsRule, err := getDnsResovler(question, metadata)
+	var curRuleEngine = matcher.GetRuleEngine()
+	dnsRule, err := getDnsResolver(question, metadata, curRuleEngine)
 	if err != nil {
 		return nil, fmt.Errorf("fail to get dns resolver, err: %v, question: %v", err, question)
 	}
@@ -135,7 +136,8 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 	for _, resIp := range resIps {
 		if resIp != nil {
 			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule.GetPolicy())
-			AddCachedDnsItem(resIp.String(), question, dnsRule)
+			addCachedDnsItem(resIp.String(), question)
+			curRuleEngine.AddCache(resIp.String(), dnsRule)
 		}
 	}
 	elapsed := time.Since(start).Milliseconds()

@@ -36,6 +36,10 @@ func (e *Engine) Match(value string, types []constants.RuleType) (Rule, error) {
 	return nil, ErrNotFound
 }
 
+func (e *Engine) AddCache(value string, rule Rule) {
+	e.cache.Add(value, rule)
+}
+
 func New(name string, extraRules []string) (*Engine, error) {
 	rules, err := Parse(name, extraRules)
 	if err != nil {

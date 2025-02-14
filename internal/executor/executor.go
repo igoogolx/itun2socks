@@ -40,7 +40,7 @@ func UpdateRule() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	matcher.UpdateRule(rEngine)
+	matcher.UpdateRuleEngine(rEngine)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update rule: %v"), selectedRule)
 	dns.ResetCache()
 	return selectedRule, nil
