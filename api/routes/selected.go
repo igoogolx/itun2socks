@@ -36,7 +36,7 @@ func setRuleSelectedId(w http.ResponseWriter, r *http.Request) {
 	}
 	if manager.GetIsStarted() {
 		ruleName, err := executor.UpdateRule()
-		log.Infoln(log.FormatLog(log.ExecutorPrefix, "Update rule: %v"), ruleName)
+		log.Infoln(log.FormatLog(log.ExecutorPrefix, "update rule: %v"), ruleName)
 		statistic.DefaultManager.CloseAllConnections()
 		if err != nil {
 			render.Status(r, http.StatusInternalServerError)
