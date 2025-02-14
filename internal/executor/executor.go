@@ -108,8 +108,7 @@ func newTun() (Client, error) {
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set dns, local: %v, remote: %v"), config.Rule.Dns.Local.Addresses, config.Rule.Dns.Remote.Addresses)
-	ruleName, err := UpdateRule()
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set rule: %v"), ruleName)
+	_, err = UpdateRule()
 	if err != nil {
 		return nil, err
 	}
@@ -135,12 +134,11 @@ func newSysProxy() (Client, error) {
 	})
 	conn.UpdateProxy(config.Proxy)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
-	ruleName, err := UpdateRule()
+	_, err = UpdateRule()
 	if err != nil {
 		return nil, err
 	}
 
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set rule: %v"), ruleName)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
 		config:      config,
