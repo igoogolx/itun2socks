@@ -9,7 +9,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 )
 
@@ -35,8 +34,7 @@ func setRuleSelectedId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if manager.GetIsStarted() {
-		ruleName, err := executor.UpdateRule()
-		log.Infoln(log.FormatLog(log.ExecutorPrefix, "update rule: %v"), ruleName)
+		_, err := executor.UpdateRule()
 		statistic.DefaultManager.CloseAllConnections()
 		if err != nil {
 			render.Status(r, http.StatusInternalServerError)

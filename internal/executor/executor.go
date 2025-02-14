@@ -41,6 +41,7 @@ func UpdateRule() (string, error) {
 		return "", err
 	}
 	matcher.UpdateRule(rEngine)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update rule: %v"), selectedRule)
 	return selectedRule, nil
 }
 
