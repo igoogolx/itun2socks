@@ -1,4 +1,4 @@
-package ruleEngine
+package rule_engine
 
 import (
 	"fmt"

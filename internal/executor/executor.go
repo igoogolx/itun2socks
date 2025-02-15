@@ -5,7 +5,7 @@ import (
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -36,11 +36,13 @@ func UpdateRule() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	rEngine, err := ruleEngine.New(selectedRule, rawConfig.Rules)
+	rEngine, err := rule_engine.New(selectedRule, rawConfig.Rules)
 	if err != nil {
 		return "", err
 	}
-	matcher.UpdateRule(rEngine)
+	matcher.UpdateRuleEngine(rEngine)
+	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update rule: %v"), selectedRule)
+	dns.ResetCache()
 	return selectedRule, nil
 }
 
@@ -107,8 +109,7 @@ func newTun() (Client, error) {
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set dns, local: %v, remote: %v"), config.Rule.Dns.Local.Addresses, config.Rule.Dns.Remote.Addresses)
-	ruleName, err := UpdateRule()
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set rule: %v"), ruleName)
+	_, err = UpdateRule()
 	if err != nil {
 		return nil, err
 	}
@@ -134,12 +135,11 @@ func newSysProxy() (Client, error) {
 	})
 	conn.UpdateProxy(config.Proxy)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
-	ruleName, err := UpdateRule()
+	_, err = UpdateRule()
 	if err != nil {
 		return nil, err
 	}
 
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set rule: %v"), ruleName)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
 		config:      config,

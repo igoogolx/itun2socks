@@ -3,8 +3,11 @@ package routes
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/executor"
+	"github.com/igoogolx/itun2socks/internal/manager"
+	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"net/http"
 )
 
@@ -55,6 +58,15 @@ func addCustomizedRules(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
+	if manager.GetIsStarted() {
+		_, err := executor.UpdateRule()
+		statistic.DefaultManager.CloseAllConnections()
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
+	}
 	render.NoContent(w, r)
 }
 
@@ -76,6 +88,17 @@ func deleteCustomizedRules(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
+
+	if manager.GetIsStarted() {
+		_, err := executor.UpdateRule()
+		statistic.DefaultManager.CloseAllConnections()
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
+	}
+
 	render.NoContent(w, r)
 }
 
@@ -86,7 +109,7 @@ func getRuleDetail(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	var rules []ruleEngine.Rule
+	var rules []rule_engine.Rule
 	var err error
 	if id == "customized" {
 		rules, err = configuration.GetCustomizedRules()
@@ -120,6 +143,15 @@ func editCustomizedRule(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
+	}
+	if manager.GetIsStarted() {
+		_, err := executor.UpdateRule()
+		statistic.DefaultManager.CloseAllConnections()
+		if err != nil {
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, NewError(err.Error()))
+			return
+		}
 	}
 	render.NoContent(w, r)
 }

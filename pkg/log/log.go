@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
+	"runtime"
 )
 
 type output struct {
@@ -21,12 +22,20 @@ func (o *output) Write(p []byte) (int, error) {
 }
 
 func InitLog() {
+	filePath := constants.Path.LogFilePath()
+	if runtime.GOOS == "darwin" {
+		err := os.Chmod(filePath, 0644)
+		if err != nil {
+			log.Warnln("fail to chang log file permissions:", err)
+		}
+	}
+	log.SetFormatter(&log.JSONFormatter{})
 	log.StandardLogger()
 	log.SetOutput(&output{
 		&lumberjack.Logger{
-			Filename:   constants.Path.LogFilePath(),
+			Filename:   filePath,
 			MaxSize:    1, // megabytes
-			MaxBackups: 1,
+			MaxBackups: 0,
 		},
 	})
 }

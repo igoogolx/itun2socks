@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	download("https://github.com/igoogolx/lux-rules/releases/download/v2.4.0/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "ruleEngine", "rules.tar.gz"))
-	download("https://github.com/igoogolx/lux-client/releases/download/v1.11.7/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
+	download("https://github.com/igoogolx/lux-rules/releases/download/v2.4.1/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "rule_engine", "rules.tar.gz"))
+	download("https://github.com/igoogolx/lux-client/releases/download/v1.12.2/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
 }
 
 func download(url string, outputPath string) {
@@ -128,9 +128,12 @@ func unarchiveFile(archiveFilePath string) error {
 			outFile, err := os.Create(outputPath)
 			if err != nil {
 				fmt.Printf("ExtractTarGz: Create() failed: %s", err.Error())
+				return err
+
 			}
 			if _, err := io.Copy(outFile, tarReader); err != nil {
 				fmt.Printf("ExtractTarGz: Copy() failed: %s", err.Error())
+				return err
 			}
 			err = outFile.Close()
 			if err != nil {

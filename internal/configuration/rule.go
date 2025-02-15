@@ -2,7 +2,7 @@ package configuration
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"slices"
 	"strings"
 )
@@ -16,7 +16,7 @@ func GetSelectedRule() (string, error) {
 }
 
 func GetRuleIds() ([]string, error) {
-	return ruleEngine.GetRuleIds()
+	return rule_engine.GetRuleIds()
 }
 
 func AddCustomizedRule(rules []string) error {
@@ -30,7 +30,7 @@ func AddCustomizedRule(rules []string) error {
 		if targetIndex != -1 {
 			return fmt.Errorf("duplicated rule: %v", rule)
 		}
-		_, err = ruleEngine.ParseRawValue(formatedRule)
+		_, err = rule_engine.ParseRawValue(formatedRule)
 		if err != nil {
 			return err
 		}
@@ -46,7 +46,7 @@ func DeleteCustomizedRule(rules []string) error {
 		return err
 	}
 	for _, rule := range rules {
-		_, err = ruleEngine.ParseRawValue(rule)
+		_, err = rule_engine.ParseRawValue(rule)
 		if err != nil {
 			return err
 		}
@@ -61,14 +61,14 @@ func DeleteCustomizedRule(rules []string) error {
 	return Write(c)
 }
 
-func GetCustomizedRules() ([]ruleEngine.Rule, error) {
+func GetCustomizedRules() ([]rule_engine.Rule, error) {
 	c, err := Read()
 	if err != nil {
 		return nil, err
 	}
-	var items []ruleEngine.Rule
+	var items []rule_engine.Rule
 	for _, rule := range c.Rules {
-		item, err := ruleEngine.ParseRawValue(rule)
+		item, err := rule_engine.ParseRawValue(rule)
 		if err == nil {
 			items = append(items, item)
 		}
@@ -88,6 +88,6 @@ func EditCustomizedRule(oldRule string, newRule string) error {
 	return Write(c)
 }
 
-func GetBuiltInRules(id string) ([]ruleEngine.Rule, error) {
-	return ruleEngine.Parse(id, []string{})
+func GetBuiltInRules(id string) ([]rule_engine.Rule, error) {
+	return rule_engine.Parse(id, []string{})
 }

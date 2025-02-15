@@ -36,6 +36,13 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 				Interface: defaultInterfaceName,
 			}
 		}
+		if nameResolver.Addr == "system" {
+			nameResolvers[index] = dns.NameServer{
+				Net:       "system",
+				Interface: defaultInterfaceName,
+				Addr:      defaultInterfaceName,
+			}
+		}
 	}
 	return nameResolvers, err
 }

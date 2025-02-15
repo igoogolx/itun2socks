@@ -13,11 +13,11 @@
         "boost": [
           "tcp://114.114.114.114:53",
           "tcp://119.29.29.29:53",
-          "dhcp://auto"
+          "system://auto"
         ],
         "local": [
           "tcp://114.114.114.114:53",
-          "dhcp://auto"
+          "system://auto"
         ],
         "remote": [
           "tcp://8.8.8.8:53",
