@@ -3,12 +3,12 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/Dreamacro/clash/log"
+	cLog "github.com/Dreamacro/clash/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/gofrs/uuid/v5"
 	"github.com/gorilla/websocket"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -16,10 +16,17 @@ import (
 )
 
 type Log struct {
-	UUID    uuid.UUID `json:"id"`
-	Type    string    `json:"type"`
-	Time    int64     `json:"time"`
-	Payload string    `json:"payload"`
+	Type string `json:"level"`
+	Time int64  `json:"time"`
+	Msg  string `json:"msg"`
+}
+
+func (l Log) String() (string, error) {
+	jsonBytes, err := json.Marshal(l)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonBytes), nil
 }
 
 func logRouter() http.Handler {
@@ -31,19 +38,12 @@ func logRouter() http.Handler {
 
 func getLogs(w http.ResponseWriter, r *http.Request) {
 	var mux sync.Mutex
-	logs := make([]Log, 0)
-	levelText := r.URL.Query().Get("level")
-	if levelText == "" {
-		levelText = "info"
-	}
-
-	level, ok := log.LogLevelMapping[levelText]
-	if !ok {
-		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, ErrBadRequest)
+	logs, err := log.ReadFile(1000)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, err)
 		return
 	}
-
 	var wsConn *websocket.Conn
 	if websocket.IsWebSocketUpgrade(r) {
 		var err error
@@ -58,28 +58,26 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusOK)
 	}
 
-	sub := log.Subscribe()
-	defer log.UnSubscribe(sub)
-	var err error
+	sub := cLog.Subscribe()
+	defer cLog.UnSubscribe(sub)
 	go func() {
 		for elm := range sub {
 			func() {
 				mux.Lock()
 				defer mux.Unlock()
-				logEvent, ok := elm.(log.Event)
+				logEvent, ok := elm.(cLog.Event)
 				if !ok {
 					return
 				}
-				if logEvent.LogLevel < level {
+				logValue, err := Log{
+					Time: time.Now().UnixNano() / int64(time.Millisecond),
+					Type: logEvent.Type(),
+					Msg:  logEvent.Payload,
+				}.String()
+				if err != nil {
 					return
 				}
-				uid, _ := uuid.NewV4()
-				logs = append(logs, Log{
-					UUID:    uid,
-					Time:    time.Now().UnixNano() / int64(time.Millisecond),
-					Type:    logEvent.Type(),
-					Payload: logEvent.Payload,
-				})
+				logs = append(logs, logValue)
 			}()
 		}
 	}()
@@ -94,7 +92,7 @@ func getLogs(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		logs = make([]Log, 0)
+		logs = make([]string, 0)
 
 		if wsConn == nil {
 			_, err = w.Write(buf.Bytes())
