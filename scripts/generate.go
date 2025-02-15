@@ -128,9 +128,12 @@ func unarchiveFile(archiveFilePath string) error {
 			outFile, err := os.Create(outputPath)
 			if err != nil {
 				fmt.Printf("ExtractTarGz: Create() failed: %s", err.Error())
+				return err
+
 			}
 			if _, err := io.Copy(outFile, tarReader); err != nil {
 				fmt.Printf("ExtractTarGz: Copy() failed: %s", err.Error())
+				return err
 			}
 			err = outFile.Close()
 			if err != nil {
