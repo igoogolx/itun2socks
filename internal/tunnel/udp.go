@@ -3,7 +3,6 @@ package tunnel
 import (
 	"fmt"
 	"github.com/igoogolx/itun2socks/internal/conn"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -130,7 +129,7 @@ func handleDnsConn(ct conn.UdpConnContext) {
 // processUDP starts a loop to handle udp packet
 func processUDP() {
 	for c := range udpQueue {
-		if c.Metadata().DstPort.String() == constants.DnsPort {
+		if conn.GetIsUdpConn(c.Metadata()) {
 			go handleDnsConn(c)
 		} else {
 			go handleUdpConn(c)

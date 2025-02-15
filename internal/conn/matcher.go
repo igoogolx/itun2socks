@@ -3,6 +3,7 @@ package conn
 import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"sync"
@@ -23,7 +24,15 @@ func GetConnMatcher() []Matcher {
 	return defaultConnMatchers
 }
 
+func GetIsUdpConn(metadata *C.Metadata) bool {
+	return metadata.NetWork == C.UDP && metadata.DstPort.String() == constants.DnsPort
+}
+
 func resolveMetadata(metadata *C.Metadata) ruleEngine.Rule {
+
+	var logType = log.TcpPrefix
+	var printLog = log.Infoln
+
 	var rule ruleEngine.Rule = ruleEngine.BuiltInProxyRule
 	for _, matcher := range GetConnMatcher() {
 		tempRule, err := matcher(metadata, rule)
@@ -31,16 +40,18 @@ func resolveMetadata(metadata *C.Metadata) ruleEngine.Rule {
 			rule = tempRule
 		}
 	}
-	var logType = log.TcpPrefix
+	remoteAddr := metadata.DstIP.String()
 	if metadata.NetWork == C.UDP {
 		logType = log.UdpPrefix
 	}
-	remoteAddr := metadata.DstIP.String()
+	if !GetIsUdpConn(metadata) {
+		printLog = log.Debugln
+	}
 	cachedDomain, ok := dns.GetCachedDnsItem(remoteAddr)
 	if ok {
-		log.Infoln(log.FormatLog(logType, " %s --> %s(%s) using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), cachedDomain, rule.GetPolicy())
+		printLog(log.FormatLog(logType, " %s to %s(%s) using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), cachedDomain, rule.GetPolicy())
 	} else {
-		log.Infoln(log.FormatLog(logType, " %s --> %s using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), rule.GetPolicy())
+		printLog(log.FormatLog(logType, " %s to %s using %s"), metadata.SourceAddress(), metadata.RemoteAddress(), rule.GetPolicy())
 	}
 	return rule
 }
