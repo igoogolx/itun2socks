@@ -24,7 +24,7 @@ func GetConnMatcher() []Matcher {
 	return defaultConnMatchers
 }
 
-func GetIsUdpConn(metadata *C.Metadata) bool {
+func GetIsDNSConn(metadata *C.Metadata) bool {
 	return metadata.NetWork == C.UDP && metadata.DstPort.String() == constants.DnsPort
 }
 
@@ -44,7 +44,7 @@ func resolveMetadata(metadata *C.Metadata) rule_engine.Rule {
 	if metadata.NetWork == C.UDP {
 		logType = log.UdpPrefix
 	}
-	if !GetIsUdpConn(metadata) {
+	if GetIsDNSConn(metadata) {
 		printLog = log.Debugln
 	}
 	cachedDomain, ok := dns.GetCachedDnsItem(remoteAddr)

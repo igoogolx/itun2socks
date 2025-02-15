@@ -129,7 +129,7 @@ func handleDnsConn(ct conn.UdpConnContext) {
 // processUDP starts a loop to handle udp packet
 func processUDP() {
 	for c := range udpQueue {
-		if conn.GetIsUdpConn(c.Metadata()) {
+		if conn.GetIsDNSConn(c.Metadata()) {
 			go handleDnsConn(c)
 		} else {
 			go handleUdpConn(c)
