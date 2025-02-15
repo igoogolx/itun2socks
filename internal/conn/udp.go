@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	"github.com/sagernet/sing/common/buf"
@@ -21,7 +21,7 @@ type UdpConnContext struct {
 	ctx      context.Context
 	metadata *C.Metadata
 	conn     network.PacketConn
-	rule     ruleEngine.Rule
+	rule     rule_engine.Rule
 	wg       *sync.WaitGroup
 }
 
@@ -33,7 +33,7 @@ func (u *UdpConnContext) Ctx() context.Context {
 	return u.ctx
 }
 
-func (u *UdpConnContext) Rule() ruleEngine.Rule {
+func (u *UdpConnContext) Rule() rule_engine.Rule {
 	return u.rule
 }
 
@@ -142,7 +142,7 @@ func (uc *CopyableReaderWriterConn) WriteTo(data []byte, addr net.Addr) (int, er
 	return len(data), err
 }
 
-func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule ruleEngine.Rule, defaultInterface string) (*CopyablePacketConn, error) {
+func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule rule_engine.Rule, defaultInterface string) (*CopyablePacketConn, error) {
 	connDialer, err := GetProxy(rule.GetPolicy())
 	if err != nil {
 		return nil, err

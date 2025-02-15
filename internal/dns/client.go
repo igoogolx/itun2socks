@@ -5,7 +5,7 @@ import (
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/Dreamacro/clash/constant"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -70,16 +70,16 @@ func getResponseIp(msg *D.Msg) []net.IP {
 	return ips
 }
 
-func convertRulePolicyToResolver(rule ruleEngine.Rule) (ruleEngine.Rule, error) {
+func convertRulePolicyToResolver(rule rule_engine.Rule) (rule_engine.Rule, error) {
 	if rule.GetPolicy() == constants.PolicyReject {
 		return nil, fmt.Errorf("reject dns")
 	}
 	return rule, nil
 }
 
-func getDnsResolver(domain string, metadata *constant.Metadata, curRuleEngine *ruleEngine.Engine) (ruleEngine.Rule, error) {
+func getDnsResolver(domain string, metadata *constant.Metadata, curRuleEngine *rule_engine.Engine) (rule_engine.Rule, error) {
 	processPath := metadata.ProcessPath
-	var rule ruleEngine.Rule
+	var rule rule_engine.Rule
 	var err error
 	if len(processPath) != 0 {
 		rule, err = curRuleEngine.Match(processPath, constants.ProcessRuleTypes)
@@ -93,7 +93,7 @@ func getDnsResolver(domain string, metadata *constant.Metadata, curRuleEngine *r
 		return convertRulePolicyToResolver(rule)
 	}
 
-	return ruleEngine.BuiltInProxyRule, nil
+	return rule_engine.BuiltInProxyRule, nil
 }
 
 func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {

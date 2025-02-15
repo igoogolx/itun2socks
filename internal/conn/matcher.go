@@ -2,7 +2,7 @@ package conn
 
 import (
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -28,12 +28,12 @@ func GetIsUdpConn(metadata *C.Metadata) bool {
 	return metadata.NetWork == C.UDP && metadata.DstPort.String() == constants.DnsPort
 }
 
-func resolveMetadata(metadata *C.Metadata) ruleEngine.Rule {
+func resolveMetadata(metadata *C.Metadata) rule_engine.Rule {
 
 	var logType = log.TcpPrefix
 	var printLog = log.Infoln
 
-	var rule ruleEngine.Rule = ruleEngine.BuiltInProxyRule
+	var rule rule_engine.Rule = rule_engine.BuiltInProxyRule
 	for _, matcher := range GetConnMatcher() {
 		tempRule, err := matcher(metadata, rule)
 		if err == nil {

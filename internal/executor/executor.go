@@ -5,7 +5,7 @@ import (
 	"fmt"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/ruleEngine"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -36,7 +36,7 @@ func UpdateRule() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	rEngine, err := ruleEngine.New(selectedRule, rawConfig.Rules)
+	rEngine, err := rule_engine.New(selectedRule, rawConfig.Rules)
 	if err != nil {
 		return "", err
 	}
