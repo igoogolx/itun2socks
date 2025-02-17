@@ -2,7 +2,7 @@ package resolver
 
 import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
-	_ "github.com/Dreamacro/clash/config"
+	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/dns"
 	_ "unsafe"
@@ -24,7 +24,7 @@ func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.P
 }
 
 func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, error) {
-	nameResolvers, err := parseNameServer(servers)
+	nameResolvers, err := config.ParseNameServer(servers)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 				Interface: defaultInterfaceName,
 			}
 		}
-		if nameResolver.Addr == "system" {
+		if nameResolver.Net == "system" {
 			nameResolvers[index] = dns.NameServer{
 				Net:       "system",
 				Interface: defaultInterfaceName,
@@ -46,6 +46,3 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 	}
 	return nameResolvers, err
 }
-
-//go:linkname parseNameServer github.com/Dreamacro/clash/config.parseNameServer
-func parseNameServer(servers []string) ([]dns.NameServer, error)
