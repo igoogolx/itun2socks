@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"net/http"
 	"runtime"
@@ -26,7 +27,7 @@ func getDetail(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, nil)
 		return
 	}
-	detail, err := manager.RuntimeDetail()
+	detail, err := manager.RuntimeDetail(constants.HubAddress())
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, err)

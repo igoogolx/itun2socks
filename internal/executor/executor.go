@@ -24,7 +24,7 @@ import (
 type Client interface {
 	Start() error
 	Close() error
-	RuntimeDetail() (interface{}, error)
+	RuntimeDetail(hubAddress string) (interface{}, error)
 }
 
 func UpdateRule() (string, error) {

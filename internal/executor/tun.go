@@ -13,13 +13,19 @@ import (
 	"sync"
 )
 
+type DnsDetail struct {
+	Addresses []string `json:"addresses"`
+	Servers   []string `json:"servers"`
+}
+
 type Detail struct {
-	DirectedInterfaceName   string   `json:"directedInterfaceName"`
-	DirectedInterfaceV4Addr string   `json:"directedInterfaceV4Addr"`
-	TunInterfaceName        string   `json:"tunInterfaceName"`
-	LocalDns                []string `json:"localDns"`
-	RemoteDns               []string `json:"remoteDns"`
-	BoostDns                []string `json:"boostDns"`
+	DirectedInterfaceName   string    `json:"directedInterfaceName"`
+	DirectedInterfaceV4Addr string    `json:"directedInterfaceV4Addr"`
+	TunInterfaceName        string    `json:"tunInterfaceName"`
+	LocalDns                DnsDetail `json:"localDns"`
+	RemoteDns               DnsDetail `json:"remoteDns"`
+	BoostDns                DnsDetail `json:"boostDns"`
+	HubAddress              string    `json:"hubAddress"`
 }
 
 type TunClient struct {
@@ -30,7 +36,7 @@ type TunClient struct {
 	config      *cfg.Config
 }
 
-func (c *TunClient) RuntimeDetail() (interface{}, error) {
+func (c *TunClient) RuntimeDetail(hubAddress string) (interface{}, error) {
 	networkInterface, err := iface.ResolveInterface(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err
@@ -39,13 +45,17 @@ func (c *TunClient) RuntimeDetail() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	localDns := DnsDetail{Addresses: c.config.Rule.Dns.Local.Addresses, Servers: c.config.Rule.Dns.Local.GetServers()}
+	remoteDns := DnsDetail{Addresses: c.config.Rule.Dns.Remote.Addresses, Servers: c.config.Rule.Dns.Remote.GetServers()}
+	boostDns := DnsDetail{Addresses: c.config.Rule.Dns.Boost.Addresses, Servers: c.config.Rule.Dns.Boost.GetServers()}
 	return &Detail{
 		DirectedInterfaceV4Addr: addr.IP.String(),
 		DirectedInterfaceName:   networkInterface.Name,
 		TunInterfaceName:        c.config.Device.Name,
-		LocalDns:                c.config.Rule.Dns.Local.Addresses,
-		RemoteDns:               c.config.Rule.Dns.Remote.Addresses,
-		BoostDns:                c.config.Rule.Dns.Boost.Addresses,
+		LocalDns:                localDns,
+		RemoteDns:               remoteDns,
+		BoostDns:                boostDns,
+		HubAddress:              hubAddress,
 	}, nil
 }
 
