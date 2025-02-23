@@ -64,6 +64,10 @@ type SubDnsDistribution struct {
 	Client    cResolver.Resolver
 }
 
+func (s SubDnsDistribution) GetServers() []string {
+	return s.Client.GetServers()
+}
+
 type DnsDistribution struct {
 	Local  SubDnsDistribution
 	Remote SubDnsDistribution

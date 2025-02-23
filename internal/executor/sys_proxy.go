@@ -11,6 +11,7 @@ import (
 )
 
 type SysProxyDetail struct {
+	HubAddress string `json:"hubAddress"`
 }
 
 type SystemProxyClient struct {
@@ -20,8 +21,8 @@ type SystemProxyClient struct {
 	off         func() error
 }
 
-func (c *SystemProxyClient) RuntimeDetail() (interface{}, error) {
-	return &SysProxyDetail{}, nil
+func (c *SystemProxyClient) RuntimeDetail(hubAddress string) (interface{}, error) {
+	return &SysProxyDetail{hubAddress}, nil
 }
 
 func (c *SystemProxyClient) Start() error {

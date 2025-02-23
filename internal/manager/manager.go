@@ -59,6 +59,6 @@ func GetIsStarted() bool {
 	return client != nil
 }
 
-func RuntimeDetail() (interface{}, error) {
-	return client.RuntimeDetail()
+func RuntimeDetail(hubAddress string) (interface{}, error) {
+	return client.RuntimeDetail(hubAddress)
 }
