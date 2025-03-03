@@ -15,6 +15,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/igoogolx/sysproxy v1.0.5
+	github.com/kardianos/service v1.2.2
 	github.com/miekg/dns v1.1.63
 	github.com/sagernet/sing v0.6.1
 	github.com/sagernet/sing-tun v0.6.1
