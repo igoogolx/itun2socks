@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
+	"github.com/igoogolx/itun2socks/internal/service"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"os"
 	"os/signal"
@@ -29,7 +30,7 @@ func main() {
 	userConfigDir, _ := os.UserConfigDir()
 	defaultHomeDir := filepath.Join(userConfigDir, packageName)
 
-	flag.IntVar(&port, "port", constants.DefaultHubPort, "set running port")
+	flag.IntVar(&port, "port", 0, "set running port")
 	flag.StringVar(&homeDir, "home_dir", defaultHomeDir, "set configuration directory")
 	flag.BoolVar(&version, "version", false, "print current version of itun2socks")
 	flag.StringVar(&secret, "secret", "", "set secret")
@@ -50,6 +51,14 @@ func main() {
 	log.Infoln(log.FormatLog(log.InitPrefix, "using config: %v"), constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
 	api.Start(port, secret)
+
+	go func() {
+		err := service.Run()
+		if err != nil {
+			log.Debugln("fail to run service")
+		}
+	}()
+
 	defer func() {
 		if p := recover(); p != nil {
 			log.Errorln(log.FormatLog(log.InitPrefix, "internal error: %v"), p)

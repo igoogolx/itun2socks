@@ -6,6 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
+	"os"
 )
 
 func managerRouter() http.Handler {
@@ -13,6 +14,7 @@ func managerRouter() http.Handler {
 	r.Get("/", getStatus)
 	r.Post("/start", start)
 	r.Post("/stop", stop)
+	r.Post("/exit", exit)
 	return r
 }
 
@@ -46,4 +48,8 @@ func getStatus(w http.ResponseWriter, r *http.Request) {
 	isStarted := manager.GetIsStarted()
 	status := &Status{isStarted}
 	render.JSON(w, r, status)
+}
+
+func exit(w http.ResponseWriter, r *http.Request) {
+	os.Exit(0)
 }
