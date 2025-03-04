@@ -55,7 +55,7 @@ func main() {
 	go func() {
 		err := service.Run()
 		if err != nil {
-			log.Errorln("fail to run service")
+			log.Debugln("fail to run service")
 		}
 	}()
 
