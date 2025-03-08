@@ -43,9 +43,10 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 				Addr:      defaultInterfaceName,
 			}
 		}
-		if nameResolver.Net == "doh" {
+		//FIXME
+		if nameResolver.Net == "https" {
 			nameResolvers[index] = dns.NameServer{
-				Net:       "doh",
+				Net:       "https",
 				Interface: defaultInterfaceName,
 				Addr:      nameResolvers[index].Addr,
 			}
