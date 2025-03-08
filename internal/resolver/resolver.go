@@ -29,6 +29,7 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 		return nil, err
 	}
 	for index, nameResolver := range nameResolvers {
+		//FIXME: remove in v2
 		if nameResolver.Net == "dhcp" && nameResolver.Addr == "auto" {
 			nameResolvers[index] = dns.NameServer{
 				Net:       "dhcp",
@@ -41,14 +42,6 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 				Net:       "system",
 				Interface: defaultInterfaceName,
 				Addr:      defaultInterfaceName,
-			}
-		}
-		//FIXME
-		if nameResolver.Net == "https" {
-			nameResolvers[index] = dns.NameServer{
-				Net:       "https",
-				Interface: defaultInterfaceName,
-				Addr:      nameResolvers[index].Addr,
 			}
 		}
 	}
