@@ -28,8 +28,12 @@ var svcConfig = &service.Config{
 	Description: "Run the lux core as admin on default",
 }
 var s service.Service
+var isInService = !service.Interactive()
 
 func init() {
+	if !isInService {
+		return
+	}
 	prg := &program{}
 	var err error
 	s, err = service.New(prg, svcConfig)
@@ -39,21 +43,33 @@ func init() {
 }
 
 func Run() error {
+	if !isInService {
+		return nil
+	}
 	return s.Run()
 }
 
 func Install() error {
+	if !isInService {
+		return nil
+	}
 	return s.Install()
 }
 
 func Uninstall() error {
+	if !isInService {
+		return nil
+	}
 	return s.Uninstall()
 }
 
 func Restart() error {
+	if !isInService {
+		return nil
+	}
 	return s.Restart()
 }
 
 func Interactive() bool {
-	return service.Interactive()
+	return false
 }
