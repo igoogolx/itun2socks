@@ -1,5 +1,4 @@
-//go:build windows_arm64
-// +build windows_arm64
+//go:build windows && arm64
 
 package executor
 
