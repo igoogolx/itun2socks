@@ -25,8 +25,12 @@ func Read() (Config, error) {
 		return Config{}, err
 	}
 
+	//FIXME: remove in v2
 	if len(config.Setting.Stack) == 0 {
 		config.Setting.Stack = "gvisor"
+	}
+	if len(config.Setting.Theme) == 0 {
+		config.Setting.Theme = "light"
 	}
 
 	return *config, nil
