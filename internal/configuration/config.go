@@ -30,6 +30,8 @@ type SettingCfg struct {
 	Stack             string `json:"stack"`
 	ShouldFindProcess bool   `json:"shouldFindProcess,omitempty"`
 	Theme             string `json:"theme,omitempty"`
+	AutoConnect       bool   `json:"autoConnect,omitempty"`
+	AutoLaunch        bool   `json:"autoLaunch,omitempty"`
 }
 
 type DnsServer struct {

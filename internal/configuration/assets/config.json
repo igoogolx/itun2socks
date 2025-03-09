@@ -45,6 +45,8 @@
     "blockQuic": false,
     "stack": "gvisor",
     "shouldFindProcess": true,
-    "theme": "light"
+    "theme": "light",
+    "autoLaunch": false,
+    "autoConnect": false
   }
 }
