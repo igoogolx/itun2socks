@@ -1,8 +1,6 @@
 module github.com/igoogolx/itun2socks
 
-go 1.23.0
-
-toolchain go1.24.0
+go 1.24.0
 
 replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.31.3
 

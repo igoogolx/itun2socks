@@ -57,7 +57,7 @@ func newTun() (Client, error) {
 		if len(defaultInterface) != 0 {
 			break
 		}
-		log.Infoln(log.FormatLog(log.InitPrefix, "waiting for default interface name"))
+		log.Infoln("%s", log.FormatLog(log.InitPrefix, "waiting for default interface name"))
 		time.Sleep(1 * time.Second)
 	}
 

@@ -37,7 +37,7 @@ func Start() error {
 		}
 		return err
 	}
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Started the client successfully"))
+	log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, "Started the client successfully"))
 	return nil
 }
 
@@ -51,7 +51,7 @@ func Close() error {
 			return err
 		}
 	}
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "Stopped the client successfully"))
+	log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, "Stopped the client successfully"))
 	return nil
 }
 

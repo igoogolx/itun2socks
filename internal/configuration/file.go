@@ -66,7 +66,7 @@ func readFile() (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Infoln(log.FormatLog(log.ConfigurationPrefix, "created the default config file"))
+		log.Infoln("%s", log.FormatLog(log.ConfigurationPrefix, "created the default config file"))
 	}
 	c := &Config{}
 	data, err := os.ReadFile(configFilePath.Load())
