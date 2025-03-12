@@ -12,7 +12,7 @@ var DefaultManager *Manager
 
 func init() {
 	cache, err := lru.NewWithEvict[string, tracker](256, func(key string, value tracker) {
-		log.Debugln(log.FormatLog(log.CachePrefix, "close connection on evicted"))
+		log.Debugln("%s", log.FormatLog(log.CachePrefix, "close connection on evicted"))
 		err := value.Close()
 		if err != nil {
 			log.Warnln(log.FormatLog(log.CachePrefix, "fail to close connection on evicted, err: %v"), err)

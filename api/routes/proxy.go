@@ -54,7 +54,7 @@ func getResFromUrl(w http.ResponseWriter, r *http.Request) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Debugln(log.FormatLog(log.HubPrefix, "get res from url: fail to close body"))
+			log.Debugln("%s", log.FormatLog(log.HubPrefix, "get res from url: fail to close body"))
 		}
 	}(res.Body)
 	body, err := io.ReadAll(res.Body)

@@ -45,7 +45,7 @@ func Start(port int, secret string) {
 			hubAddress = fmt.Sprintf("%v?token=%v", hubAddress, secret)
 		}
 		constants.SetHubAddress(hubAddress)
-		log.Infoln(log.FormatLog(log.ExecutorPrefix, hubAddress))
+		log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, hubAddress))
 		err := routes.Start("localhost:"+strconv.Itoa(availablePort), secret)
 		if err != nil {
 			log.Fatalln(log.FormatLog(log.ExecutorPrefix, "fail to start hub: %v"), err)
