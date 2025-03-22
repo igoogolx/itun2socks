@@ -14,8 +14,8 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/igoogolx/sysproxy v1.0.5
 	github.com/kardianos/service v1.2.2
-	github.com/miekg/dns v1.1.63
-	github.com/sagernet/sing v0.6.1
+	github.com/miekg/dns v1.1.64
+	github.com/sagernet/sing v0.6.3
 	github.com/sagernet/sing-tun v0.6.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
@@ -76,7 +76,7 @@ require (
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
-	golang.org/x/tools v0.29.0 // indirect
+	golang.org/x/tools v0.30.0 // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
