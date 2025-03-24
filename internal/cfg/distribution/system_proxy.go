@@ -2,6 +2,7 @@ package distribution
 
 import (
 	"fmt"
+	cResolver "github.com/Dreamacro/clash/component/resolver"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -34,5 +35,6 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, _ rule_engine.Rule)
 
 func NewSystemProxy() (SystemProxyConfig, error) {
 	dns.ResetCache()
+	cResolver.DefaultResolver = nil
 	return SystemProxyConfig{}, nil
 }
