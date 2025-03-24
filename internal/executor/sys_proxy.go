@@ -1,5 +1,3 @@
-//go:build !(windows && arm64)
-
 package executor
 
 import (
