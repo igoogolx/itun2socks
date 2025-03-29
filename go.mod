@@ -9,12 +9,12 @@ require (
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
-	github.com/gofrs/uuid/v5 v5.3.1
+	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/kardianos/service v1.2.2
 	github.com/miekg/dns v1.1.64
-	github.com/sagernet/sing v0.6.4
+	github.com/sagernet/sing v0.6.5
 	github.com/sagernet/sing-tun v0.6.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
