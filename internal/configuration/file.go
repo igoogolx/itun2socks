@@ -93,7 +93,7 @@ func writeFile(config Config) error {
 }
 
 func write(data []byte) error {
-	f, err := os.Create(configFilePath.Load())
+	f, err := os.OpenFile(configFilePath.Load(), os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return fmt.Errorf("fail to open file:%v, err:%v", configFilePath.Load(), err)
 	}
