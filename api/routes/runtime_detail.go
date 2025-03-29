@@ -9,6 +9,10 @@ import (
 	"runtime"
 )
 
+type defaultDetail struct {
+	HubAddress string `json:"hubAddress"`
+}
+
 func runtimeDetailRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getDetail)
@@ -23,11 +27,14 @@ func getOs(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDetail(w http.ResponseWriter, r *http.Request) {
+	hubAddress := constants.HubAddress()
 	if !manager.GetIsStarted() {
-		render.JSON(w, r, nil)
+		render.JSON(w, r, defaultDetail{
+			HubAddress: hubAddress,
+		})
 		return
 	}
-	detail, err := manager.RuntimeDetail(constants.HubAddress())
+	detail, err := manager.RuntimeDetail(hubAddress)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, err)
