@@ -2,7 +2,7 @@ module github.com/igoogolx/itun2socks
 
 go 1.24.0
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.31.6
+replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.31.7
 
 require (
 	github.com/Dreamacro/clash v1.18.0
@@ -46,7 +46,6 @@ require (
 	github.com/sagernet/nftables v0.3.0-beta.4 // indirect
 	github.com/samber/lo v1.49.1 // indirect
 	github.com/u-root/uio v0.0.0-20240224005618-d2acac8f3701 // indirect
-	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/x/crypto v0.36.0 // indirect
