@@ -28,8 +28,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
-github.com/igoogolx/clash v1.31.7 h1:dhjrpz/dp1hGhYNN++Yg55VltWThuiJLejC0C1bBBQc=
-github.com/igoogolx/clash v1.31.7/go.mod h1:rSG08uGV/mHTTEmOz6PWOZe60IutCNAETn/qPPRdwas=
+github.com/igoogolx/clash v1.31.8 h1:afJBw9qumobuq4UPnjvbGOYJHu9QMgmVKIcYyvA0oPQ=
+github.com/igoogolx/clash v1.31.8/go.mod h1:rSG08uGV/mHTTEmOz6PWOZe60IutCNAETn/qPPRdwas=
 github.com/insomniacslk/dhcp v0.0.0-20250109001534-8abf58130905 h1:q3OEI9RaN/wwcx+qgGo6ZaoJkCiDYe/gjDLfq7lQQF4=
 github.com/insomniacslk/dhcp v0.0.0-20250109001534-8abf58130905/go.mod h1:VvGYjkZoJyKqlmT1yzakUs4mfKMNB0XdODP0+rdml6k=
 github.com/josharian/native v1.1.0 h1:uuaP0hAbW7Y4l0ZRQ6C9zfb7Mg1mbFKry/xzDAfmtLA=
