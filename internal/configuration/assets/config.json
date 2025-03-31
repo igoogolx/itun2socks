@@ -47,6 +47,7 @@
     "shouldFindProcess": true,
     "theme": "light",
     "autoLaunch": false,
-    "autoConnect": false
+    "autoConnect": false,
+    "sensitiveInfoMode": false
   }
 }
