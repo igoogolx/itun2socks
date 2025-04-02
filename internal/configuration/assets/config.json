@@ -45,7 +45,7 @@
     "blockQuic": false,
     "stack": "gvisor",
     "shouldFindProcess": true,
-    "theme": "light",
+    "theme": "system",
     "autoLaunch": false,
     "autoConnect": false,
     "sensitiveInfoMode": false
