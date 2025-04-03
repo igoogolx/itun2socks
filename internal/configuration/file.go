@@ -30,7 +30,7 @@ func Read() (Config, error) {
 		config.Setting.Stack = "gvisor"
 	}
 	if len(config.Setting.Theme) == 0 {
-		config.Setting.Theme = "light"
+		config.Setting.Theme = "system"
 	}
 
 	return *config, nil
