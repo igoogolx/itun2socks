@@ -32,6 +32,7 @@ type SettingCfg struct {
 	Theme             string `json:"theme,omitempty"`
 	AutoConnect       bool   `json:"autoConnect,omitempty"`
 	AutoLaunch        bool   `json:"autoLaunch,omitempty"`
+	SensitiveInfoMode bool   `json:"sensitiveInfoMode,omitempty"`
 }
 
 type DnsServer struct {

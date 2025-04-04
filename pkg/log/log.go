@@ -3,6 +3,7 @@ package log
 import (
 	cLog "github.com/Dreamacro/clash/log"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/is_elevated"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
@@ -23,7 +24,7 @@ func (o *output) Write(p []byte) (int, error) {
 
 func InitLog() {
 	filePath := constants.Path.LogFilePath()
-	if runtime.GOOS == "darwin" {
+	if runtime.GOOS == "darwin" && is_elevated.Get() {
 		err := os.Chmod(filePath, 0644)
 		if err != nil {
 			log.Warnln("fail to chang log file permissions:", err)

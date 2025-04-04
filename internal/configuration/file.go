@@ -30,7 +30,7 @@ func Read() (Config, error) {
 		config.Setting.Stack = "gvisor"
 	}
 	if len(config.Setting.Theme) == 0 {
-		config.Setting.Theme = "light"
+		config.Setting.Theme = "system"
 	}
 
 	return *config, nil
@@ -93,7 +93,7 @@ func writeFile(config Config) error {
 }
 
 func write(data []byte) error {
-	f, err := os.Create(configFilePath.Load())
+	f, err := os.OpenFile(configFilePath.Load(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return fmt.Errorf("fail to open file:%v, err:%v", configFilePath.Load(), err)
 	}
