@@ -1,4 +1,4 @@
-name: released
+name: Run VirusTotal Scan
 
 on:
   workflow_run:
