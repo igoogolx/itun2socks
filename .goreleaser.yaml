@@ -51,6 +51,7 @@ changelog:
       - '^test:'
 
 release:
+  draft: true
   prerelease: auto
   replace_existing_draft: true
 # The lines beneath this are called `modelines`. See `:help modeline`
