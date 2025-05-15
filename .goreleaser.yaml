@@ -18,7 +18,6 @@ builds:
       - -s -w -X github.com/igoogolx/itun2socks/internal/constants.Version={{ .Tag }} -X github.com/igoogolx/itun2socks/internal/constants.BuildTime={{ .Date }} -buildid=
     tags:
       - with_gvisor
-      - with_system
     goos:
       - windows
       - darwin
