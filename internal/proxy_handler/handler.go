@@ -23,6 +23,10 @@ func (uc ConnHandler) PrepareConnection(_ string, _ M.Socksaddr, _ M.Socksaddr) 
 }
 
 func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, source M.Socksaddr, destination M.Socksaddr, _ network.CloseHandlerFunc) {
+	//TODO: IPV6
+	if source.Addr.Is6() {
+		return
+	}
 	local, err := net.ResolveTCPAddr("tcp", source.String())
 	if err != nil {
 		return
@@ -44,6 +48,10 @@ func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, sou
 }
 
 func (uc ConnHandler) NewPacketConnectionEx(ctx context.Context, packetConn network.PacketConn, source M.Socksaddr, destination M.Socksaddr, _ network.CloseHandlerFunc) {
+	//TODO: IPV6
+	if source.Addr.Is6() {
+		return
+	}
 	local, err := net.ResolveUDPAddr("udp", source.String())
 	if err != nil {
 		return

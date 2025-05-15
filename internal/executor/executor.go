@@ -81,7 +81,7 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	stack, err := sTun.NewStack(config.Stack, sTun.StackOptions{
+	stack, err := sTun.NewStack("gvisor", sTun.StackOptions{
 		Context:    context.Background(),
 		Handler:    proxy_handler.New(tunnel.TcpQueue(), tunnel.UdpQueue()),
 		TunOptions: tunOptions,
@@ -92,8 +92,6 @@ func newTun() (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set network stack: %v"), config.Stack)
 
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 	var matchers = []conn.Matcher{
