@@ -7,7 +7,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
-	"github.com/igoogolx/itun2socks/internal/service"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"os"
 	"os/signal"
@@ -51,13 +50,6 @@ func main() {
 	log.Infoln(log.FormatLog(log.InitPrefix, "using config: %v"), constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
 	api.Start(port, secret)
-
-	go func() {
-		err := service.Run()
-		if err != nil {
-			log.Debugln("fail to run service")
-		}
-	}()
 
 	defer func() {
 		if p := recover(); p != nil {
