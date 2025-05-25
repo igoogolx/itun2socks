@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.66
-	github.com/sagernet/sing v0.6.9
+	github.com/sagernet/sing v0.6.10
 	github.com/sagernet/sing-tun v0.6.5
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
