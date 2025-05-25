@@ -29,15 +29,8 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 		return nil, err
 	}
 	for index, nameResolver := range nameResolvers {
-		//FIXME: remove in v2
-		if nameResolver.Net == "dhcp" && nameResolver.Addr == "auto" {
-			nameResolvers[index] = dns.NameServer{
-				Net:       "dhcp",
-				Addr:      defaultInterfaceName,
-				Interface: defaultInterfaceName,
-			}
-		}
-		if nameResolver.Net == "system" {
+		//FIXME: remove dhcp
+		if nameResolver.Net == "system" || nameResolver.Net == "dhcp" {
 			nameResolvers[index] = dns.NameServer{
 				Net:       "system",
 				Interface: defaultInterfaceName,
