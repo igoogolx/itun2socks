@@ -66,7 +66,7 @@ func Start(addr string, secret string) error {
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"https://*", "http://*", "ws://*"},
+		AllowedOrigins: []string{"https://127.0.0.1:*", "http://127.0.0.1:*", "ws://127.0.0.1:*", "https://localhost:*", "http://localhost:*", "ws://localhost:*"},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
