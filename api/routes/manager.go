@@ -50,6 +50,10 @@ func getStatus(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, status)
 }
 
-func exit(w http.ResponseWriter, r *http.Request) {
+func exit(_ http.ResponseWriter, _ *http.Request) {
+	err := manager.Close()
+	if err != nil {
+		log.Warnln(log.FormatLog(log.HubPrefix, "fail to close the manger on exit, err:%v"), err)
+	}
 	os.Exit(0)
 }
