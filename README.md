@@ -16,11 +16,6 @@ The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux
 
   <p align="center">
     <br />
-    <a href="https://github.com/igoogolx/itun2socks/wiki"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://igoogolx.github.io/lux-dashboard/">View Demo</a>
-    .
     <a href="https://github.com/igoogolx/itun2socks/issues">Report Bug</a>
     ·
     <a href="https://github.com/igoogolx/itun2socks/issues">Request Feature</a>
@@ -45,6 +40,9 @@ The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux
 
 
 ### Build with gvisor stack
+
+The release is built with gvisor stack by default, you can build it with the following command:
+
 `go build -v -ldflags="-s -w" -trimpath -tags="with_gvisor"`
 
 ### Supported net stack
