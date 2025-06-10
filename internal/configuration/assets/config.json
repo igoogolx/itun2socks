@@ -43,6 +43,7 @@
     },
     "language": "system",
     "blockQuic": false,
+    "stack": "gvisor",
     "shouldFindProcess": true,
     "theme": "system",
     "autoLaunch": false,
