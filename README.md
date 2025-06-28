@@ -10,6 +10,7 @@
 [![Issues][issues-shield]][issues-url]
 [![GPL License][license-shield]][license-url]
 [![Build Status][build-shield]][build-url]
+[![Winget Version][winget-shield]][winget-url]
 
 <h3 align="center">Itun2socks</h3>
 The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux</strong></a>.
@@ -37,6 +38,8 @@ The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux
 [license-url]: https://github.com/igoogolx/itun2socks/blob/main/LICENSE
 [build-shield]: https://github.com/igoogolx/itun2socks/actions/workflows/build.yml/badge.svg
 [build-url]: https://github.com/igoogolx/itun2socks/actions/workflows/build.yml
+[winget-shield]: https://img.shields.io/winget/v/igoogolx.itun2socks
+[winget-url]: https://github.com/microsoft/winget-cli
 
 
 ### Build with gvisor stack
