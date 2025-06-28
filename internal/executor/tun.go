@@ -30,10 +30,11 @@ type Detail struct {
 
 type TunClient struct {
 	sync.RWMutex
-	tun         sTun.Tun
-	stack       sTun.Stack
-	localserver localserver.Listener
-	config      *cfg.Config
+	tun                  sTun.Tun
+	stack                sTun.Stack
+	localserver          localserver.Listener
+	config               *cfg.Config
+	isLocalServerEnabled bool
 }
 
 func (c *TunClient) RuntimeDetail(hubAddress string) (interface{}, error) {
@@ -71,10 +72,13 @@ func (c *TunClient) Start() error {
 			return err
 		}
 	}
-	err = c.localserver.Start()
-	if err != nil {
-		return err
+	if c.isLocalServerEnabled && c.config.LocalServer.AllowLan {
+		err = c.localserver.Start()
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
@@ -96,8 +100,11 @@ func (c *TunClient) Close() error {
 		return err
 	}
 
-	if err = c.localserver.Close(); err != nil {
-		return err
+	if c.isLocalServerEnabled && c.config.LocalServer.AllowLan {
+		if err = c.localserver.Close(); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }

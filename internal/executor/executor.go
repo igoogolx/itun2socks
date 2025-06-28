@@ -46,7 +46,7 @@ func UpdateRule() (string, error) {
 	return selectedRule, nil
 }
 
-func newTun() (Client, error) {
+func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 	err := network_iface.StartMonitor()
 	if err != nil {
 		return nil, err
@@ -113,14 +113,15 @@ func newTun() (Client, error) {
 	}
 
 	return &TunClient{
-		stack:       stack,
-		tun:         tun,
-		localserver: newLocalServer,
-		config:      config,
+		stack:                stack,
+		tun:                  tun,
+		localserver:          newLocalServer,
+		config:               config,
+		isLocalServerEnabled: isLocalServerEnabled,
 	}, nil
 }
 
-func newSysProxy() (Client, error) {
+func newSysProxy() (*SystemProxyClient, error) {
 	config, err := cfg.NewSystemProxy()
 	if err != nil {
 		return nil, err
@@ -144,6 +145,22 @@ func newSysProxy() (Client, error) {
 	}, nil
 }
 
+func newMixed() (Client, error) {
+	sysClient, err := newSysProxy()
+	if err != nil {
+		return nil, err
+	}
+	tunClient, err := newTun(false)
+	if err != nil {
+
+		return nil, err
+	}
+	return &MixedProxyClient{
+		sysClient: sysClient,
+		tunClient: tunClient,
+	}, nil
+}
+
 func New() (Client, error) {
 	cResolver.DefaultResolver = nil
 	rawConfig, err := configuration.Read()
@@ -151,10 +168,13 @@ func New() (Client, error) {
 		return nil, err
 	}
 	if rawConfig.Setting.Mode == "tun" {
-		return newTun()
+		return newTun(true)
 	}
 	if rawConfig.Setting.Mode == "system" {
 		return newSysProxy()
+	}
+	if rawConfig.Setting.Mode == "mixed" {
+		return newMixed()
 	}
 	return nil, fmt.Errorf("invalid proxy mode: %v", rawConfig.Setting.Mode)
 }
