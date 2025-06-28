@@ -6,7 +6,7 @@ replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.31.10
 
 require (
 	github.com/Dreamacro/clash v1.18.0
-	github.com/go-chi/chi/v5 v5.2.1
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.3.2
@@ -14,7 +14,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.66
 	github.com/sagernet/sing v0.6.11
-	github.com/sagernet/sing-tun v0.6.5
+	github.com/sagernet/sing-tun v0.6.9
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/atomic v1.11.0
