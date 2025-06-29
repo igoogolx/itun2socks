@@ -1,7 +1,6 @@
 package executor
 
 import (
-	"github.com/igoogolx/itun2socks/internal/cfg"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/sysproxy"
@@ -15,7 +14,6 @@ type SysProxyDetail struct {
 type SystemProxyClient struct {
 	sync.RWMutex
 	localserver localserver.Listener
-	config      *cfg.SystemProxyConfig
 }
 
 func (c *SystemProxyClient) RuntimeDetail(hubAddress string) (interface{}, error) {

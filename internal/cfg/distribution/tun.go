@@ -22,9 +22,20 @@ func (c Config) ConnMatcher(metadata *C.Metadata, _ rule_engine.Rule) (rule_engi
 	}
 
 	ip := metadata.DstIP.String()
-	if rule, err := matcher.GetRuleEngine().Match(ip, constants.IpRuleTypes); err == nil {
-		return rule, nil
+	if len(ip) != 0 {
+		if rule, err := matcher.GetRuleEngine().Match(ip, constants.IpRuleTypes); err == nil {
+			return rule, nil
+		}
 	}
+
+	host := metadata.Host
+	if len(host) != 0 {
+		var rule, err = matcher.GetRuleEngine().Match(host, constants.DomainRuleTypes)
+		if err == nil {
+			return rule, nil
+		}
+	}
+
 	return nil, fmt.Errorf("no rule found")
 }
 

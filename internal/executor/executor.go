@@ -6,6 +6,7 @@ import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
+	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -126,7 +127,6 @@ func newSysProxy() (*SystemProxyClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 
 	tunnel.UpdateShouldFindProcess(false)
 	conn.UpdateConnMatcher([]conn.Matcher{
@@ -139,20 +139,25 @@ func newSysProxy() (*SystemProxyClient, error) {
 		return nil, err
 	}
 
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
-		config:      config,
 	}, nil
 }
 
 func newMixed() (Client, error) {
-	sysClient, err := newSysProxy()
+	rawConfig, err := configuration.Read()
 	if err != nil {
 		return nil, err
 	}
+	localServerConfig := local_server.New(rawConfig.Setting.LocalServer)
+	newLocalServer := localserver.NewListener(localServerConfig.Addr)
+	sysClient := &SystemProxyClient{
+		localserver: newLocalServer,
+	}
+
 	tunClient, err := newTun(false)
 	if err != nil {
-
 		return nil, err
 	}
 	return &MixedProxyClient{
