@@ -42,6 +42,10 @@ The engine that powers the <a href="https://github.com/igoogolx/lux"><strong>lux
 [winget-url]: https://github.com/microsoft/winget-cli
 
 
+### Install by winget(Windows only)
+
+`winget install igoogolx.itun2socks`
+
 ### Build with gvisor stack
 
 The release is built with gvisor stack by default, you can build it with the following command:
