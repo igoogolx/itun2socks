@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -19,27 +20,35 @@ func (m *MixedProxyClient) RuntimeDetail(hubAddress string) (interface{}, error)
 }
 
 func (m *MixedProxyClient) Start() error {
-	var err error
-	err = m.tunClient.Start()
-	if err != nil {
-		return err
+	sysErr := m.sysClient.Start()
+	tunErr := m.tunClient.Start()
+
+	if sysErr != nil && tunErr != nil {
+		return fmt.Errorf("%v, %v", sysErr, tunErr)
 	}
-	err = m.sysClient.Start()
-	if err != nil {
-		return err
+	if sysErr != nil {
+		return sysErr
 	}
+	if tunErr != nil {
+		return tunErr
+	}
+
 	return nil
 }
 
 func (m *MixedProxyClient) Close() error {
-	var err error
-	err = m.tunClient.Close()
-	if err != nil {
-		return err
+	sysErr := m.sysClient.Close()
+	tunErr := m.tunClient.Close()
+
+	if sysErr != nil && tunErr != nil {
+		return fmt.Errorf("%v, %v", sysErr, tunErr)
 	}
-	err = m.sysClient.Close()
-	if err != nil {
-		return err
+	if sysErr != nil {
+		return sysErr
 	}
+	if tunErr != nil {
+		return tunErr
+	}
+
 	return nil
 }
