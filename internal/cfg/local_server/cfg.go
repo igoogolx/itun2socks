@@ -6,11 +6,12 @@ import (
 )
 
 type Cfg struct {
-	Addr string
+	Addr     string
+	AllowLan bool
 }
 
 func New(config configuration.LocalServer) Cfg {
-	cfg := Cfg{}
+	cfg := Cfg{AllowLan: config.AllowLan}
 	if config.AllowLan {
 		cfg.Addr = "0.0.0.0:" + strconv.Itoa(config.Port)
 	} else {

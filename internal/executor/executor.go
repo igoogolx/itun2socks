@@ -6,6 +6,7 @@ import (
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
+	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
@@ -46,7 +47,7 @@ func UpdateRule() (string, error) {
 	return selectedRule, nil
 }
 
-func newTun() (Client, error) {
+func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 	err := network_iface.StartMonitor()
 	if err != nil {
 		return nil, err
@@ -113,19 +114,19 @@ func newTun() (Client, error) {
 	}
 
 	return &TunClient{
-		stack:       stack,
-		tun:         tun,
-		localserver: newLocalServer,
-		config:      config,
+		stack:                stack,
+		tun:                  tun,
+		localserver:          newLocalServer,
+		config:               config,
+		isLocalServerEnabled: isLocalServerEnabled,
 	}, nil
 }
 
-func newSysProxy() (Client, error) {
+func newSysProxy() (*SystemProxyClient, error) {
 	config, err := cfg.NewSystemProxy()
 	if err != nil {
 		return nil, err
 	}
-	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 
 	tunnel.UpdateShouldFindProcess(false)
 	conn.UpdateConnMatcher([]conn.Matcher{
@@ -138,9 +139,30 @@ func newSysProxy() (Client, error) {
 		return nil, err
 	}
 
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
-		config:      config,
+	}, nil
+}
+
+func newMixed() (Client, error) {
+	rawConfig, err := configuration.Read()
+	if err != nil {
+		return nil, err
+	}
+	localServerConfig := local_server.New(rawConfig.Setting.LocalServer)
+	newLocalServer := localserver.NewListener(localServerConfig.Addr)
+	sysClient := &SystemProxyClient{
+		localserver: newLocalServer,
+	}
+
+	tunClient, err := newTun(false)
+	if err != nil {
+		return nil, err
+	}
+	return &MixedProxyClient{
+		sysClient: sysClient,
+		tunClient: tunClient,
 	}, nil
 }
 
@@ -151,10 +173,13 @@ func New() (Client, error) {
 		return nil, err
 	}
 	if rawConfig.Setting.Mode == "tun" {
-		return newTun()
+		return newTun(true)
 	}
 	if rawConfig.Setting.Mode == "system" {
 		return newSysProxy()
+	}
+	if rawConfig.Setting.Mode == "mixed" {
+		return newMixed()
 	}
 	return nil, fmt.Errorf("invalid proxy mode: %v", rawConfig.Setting.Mode)
 }
