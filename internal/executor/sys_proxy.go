@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"fmt"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/sysproxy"
@@ -32,14 +33,20 @@ func (c *SystemProxyClient) Start() error {
 }
 
 func (c *SystemProxyClient) Close() error {
-	var err error
 	statistic.DefaultManager.CloseAllConnections()
-	err = sysproxy.Clear()
-	if err != nil {
-		return err
+
+	sysErr := sysproxy.Clear()
+
+	lcErr := c.localserver.Close()
+
+	if sysErr != nil && lcErr != nil {
+		return fmt.Errorf("%v, %v", sysErr, lcErr)
 	}
-	if err = c.localserver.Close(); err != nil {
-		return err
+	if sysErr != nil {
+		return sysErr
+	}
+	if lcErr != nil {
+		return lcErr
 	}
 
 	return nil

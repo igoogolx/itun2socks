@@ -117,14 +117,20 @@ func (l *Listener) Start() error {
 }
 
 func (l *Listener) Close() error {
-	err := l.udpListener.Close()
-	if err != nil {
-		return err
+	if l.udpListener != nil {
+		err := l.udpListener.Close()
+		if err != nil {
+			return err
+		}
 	}
-	err = l.tcpListener.Close()
-	if err != nil {
-		return err
+
+	if l.tcpListener != nil {
+		err := l.tcpListener.Close()
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
