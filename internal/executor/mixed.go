@@ -2,7 +2,6 @@ package executor
 
 import (
 	"fmt"
-	"sync"
 )
 
 type MixedProxyDetail struct {
@@ -10,13 +9,12 @@ type MixedProxyDetail struct {
 }
 
 type MixedProxyClient struct {
-	sync.RWMutex
 	sysClient *SystemProxyClient
 	tunClient *TunClient
 }
 
 func (m *MixedProxyClient) RuntimeDetail(hubAddress string) (interface{}, error) {
-	return &MixedProxyDetail{hubAddress}, nil
+	return m.tunClient.RuntimeDetail(hubAddress)
 }
 
 func (m *MixedProxyClient) Start() error {

@@ -4,7 +4,6 @@ import (
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/sysproxy"
-	"sync"
 )
 
 type SysProxyDetail struct {
@@ -12,7 +11,6 @@ type SysProxyDetail struct {
 }
 
 type SystemProxyClient struct {
-	sync.RWMutex
 	localserver localserver.Listener
 }
 

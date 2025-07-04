@@ -10,13 +10,6 @@ const (
 	PolicyReject Policy = "REJECT"
 )
 
-type DnsType string
-
-const (
-	LocalDns  DnsType = "local"
-	RemoteDns DnsType = "remote"
-)
-
 type RuleType string
 
 const (
@@ -53,10 +46,6 @@ const (
 
 const (
 	DbFileName = "config.json"
-)
-
-const (
-	DefaultHubPort = 9000
 )
 
 var (
