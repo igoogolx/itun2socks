@@ -15,9 +15,9 @@ var (
 func Start() error {
 	mux.Lock()
 	defer mux.Unlock()
-	var err error
+	var err, startErr, closeErr error
 	defer func() {
-		if err != nil {
+		if err != nil || startErr != nil || closeErr != nil {
 			client = nil
 		}
 	}()
@@ -28,16 +28,16 @@ func Start() error {
 	if err != nil {
 		return err
 	}
-	err = client.Start()
-	if err != nil {
-		log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to start the client: %v"), err)
-		err = client.Close()
-		if err != nil {
-			log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to close the client: %v"), err)
+	startErr = client.Start()
+	if startErr != nil {
+		log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to start the client: %v"), startErr)
+		closeErr = client.Close()
+		if closeErr != nil {
+			log.Errorln(log.FormatLog(log.ExecutorPrefix, "fail to close the client: %v"), closeErr)
 		}
-		return err
+		return startErr
 	}
-	log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, "Started the client successfully"))
+	log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, "started the client successfully"))
 	return nil
 }
 
@@ -51,7 +51,7 @@ func Close() error {
 			return err
 		}
 	}
-	log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, "Stopped the client successfully"))
+	log.Infoln("%s", log.FormatLog(log.ExecutorPrefix, "stopped the client successfully"))
 	return nil
 }
 

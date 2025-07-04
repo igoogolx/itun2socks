@@ -6,7 +6,7 @@
     "rule": "proxy_all"
   },
   "setting": {
-    "mode": "tun",
+    "mode": "mixed",
     "dns": {
       "disableCache": true,
       "server": {

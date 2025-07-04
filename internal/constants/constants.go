@@ -1,20 +1,11 @@
 package constants
 
-import "runtime"
-
 type Policy string
 
 const (
 	PolicyDirect Policy = "DIRECT"
 	PolicyProxy  Policy = "PROXY"
 	PolicyReject Policy = "REJECT"
-)
-
-type DnsType string
-
-const (
-	LocalDns  DnsType = "local"
-	RemoteDns DnsType = "remote"
 )
 
 type RuleType string
@@ -38,10 +29,6 @@ var (
 const DnsPort = "53"
 
 func TunName() string {
-	if runtime.GOOS == "windows" {
-		//It is tricky. Utun is "bigger" than Wi-Fi so that ethernet icon is displayed on the task bar.
-		return "ztun"
-	}
 	return "utun"
 }
 
@@ -53,10 +40,6 @@ const (
 
 const (
 	DbFileName = "config.json"
-)
-
-const (
-	DefaultHubPort = 9000
 )
 
 var (
