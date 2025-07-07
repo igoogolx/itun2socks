@@ -1,6 +1,7 @@
 package distribution
 
 import (
+	"github.com/Dreamacro/clash/component/fakeip"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/conn"
@@ -14,6 +15,7 @@ func NewDnsDistribution(
 	localDns []string,
 	defaultInterfaceName string,
 	disableCache bool,
+	fakeIpPool *fakeip.Pool,
 ) (DnsDistribution, error) {
 
 	var err error
@@ -22,7 +24,7 @@ func NewDnsDistribution(
 	//Boost
 	boostDnsClient, err := resolver.New(bootDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
-	}, disableCache)
+	}, disableCache, nil)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -34,7 +36,7 @@ func NewDnsDistribution(
 	//Local
 	localDnsClient, err := resolver.New(localDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
-	}, disableCache)
+	}, disableCache, nil)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -46,7 +48,7 @@ func NewDnsDistribution(
 	//Remote
 	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (C.Proxy, error) {
 		return conn.GetProxy(constants.PolicyProxy)
-	}, disableCache)
+	}, disableCache, fakeIpPool)
 	if err != nil {
 		return DnsDistribution{}, err
 	}

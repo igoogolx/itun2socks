@@ -12,6 +12,14 @@ import (
 	"sync"
 )
 
+var defaultIsFakeIpEnabled bool
+
+func UpdateIsFakeIpEnabled(value bool) {
+	mux.Lock()
+	defer mux.Unlock()
+	defaultIsFakeIpEnabled = value
+}
+
 var (
 	proxies map[constants.Policy]C.Proxy
 	mux     sync.RWMutex

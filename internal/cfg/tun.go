@@ -7,6 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/cfg/tun"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/dns"
 )
 
 type Config struct {
@@ -18,6 +19,7 @@ type Config struct {
 	BlockQuic         bool
 	Stack             string
 	ShouldFindProcess bool
+	FakeIp            bool
 }
 
 func NewTun(defaultInterfaceName string) (*Config, error) {
@@ -30,12 +32,18 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		return nil, err
 	}
 	disableDnsCache := rawConfig.Setting.Dns.DisableCache
+	remoteDnsItems := rawConfig.Setting.Dns.Server.Remote
+	fakeIp := rawConfig.Setting.Dns.FakeIp
+	if fakeIp {
+		remoteDnsItems = []string{"fake-ip://empty"}
+	}
 	rule, err := distribution.NewTun(
 		rawConfig.Setting.Dns.Server.Boost,
-		rawConfig.Setting.Dns.Server.Remote,
+		remoteDnsItems,
 		rawConfig.Setting.Dns.Server.Local,
 		defaultInterfaceName,
 		disableDnsCache,
+		dns.FakeIpPool,
 	)
 
 	if err != nil {
@@ -61,5 +69,6 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.BlockQuic,
 		rawConfig.Setting.Stack,
 		rawConfig.Setting.ShouldFindProcess,
+		fakeIp,
 	}, nil
 }
