@@ -28,8 +28,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
-github.com/igoogolx/clash v1.31.11 h1:qbk0OBq7kFW0P0ls8n6ALMOQameL/gZ3uo0yN6lim3A=
-github.com/igoogolx/clash v1.31.11/go.mod h1:nuvRXarWduNrTbGi0lrMgDs1UBXdV3+JuD9KzW5Sl6A=
+github.com/igoogolx/clash v1.32.0 h1:ddrc687z8vv4SEor0QnLXqHOdXQB15K35zpEtCo9J18=
+github.com/igoogolx/clash v1.32.0/go.mod h1:nuvRXarWduNrTbGi0lrMgDs1UBXdV3+JuD9KzW5Sl6A=
 github.com/josharian/native v1.1.0 h1:uuaP0hAbW7Y4l0ZRQ6C9zfb7Mg1mbFKry/xzDAfmtLA=
 github.com/josharian/native v1.1.0/go.mod h1:7X/raswPFr05uY3HiLlYeyQntB6OO7E/d2Cu7qoaN2w=
 github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
