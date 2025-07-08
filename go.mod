@@ -7,7 +7,7 @@ replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.32.0
 require (
 	github.com/Dreamacro/clash v1.18.0
 	github.com/go-chi/chi/v5 v5.2.2
-	github.com/go-chi/cors v1.2.1
+	github.com/go-chi/cors v1.2.2
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/gorilla/websocket v1.5.3
