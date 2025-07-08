@@ -46,3 +46,5 @@ var (
 	Version   = "undefined"
 	BuildTime = "undefined"
 )
+
+var FakeIpRange = "198.18.0.1/16"

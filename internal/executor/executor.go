@@ -101,10 +101,12 @@ func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 	if config.BlockQuic {
 		matchers = append(matchers, conn.RejectQuicMather)
 	}
+
 	tunnel.UpdateShouldFindProcess(config.ShouldFindProcess)
 	conn.UpdateConnMatcher(matchers)
-
+	conn.UpdateIsFakeIpEnabled(config.FakeIp)
 	conn.UpdateProxy(config.Proxy)
+
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set proxy: %v"), config.Proxy.Name())
 	dns.UpdateDnsMap(config.Rule.Dns.Local.Client, config.Rule.Dns.Remote.Client)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "set dns, local: %v, remote: %v"), config.Rule.Dns.Local.Addresses, config.Rule.Dns.Remote.Addresses)

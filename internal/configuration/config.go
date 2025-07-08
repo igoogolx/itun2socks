@@ -24,6 +24,7 @@ type SettingCfg struct {
 			Local  []string `json:"local"`
 		} `json:"server"`
 		CustomizedOptions []string `json:"customizedOptions"`
+		FakeIp            bool     `json:"fakeIp,omitempty"`
 	} `json:"dns"`
 	Language          string `json:"language,omitempty"`
 	BlockQuic         bool   `json:"blockQuic,omitempty"`

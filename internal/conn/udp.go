@@ -6,6 +6,8 @@ import (
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
+	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	"github.com/sagernet/sing/common/buf"
@@ -46,11 +48,19 @@ func (u *UdpConnContext) Conn() network.PacketConn {
 }
 
 func NewUdpConnContext(ctx context.Context, conn network.PacketConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
+	rule := resolveMetadata(metadata)
+
+	if rule.GetPolicy() == constants.PolicyProxy && defaultIsFakeIpEnabled {
+		hostByFakeIp, ok := dns.FakeIpPool.LookBack(metadata.DstIP)
+		if ok {
+			metadata.Host = hostByFakeIp
+		}
+	}
 	var connContext = &UdpConnContext{
 		ctx,
 		metadata,
 		conn,
-		resolveMetadata(metadata),
+		rule,
 		wg,
 	}
 

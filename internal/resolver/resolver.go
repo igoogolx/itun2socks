@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	"github.com/Dreamacro/clash/component/fakeip"
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/Dreamacro/clash/config"
 	C "github.com/Dreamacro/clash/constant"
@@ -8,7 +9,7 @@ import (
 	_ "unsafe"
 )
 
-func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error), disableCache bool) (cResolver.Resolver, error) {
+func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error), disableCache bool, fakeIpPool *fakeip.Pool) (cResolver.Resolver, error) {
 	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err
@@ -18,6 +19,7 @@ func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.P
 		Main:         mainNameResolver,
 		GetDialer:    getDialer,
 		DisableCache: disableCache,
+		Pool:         fakeIpPool,
 	})
 
 	return mainDnsClient, nil
