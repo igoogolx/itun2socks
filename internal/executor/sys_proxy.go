@@ -5,6 +5,7 @@ import (
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/sysproxy"
+	"strconv"
 )
 
 type SysProxyDetail struct {
@@ -25,7 +26,9 @@ func (c *SystemProxyClient) Start() error {
 	if err != nil {
 		return err
 	}
-	err = sysproxy.Set(c.localserver.Addr)
+
+	addr := "127.0.0.1:" + strconv.Itoa(c.localserver.Port)
+	err = sysproxy.Set(addr)
 	if err != nil {
 		return err
 	}

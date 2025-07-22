@@ -63,6 +63,7 @@ type Listener struct {
 	Addr        string
 	tcpListener C.Listener
 	udpListener C.Listener
+	Port        int
 }
 
 func process() {
@@ -134,6 +135,6 @@ func (l *Listener) Close() error {
 	return nil
 }
 
-func NewListener(httpAddr string) Listener {
-	return Listener{Addr: httpAddr}
+func NewListener(httpAddr string, port int) Listener {
+	return Listener{Addr: httpAddr, Port: port}
 }
