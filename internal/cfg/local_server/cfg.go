@@ -8,10 +8,11 @@ import (
 type Cfg struct {
 	Addr     string
 	AllowLan bool
+	Port     int
 }
 
 func New(config configuration.LocalServer) Cfg {
-	cfg := Cfg{AllowLan: config.AllowLan}
+	cfg := Cfg{AllowLan: config.AllowLan, Port: config.Port}
 	if config.AllowLan {
 		cfg.Addr = "0.0.0.0:" + strconv.Itoa(config.Port)
 	} else {

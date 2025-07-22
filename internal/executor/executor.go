@@ -94,7 +94,7 @@ func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 		return nil, err
 	}
 
-	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr, config.LocalServer.Port)
 	var matchers = []conn.Matcher{
 		config.Rule.ConnMatcher,
 	}
@@ -141,7 +141,7 @@ func newSysProxy() (*SystemProxyClient, error) {
 		return nil, err
 	}
 
-	newLocalServer := localserver.NewListener(config.LocalServer.Addr)
+	newLocalServer := localserver.NewListener(config.LocalServer.Addr, config.LocalServer.Port)
 	return &SystemProxyClient{
 		localserver: newLocalServer,
 	}, nil
@@ -153,7 +153,7 @@ func newMixed() (Client, error) {
 		return nil, err
 	}
 	localServerConfig := local_server.New(rawConfig.Setting.LocalServer)
-	newLocalServer := localserver.NewListener(localServerConfig.Addr)
+	newLocalServer := localserver.NewListener(localServerConfig.Addr, localServerConfig.Port)
 	sysClient := &SystemProxyClient{
 		localserver: newLocalServer,
 	}
