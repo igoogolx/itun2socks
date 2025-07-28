@@ -11,6 +11,7 @@ type Config struct {
 }
 
 type SettingCfg struct {
+	LightClientMode  bool   `json:"lightClientMode"`
 	Mode             string `json:"mode"`
 	DefaultInterface string `json:"defaultInterface"`
 	LocalServer      `json:"localServer"`
