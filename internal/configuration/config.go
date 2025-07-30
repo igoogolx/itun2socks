@@ -34,6 +34,7 @@ type SettingCfg struct {
 	AutoConnect       bool   `json:"autoConnect,omitempty"`
 	AutoLaunch        bool   `json:"autoLaunch,omitempty"`
 	SensitiveInfoMode bool   `json:"sensitiveInfoMode,omitempty"`
+	LightClientMode   bool   `json:"lightClientMode,omitempty"`
 }
 
 type DnsServer struct {
