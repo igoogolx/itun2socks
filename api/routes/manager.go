@@ -1,12 +1,14 @@
 package routes
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
-	"github.com/igoogolx/itun2socks/internal/manager"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 	"os"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
+	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/internal/manager"
+	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 func managerRouter() http.Handler {
@@ -19,7 +21,19 @@ func managerRouter() http.Handler {
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
-	err := manager.Start()
+	rawConfig, err := configuration.Read()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	if rawConfig.Setting.Mode != "system" && !IsElevated {
+		render.Status(r, http.StatusForbidden)
+		render.JSON(w, r, NewErrorWithCode("administrator privileges are required to start in non-system proxy mode", NotElevatedErrorCode))
+		return
+	}
+
+	err = manager.Start()
 	if err != nil {
 		log.Errorln(log.FormatLog(log.HubPrefix, "fail to start the client, err:%v"), err)
 		render.Status(r, http.StatusInternalServerError)
