@@ -2,14 +2,14 @@ package sysproxy
 
 import "net"
 
-func Set(addr string) error {
+func Set(addr string, activeInterface string) error {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return err
 	}
-	return SetWebProxy(host, port)
+	return SetWebProxy(host, port, activeInterface)
 }
 
-func Clear() error {
-	return DisableWebProxy()
+func Clear(activeInterface string) error {
+	return DisableWebProxy(activeInterface)
 }

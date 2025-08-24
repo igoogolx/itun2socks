@@ -47,7 +47,7 @@ const (
 	INTERNET_OPTION_REFRESH          = 37
 )
 
-func SetWebProxy(host string, port string) error {
+func SetWebProxy(host string, port string, _ string) error {
 
 	settings := &proxySettings{
 		proxyServer:   net.JoinHostPort(host, port),
@@ -57,7 +57,7 @@ func SetWebProxy(host string, port string) error {
 	return setProxySettings(settings)
 }
 
-func DisableWebProxy() error {
+func DisableWebProxy(_ string) error {
 	// disable proxy settings
 	return disableProxy()
 }

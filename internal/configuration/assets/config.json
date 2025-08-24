@@ -6,7 +6,7 @@
     "rule": "proxy_all"
   },
   "setting": {
-    "lightClientMode": false,
+    "lightClientMode": true,
     "mode": "mixed",
     "dns": {
       "disableCache": true,
