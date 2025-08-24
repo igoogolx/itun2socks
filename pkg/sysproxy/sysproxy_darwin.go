@@ -38,13 +38,7 @@ type proxySettings struct {
 	enabled bool
 }
 
-func SetWebProxy(host string, port string) error {
-	// Get the active network interface
-	activeInterface, err := getActiveNetworkInterface()
-	if err != nil {
-		return err
-	}
-
+func SetWebProxy(host string, port string, activeInterface string) error {
 	// Set the web proxy and secure web proxy
 	if err := setProxySettings(proxyTypeHTTP, activeInterface, host, port); err != nil {
 		return err
@@ -57,12 +51,7 @@ func SetWebProxy(host string, port string) error {
 	return nil
 }
 
-func DisableWebProxy() error {
-	// Get the active network interface
-	activeInterface, err := getActiveNetworkInterface()
-	if err != nil {
-		return err
-	}
+func DisableWebProxy(activeInterface string) error {
 
 	// disable the web proxy and secure web proxy
 	errHTTP := disableProxy(proxyTypeHTTP, activeInterface)

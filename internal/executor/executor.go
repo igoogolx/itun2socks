@@ -3,6 +3,9 @@ package executor
 import (
 	"context"
 	"fmt"
+	"net/netip"
+	"time"
+
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
@@ -18,8 +21,6 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
 	"github.com/sirupsen/logrus"
-	"net/netip"
-	"time"
 )
 
 type Client interface {
@@ -143,7 +144,8 @@ func newSysProxy() (*SystemProxyClient, error) {
 
 	newLocalServer := localserver.NewListener(config.LocalServer.Addr, config.LocalServer.Port)
 	return &SystemProxyClient{
-		localserver: newLocalServer,
+		localserver:     newLocalServer,
+		activeInterface: config.ActiveInterface,
 	}, nil
 }
 
@@ -155,7 +157,8 @@ func newMixed() (Client, error) {
 	localServerConfig := local_server.New(rawConfig.Setting.LocalServer)
 	newLocalServer := localserver.NewListener(localServerConfig.Addr, localServerConfig.Port)
 	sysClient := &SystemProxyClient{
-		localserver: newLocalServer,
+		localserver:     newLocalServer,
+		activeInterface: rawConfig.Setting.HijackDns.NetworkService,
 	}
 
 	tunClient, err := newTun(false)

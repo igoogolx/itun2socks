@@ -9,9 +9,10 @@ import (
 )
 
 type SystemProxyConfig struct {
-	Rule        distribution.SystemProxyConfig
-	Proxy       constant.Proxy
-	LocalServer local_server.Cfg
+	Rule            distribution.SystemProxyConfig
+	Proxy           constant.Proxy
+	LocalServer     local_server.Cfg
+	ActiveInterface string
 }
 
 func NewSystemProxy() (*SystemProxyConfig, error) {
@@ -38,5 +39,6 @@ func NewSystemProxy() (*SystemProxyConfig, error) {
 		rule,
 		proxy,
 		newLocalServer,
+		rawConfig.Setting.HijackDns.NetworkService,
 	}, nil
 }

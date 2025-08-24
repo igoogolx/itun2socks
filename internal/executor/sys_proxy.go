@@ -2,10 +2,11 @@ package executor
 
 import (
 	"fmt"
+	"strconv"
+
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/sysproxy"
-	"strconv"
 )
 
 type SysProxyDetail struct {
@@ -13,7 +14,8 @@ type SysProxyDetail struct {
 }
 
 type SystemProxyClient struct {
-	localserver localserver.Listener
+	localserver     localserver.Listener
+	activeInterface string
 }
 
 func (c *SystemProxyClient) RuntimeDetail(hubAddress string) (interface{}, error) {
@@ -28,7 +30,7 @@ func (c *SystemProxyClient) Start() error {
 	}
 
 	addr := "127.0.0.1:" + strconv.Itoa(c.localserver.Port)
-	err = sysproxy.Set(addr)
+	err = sysproxy.Set(addr, c.activeInterface)
 	if err != nil {
 		return err
 	}
@@ -38,7 +40,7 @@ func (c *SystemProxyClient) Start() error {
 func (c *SystemProxyClient) Close() error {
 	statistic.DefaultManager.CloseAllConnections()
 
-	sysErr := sysproxy.Clear()
+	sysErr := sysproxy.Clear(c.activeInterface)
 
 	lcErr := c.localserver.Close()
 
