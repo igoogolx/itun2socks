@@ -104,7 +104,7 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		log.Infoln(string(message))
+		log.Infoln("message: %s", string(message))
 		c.hub.broadcast <- message
 	}
 }
