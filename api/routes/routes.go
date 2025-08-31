@@ -3,16 +3,17 @@ package routes
 import (
 	"crypto/subtle"
 	"embed"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
-	"github.com/go-chi/render"
-	"github.com/gorilla/websocket"
 	"io/fs"
 	"net/http"
 	"os"
 	"strings"
 	"unsafe"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/go-chi/render"
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -91,6 +92,7 @@ func Start(addr string, secret string) error {
 		r.Mount("/is-admin", isAdminRouter())
 		r.Mount("/heartbeat", heartbeatRouter())
 		r.Mount("/dns", dnsRouter())
+		r.Mount("/event", eventRouter())
 	})
 	go FileServer(r)
 	err := http.ListenAndServe(addr, r)
