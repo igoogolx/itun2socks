@@ -68,12 +68,13 @@ func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 		return nil, err
 	}
 	tunOptions := sTun.Options{
-		Name:         config.Device.Name,
-		MTU:          uint32(config.Device.Mtu),
-		Inet4Address: []netip.Prefix{config.Device.Gateway},
-		AutoRoute:    true,
-		StrictRoute:  true,
-		Logger:       logrus.StandardLogger(),
+		Name:             config.Device.Name,
+		MTU:              uint32(config.Device.Mtu),
+		Inet4Address:     []netip.Prefix{config.Device.Gateway},
+		AutoRoute:        true,
+		StrictRoute:      true,
+		Logger:           logrus.StandardLogger(),
+		InterfaceMonitor: network_iface.GetDefaultInterfaceMonitor(),
 	}
 	tun, err := sTun.New(tunOptions)
 	if err != nil {

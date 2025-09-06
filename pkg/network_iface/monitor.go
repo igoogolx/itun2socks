@@ -2,6 +2,7 @@ package network_iface
 
 import (
 	"context"
+
 	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -21,15 +22,15 @@ func GetDefaultInterfaceName() string {
 	return defaultInterfaceName.Load()
 }
 
+func GetDefaultInterfaceMonitor() tun.DefaultInterfaceMonitor {
+	return defaultInterfaceMonitor
+}
+
 type ErrorHandler struct {
 }
 
 func (e ErrorHandler) NewError(_ context.Context, err error) {
 	log.Errorln(log.FormatLog(log.ExecutorPrefix, "network interface monitor: %v"), err)
-}
-
-type Handler struct {
-	Monitor tun.DefaultInterfaceMonitor
 }
 
 var monitorCallback *list.Element[tun.DefaultInterfaceUpdateCallback]
