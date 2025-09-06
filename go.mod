@@ -6,17 +6,17 @@ replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.32.0
 
 require (
 	github.com/Dreamacro/clash v1.18.0
-	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-chi/cors v1.2.2
 	github.com/go-chi/render v1.0.3
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.68
-	github.com/sagernet/sing v0.7.5
-	github.com/sagernet/sing-tun v0.6.9
+	github.com/sagernet/sing v0.7.7
+	github.com/sagernet/sing-tun v0.7.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	go.uber.org/atomic v1.11.0
 	golang.org/x/sys v0.35.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
