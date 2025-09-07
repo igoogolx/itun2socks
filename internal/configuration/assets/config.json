@@ -50,6 +50,7 @@
     "theme": "system",
     "autoLaunch": false,
     "autoConnect": false,
-    "sensitiveInfoMode": false
+    "sensitiveInfoMode": false,
+    "keepConnectedWhenSlept": false
   }
 }

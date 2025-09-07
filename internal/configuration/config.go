@@ -26,14 +26,15 @@ type SettingCfg struct {
 		CustomizedOptions []string `json:"customizedOptions"`
 		FakeIp            bool     `json:"fakeIp,omitempty"`
 	} `json:"dns"`
-	Language          string `json:"language,omitempty"`
-	BlockQuic         bool   `json:"blockQuic,omitempty"`
-	Stack             string `json:"stack"`
-	ShouldFindProcess bool   `json:"shouldFindProcess,omitempty"`
-	Theme             string `json:"theme,omitempty"`
-	AutoConnect       bool   `json:"autoConnect,omitempty"`
-	AutoLaunch        bool   `json:"autoLaunch,omitempty"`
-	SensitiveInfoMode bool   `json:"sensitiveInfoMode,omitempty"`
+	Language               string `json:"language,omitempty"`
+	BlockQuic              bool   `json:"blockQuic,omitempty"`
+	Stack                  string `json:"stack"`
+	ShouldFindProcess      bool   `json:"shouldFindProcess,omitempty"`
+	Theme                  string `json:"theme,omitempty"`
+	AutoConnect            bool   `json:"autoConnect,omitempty"`
+	AutoLaunch             bool   `json:"autoLaunch,omitempty"`
+	SensitiveInfoMode      bool   `json:"sensitiveInfoMode,omitempty"`
+	KeepConnectedWhenSlept bool   `json:"keepConnectedWhenSlept,omitempty"`
 }
 
 type DnsServer struct {
