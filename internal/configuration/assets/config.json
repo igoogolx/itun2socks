@@ -7,7 +7,7 @@
   },
   "setting": {
     "lightClientMode": true,
-    "mode": "mixed",
+    "mode": "system",
     "dns": {
       "disableCache": true,
       "server": {
