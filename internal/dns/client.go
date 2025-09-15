@@ -3,6 +3,11 @@ package dns
 import (
 	"context"
 	"fmt"
+	"net"
+	"strings"
+	"sync"
+	"time"
+
 	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
@@ -10,10 +15,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	D "github.com/miekg/dns"
-	"net"
-	"strings"
-	"sync"
-	"time"
 )
 
 var dnsMap = map[constants.Policy]cResolver.Resolver{}
@@ -128,10 +129,28 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 		}
 	}()
 
-	res, err := dnsMap[dnsRule.GetPolicy()].ExchangeContext(ctx, dnsMessage)
+	var res *D.Msg
+
+	if dnsRule.Type() == constants.RuleDnsMap {
+		dnsMapClient, ok := dnsRule.(*rule_engine.DnsMap)
+		if ok {
+			log.Infoln(log.FormatLog(log.DnsPrefix, "query dns from DNS-MAP rule, question: %v, result: %v"), question, dnsMapClient.Value())
+			res, err = dnsMapClient.ExchangeContext(ctx, dnsMessage)
+		} else {
+			err = fmt.Errorf("invalid dns rule: %v", dnsRule.Value())
+		}
+	} else {
+		res, err = dnsMap[dnsRule.GetPolicy()].ExchangeContext(ctx, dnsMessage)
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
 	}
+
+	if res == nil {
+		return nil, fmt.Errorf("empty dns msg: %v", question)
+	}
+
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
 		if resIp != nil {
