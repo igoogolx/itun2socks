@@ -2,13 +2,12 @@ package conn
 
 import (
 	"context"
+	"net"
+	"sync"
+
 	"github.com/Dreamacro/clash/component/dialer"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
-	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/internal/dns"
-	"net"
-	"sync"
 )
 
 type TcpConnContext struct {
@@ -41,14 +40,7 @@ func (t *TcpConnContext) Conn() net.Conn {
 
 func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata, wg *sync.WaitGroup) (*TcpConnContext, error) {
 
-	rule := resolveMetadata(metadata)
-
-	if rule.GetPolicy() == constants.PolicyProxy && defaultIsFakeIpEnabled {
-		hostByFakeIp, ok := dns.FakeIpPool.LookBack(metadata.DstIP)
-		if ok {
-			metadata.Host = hostByFakeIp
-		}
-	}
+	rule := handleMetadata(metadata)
 
 	var connContext = &TcpConnContext{
 		ctx,

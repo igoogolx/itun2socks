@@ -82,6 +82,14 @@ func (d DnsMap) ExchangeContext(_ context.Context, r *D.Msg) (*D.Msg, error) {
 	return msg, nil
 }
 
+func (d DnsMap) GetIp() (net.IP, error) {
+	ip := net.ParseIP(d.ip)
+	if ip == nil {
+		return nil, fmt.Errorf("invalid ip address: %s", d.ip)
+	}
+	return ip, nil
+}
+
 func NewDnsMapRule(payload string, policy constants.Policy) (*DnsMap, error) {
 	chunks := trimArr(strings.Split(strings.TrimSpace(payload), ";"))
 	if len(chunks) != 2 {
