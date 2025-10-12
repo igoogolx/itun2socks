@@ -65,6 +65,7 @@ func handleMetadata(metadata *C.Metadata) rule_engine.Rule {
 		if ok {
 			ip, err := dnsMapRule.GetIp()
 			if err == nil {
+				log.Infoln(log.FormatLog(log.DnsPrefix, "query dns from DNS-MAP rule, question: %v, result: %v"), metadata.Host, ip.String())
 				metadata.DstIP = ip
 				metadata.Host = ""
 			}
