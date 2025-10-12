@@ -17,12 +17,13 @@ const (
 	RuleDomainRegex   RuleType = "DOMAIN-REGEX"
 	RuleDomainSuffix  RuleType = "DOMAIN-SUFFIX"
 	RuleProcess       RuleType = "PROCESS"
+	RuleDnsMap        RuleType = "DNS-MAP"
 	RuleBuiltIn       RuleType = "BUILT-IN"
 )
 
 var (
 	IpRuleTypes      = []RuleType{RuleIpCidr}
-	DomainRuleTypes  = []RuleType{RuleDomain, RuleDomainSuffix, RuleDomainRegex, RuleDomainKeyword}
+	DomainRuleTypes  = []RuleType{RuleDomain, RuleDomainSuffix, RuleDomainRegex, RuleDomainKeyword, RuleDnsMap}
 	ProcessRuleTypes = []RuleType{RuleProcess}
 )
 

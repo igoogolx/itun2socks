@@ -2,14 +2,16 @@ package conn
 
 import (
 	"fmt"
+	"strings"
+	"sync"
+
 	"github.com/Dreamacro/clash/adapter"
 	"github.com/Dreamacro/clash/adapter/outbound"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"strings"
-	"sync"
 )
 
 var defaultIsFakeIpEnabled bool
@@ -52,4 +54,29 @@ func GetProxy(rule constants.Policy) (C.Proxy, error) {
 		return nil, fmt.Errorf("empty dialer")
 	}
 	return connDialer, nil
+}
+
+func handleMetadata(metadata *C.Metadata) rule_engine.Rule {
+
+	rule := resolveMetadata(metadata)
+
+	if rule.Type() == constants.RuleDnsMap {
+		dnsMapRule, ok := rule.(*rule_engine.DnsMap)
+		if ok {
+			ip, err := dnsMapRule.GetIp()
+			if err == nil {
+				log.Infoln(log.FormatLog(log.DnsPrefix, "query dns from DNS-MAP rule, question: %v, result: %v"), metadata.Host, ip.String())
+				metadata.DstIP = ip
+				metadata.Host = ""
+			}
+		}
+	}
+
+	if rule.GetPolicy() == constants.PolicyProxy && defaultIsFakeIpEnabled {
+		hostByFakeIp, ok := dns.FakeIpPool.LookBack(metadata.DstIP)
+		if ok {
+			metadata.Host = hostByFakeIp
+		}
+	}
+	return rule
 }

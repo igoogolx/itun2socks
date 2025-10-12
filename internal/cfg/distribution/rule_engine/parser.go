@@ -3,12 +3,13 @@ package rule_engine
 import (
 	"embed"
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/pkg/list"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"io/fs"
 	"slices"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/list"
+	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 //go:embed rules/*
@@ -93,6 +94,9 @@ func ParseItem(rawRuleType, value, rawPolicy string) (Rule, error) {
 		break
 	case constants.RuleProcess:
 		rule, err = NewProcessRule(ruleType, value, policy)
+		break
+	case constants.RuleDnsMap:
+		rule, err = NewDnsMapRule(value, policy)
 		break
 	default:
 		err = fmt.Errorf("rule type not match: %v", ruleType)
