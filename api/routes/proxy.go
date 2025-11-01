@@ -2,6 +2,10 @@ package routes
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"time"
+
 	"github.com/Dreamacro/clash/adapter"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
@@ -13,9 +17,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"io"
-	"net/http"
-	"time"
 )
 
 var (
@@ -39,30 +40,43 @@ func proxyRouter() http.Handler {
 }
 
 func getResFromUrl(w http.ResponseWriter, r *http.Request) {
-	var req map[string]string
-	if err := render.DecodeJSON(r.Body, &req); err != nil {
+	var reqParams map[string]string
+	if err := render.DecodeJSON(r.Body, &reqParams); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	res, err := http.Get(req["url"])
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", reqParams["url"], nil)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
 			log.Debugln("%s", log.FormatLog(log.HubPrefix, "get res from url: fail to close body"))
 		}
-	}(res.Body)
-	body, err := io.ReadAll(res.Body)
+	}(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
+
 	render.JSON(w, r, render.M{
 		"data": string(body),
 	})
