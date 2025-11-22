@@ -121,7 +121,7 @@ func getLocalIp() (net.IP, error) {
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
-			log.Debugln("close connection error in getLocalIp:", err)
+			log.Debugln(log.FormatLog(log.ExecutorPrefix, "close connection error in getLocalIp:"), err)
 		}
 	}(conn)
 
