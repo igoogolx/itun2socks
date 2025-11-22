@@ -13,7 +13,7 @@ import (
 
 func main() {
 	download("https://github.com/igoogolx/lux-rules/releases/download/v2.4.1/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "rule_engine", "rules.tar.gz"))
-	download("https://github.com/igoogolx/lux-client/releases/download/v1.19.3-beat.2/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
+	download("https://github.com/igoogolx/lux-client/releases/download/v1.19.3/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
 }
 
 func download(url string, outputPath string) {
