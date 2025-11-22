@@ -2,6 +2,7 @@ package network_iface
 
 import (
 	"context"
+	"net"
 
 	"github.com/Dreamacro/clash/component/dialer"
 	"github.com/igoogolx/itun2socks/internal/configuration"
@@ -110,4 +111,29 @@ func update(name string) {
 	defaultInterfaceName.Store(name)
 	dialer.DefaultInterface.Store(name)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update default interface: %v"), name)
+}
+
+func getLocalIp() (net.IP, error) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return nil, err
+	}
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			log.Debugln("close connection error in getLocalIp:", err)
+		}
+	}(conn)
+
+	localAddress := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddress.IP, nil
+}
+
+func GetLanV4Address() string {
+	ip, err := getLocalIp()
+	if err != nil {
+		return ""
+	}
+	return ip.String()
 }
