@@ -1,16 +1,19 @@
 package routes
 
 import (
+	"net/http"
+	"runtime"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
-	"net/http"
-	"runtime"
+	"github.com/igoogolx/itun2socks/pkg/network_iface"
 )
 
 type defaultDetail struct {
-	HubAddress string `json:"hubAddress"`
+	HubAddress              string `json:"hubAddress"`
+	DirectedInterfaceV4Addr string `json:"directedInterfaceV4Addr"`
 }
 
 func runtimeDetailRouter() http.Handler {
@@ -30,7 +33,8 @@ func getDetail(w http.ResponseWriter, r *http.Request) {
 	hubAddress := constants.HubAddress()
 	if !manager.GetIsStarted() {
 		render.JSON(w, r, defaultDetail{
-			HubAddress: hubAddress,
+			HubAddress:              hubAddress,
+			DirectedInterfaceV4Addr: network_iface.GetLanV4Address(),
 		})
 		return
 	}
