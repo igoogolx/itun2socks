@@ -1,13 +1,21 @@
 package configuration
 
 type Config struct {
-	Proxy    []map[string]interface{} `json:"proxy"`
-	Selected struct {
+	Proxy         []map[string]interface{} `json:"proxy"`
+	Subscriptions []SubscriptionCfg        `json:"subscriptions,omitempty"`
+	Selected      struct {
 		Proxy string `json:"proxy"`
 		Rule  string `json:"rule"`
 	} `json:"selected"`
 	Setting SettingCfg `json:"setting"`
 	Rules   []string   `json:"rules"`
+}
+
+type SubscriptionCfg struct {
+	Id     string `json:"id"`
+	Url    string `json:"url"`
+	Name   string `json:"name"`
+	Remark string `json:"remark"`
 }
 
 type SettingCfg struct {

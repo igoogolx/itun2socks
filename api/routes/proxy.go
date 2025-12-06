@@ -30,12 +30,16 @@ func proxyRouter() http.Handler {
 	r.Get("/cur-proxy", handleGetProxy)
 	r.Post("/url", getResFromUrl)
 	r.Put("/", addProxy)
-	r.Put("/subscription-url", addProxiesFromSubscriptionUrl)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
+	r.Get("/subscriptions", getSubscriptions)
+	r.Put("/subscription-url", addSubscription)
+	r.Delete("/subscription", deleteSubscription)
+	r.Post("/subscription", updateSubscription)
+	r.Post("/subscription/proxies", updateSubscriptionProxies)
 	return r
 }
 
@@ -278,10 +282,12 @@ func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
 	render.NoContent(w, r)
 }
 
-func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
+func addSubscription(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Proxies         []map[string]interface{} `json:"proxies"`
-		SubscriptionUrl string                   `json:"subscriptionUrl"`
+		Proxies            []map[string]interface{} `json:"proxies"`
+		SubscriptionUrl    string                   `json:"subscriptionUrl"`
+		SubscriptionName   string                   `json:"subscriptionName"`
+		SubscriptionRemark string                   `json:"subscriptionRemark"`
 	}
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
@@ -294,7 +300,7 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError("invalid proxies"))
 		return
 	}
-	newProxies, err := configuration.AddProxies(proxies, req.SubscriptionUrl)
+	newProxies, newSubscriptions, err := configuration.AddSubscription(proxies, req.SubscriptionUrl, req.SubscriptionName, req.SubscriptionRemark)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -320,7 +326,7 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		}
 		conn.UpdateProxy(proxy)
 	}
-	render.JSON(w, r, render.M{"proxies": newProxies})
+	render.JSON(w, r, render.M{"proxies": newProxies, "subscriptions": newSubscriptions})
 }
 
 func updateProxy(w http.ResponseWriter, r *http.Request) {
@@ -337,4 +343,72 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.NoContent(w, r)
+}
+
+func getSubscriptions(w http.ResponseWriter, r *http.Request) {
+	subscriptions, err := configuration.GetSubscriptions()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.JSON(w, r, render.M{
+		"subscriptions": subscriptions,
+	})
+}
+
+func deleteSubscription(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Id string `json:"id"`
+	}
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	err := configuration.DeleteSubscription(req.Id)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func updateSubscription(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Subscription configuration.SubscriptionCfg `json:"subscription"`
+	}
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	err := configuration.UpdateSubscription(req.Subscription)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func updateSubscriptionProxies(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		SubscriptionId string                   `json:"subscriptionId"`
+		Proxies        []map[string]interface{} `json:"proxies"`
+	}
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	newProxies, err := configuration.UpdateSubscriptionProxies(req.SubscriptionId, req.Proxies)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+
+	render.JSON(w, r, render.M{"proxies": newProxies})
 }
