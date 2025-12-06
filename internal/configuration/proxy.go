@@ -147,7 +147,7 @@ func checkIsValidStr(value interface{}) (string, bool) {
 	return str, true
 }
 
-func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]interface{}, []SubscriptionCfg, error) {
+func AddSubscription(proxies []map[string]interface{}, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]interface{}, []SubscriptionCfg, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, nil, err
@@ -161,16 +161,10 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscr
 	subscriptionId := subscriptionUuid.String()
 
 	newProxyWithIds := make([]map[string]interface{}, 0)
-	idNs := uuid.NewV5(uuid.Nil, subscriptionUrl)
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
 			return nil, nil, fmt.Errorf("fail to parse proxy,error:%v", err)
-		}
-
-		if proxyName, ok := checkIsValidStr(proxy["name"]); ok {
-			id := uuid.NewV5(idNs, proxyName)
-			proxy["id"] = id.String()
 		}
 
 		if _, ok := checkIsValidStr(proxy["id"]); !ok {
@@ -194,6 +188,59 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscr
 		return nil, nil, err
 	}
 	return data.Proxy, data.Subscriptions, nil
+}
+
+func UpdateSubscription(subscription SubscriptionCfg) error {
+	c, err := Read()
+	if err != nil {
+		return err
+	}
+	for i, v := range c.Subscriptions {
+		if v.Id == subscription.Id {
+			c.Subscriptions[i] = subscription
+			break
+		}
+	}
+	return Write(c)
+}
+
+func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]interface{}) ([]map[string]interface{}, error) {
+	c, err := Read()
+	if err != nil {
+		return nil, err
+	}
+
+	newProxies := make([]map[string]interface{}, 0)
+
+	for _, p := range c.Proxy {
+		if value, ok := p["subscription"].(string); ok && value == subscriptionId {
+			continue
+		}
+		newProxies = append(newProxies, p)
+	}
+
+	for _, proxy := range proxies {
+		_, err := adapter.ParseProxy(proxy)
+		if err != nil {
+			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
+		}
+
+		id, err := uuid.NewV4()
+		if err != nil {
+			return nil, err
+		}
+		proxy["id"] = id.String()
+		proxy["subscription"] = subscriptionId
+
+		newProxies = append(newProxies, proxy)
+	}
+
+	err = Write(c)
+	if err != nil {
+		return nil, err
+	}
+
+	return newProxies, nil
 }
 
 var addMux sync.Mutex
