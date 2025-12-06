@@ -36,6 +36,8 @@ func proxyRouter() http.Handler {
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
+	r.Get("/subscriptions", getSubscriptions)
+	r.Delete("/subscription", deleteSubscription)
 	return r
 }
 
@@ -280,8 +282,10 @@ func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
 
 func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Proxies         []map[string]interface{} `json:"proxies"`
-		SubscriptionUrl string                   `json:"subscriptionUrl"`
+		Proxies            []map[string]interface{} `json:"proxies"`
+		SubscriptionUrl    string                   `json:"subscriptionUrl"`
+		SubscriptionName   string                   `json:"subscriptionName"`
+		SubscriptionRemark string                   `json:"subscriptionRemark"`
 	}
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
@@ -294,7 +298,7 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError("invalid proxies"))
 		return
 	}
-	newProxies, err := configuration.AddProxies(proxies, req.SubscriptionUrl)
+	newProxies, err := configuration.AddProxies(proxies, req.SubscriptionUrl, req.SubscriptionName, req.SubscriptionRemark)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -332,6 +336,36 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := configuration.UpdateProxy(proxyId, req.(map[string]interface{})); err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func getSubscriptions(w http.ResponseWriter, r *http.Request) {
+	subscriptions, err := configuration.GetSubscriptions()
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.JSON(w, r, render.M{
+		"subscriptions": subscriptions,
+	})
+}
+
+func deleteSubscription(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Id string `json:"id"`
+	}
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	err := configuration.DeleteSubscription(req.Id)
+	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return

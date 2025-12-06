@@ -2,11 +2,12 @@ package configuration
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/adapter"
-	"github.com/gofrs/uuid/v5"
 	"slices"
 	"strings"
 	"sync"
+
+	"github.com/Dreamacro/clash/adapter"
+	"github.com/gofrs/uuid/v5"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {
@@ -36,6 +37,50 @@ func GetProxies() ([]map[string]interface{}, error) {
 		return nil, err
 	}
 	return data.Proxy, nil
+}
+
+func GetSubscriptions() ([]SubscriptionCfg, error) {
+	data, err := Read()
+	if err != nil {
+		return nil, err
+	}
+	return data.Subscriptions, nil
+}
+
+func DeleteSubscription(id string) error {
+	data, err := Read()
+	if err != nil {
+		return err
+	}
+	var newSubscriptions = make([]SubscriptionCfg, 0)
+	for _, s := range data.Subscriptions {
+		if s.Id != id {
+			newSubscriptions = append(newSubscriptions, s)
+		}
+	}
+
+	newProxy := make([]map[string]interface{}, 0)
+
+	for _, v := range data.Proxy {
+		subscriptionId, ok := v["subscription"].(string)
+		if !ok {
+			newProxy = append(newProxy, v)
+			continue
+		}
+		if subscriptionId != id {
+			newProxy = append(newProxy, v)
+		}
+	}
+
+	data.Subscriptions = newSubscriptions
+	data.Proxy = newProxy
+
+	err = Write(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func DeleteProxies(ids []string) error {
@@ -102,11 +147,18 @@ func checkIsValidStr(value interface{}) (string, bool) {
 	return str, true
 }
 
-func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map[string]interface{}, error) {
+func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]interface{}, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
 	}
+
+	subscriptionUuid, err := uuid.NewV4()
+	if err != nil {
+		return nil, err
+	}
+
+	subscriptionId := subscriptionUuid.String()
 
 	newProxyWithIds := make([]map[string]interface{}, 0)
 	idNs := uuid.NewV5(uuid.Nil, subscriptionUrl)
@@ -129,28 +181,14 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string) ([]map
 			proxy["id"] = id.String()
 		}
 
-		proxy["subscriptionUrl"] = subscriptionUrl
+		proxy["subscription"] = subscriptionId
 		newProxyWithIds = append(newProxyWithIds, proxy)
 	}
 
-	targetIndex := slices.IndexFunc(data.Proxy, func(p map[string]interface{}) bool {
-		return p["subscriptionUrl"] == subscriptionUrl
-	})
+	newSubscription := SubscriptionCfg{Id: subscriptionId, Name: subscriptionName, Remark: subscriptionRemark, Url: subscriptionUrl}
+	data.Proxy = append(data.Proxy, newProxyWithIds...)
+	data.Subscriptions = append(data.Subscriptions, newSubscription)
 
-	newProxy := make([]map[string]interface{}, 0)
-
-	for _, v := range data.Proxy {
-		if v["subscriptionUrl"] != subscriptionUrl {
-			newProxy = append(newProxy, v)
-		}
-	}
-
-	if targetIndex != -1 && targetIndex < len(newProxy) {
-		newProxy = slices.Insert(newProxy, targetIndex, newProxyWithIds...)
-	} else {
-		newProxy = append(newProxy, newProxyWithIds...)
-	}
-	data.Proxy = newProxy
 	err = Write(data)
 	if err != nil {
 		return nil, err

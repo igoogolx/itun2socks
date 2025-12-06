@@ -4,10 +4,11 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/igoogolx/itun2socks/pkg/log"
-	"go.uber.org/atomic"
 	"os"
 	"sync"
+
+	"github.com/igoogolx/itun2socks/pkg/log"
+	"go.uber.org/atomic"
 )
 
 var mux sync.RWMutex
@@ -31,6 +32,9 @@ func Read() (Config, error) {
 	}
 	if len(config.Setting.Theme) == 0 {
 		config.Setting.Theme = "system"
+	}
+	if config.Subscriptions == nil {
+		config.Subscriptions = []SubscriptionCfg{}
 	}
 
 	return *config, nil
