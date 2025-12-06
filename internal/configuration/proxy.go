@@ -147,15 +147,15 @@ func checkIsValidStr(value interface{}) (string, bool) {
 	return str, true
 }
 
-func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]interface{}, error) {
+func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]interface{}, []SubscriptionCfg, error) {
 	data, err := Read()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	subscriptionUuid, err := uuid.NewV4()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	subscriptionId := subscriptionUuid.String()
@@ -165,7 +165,7 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscr
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
-			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
+			return nil, nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
 
 		if proxyName, ok := checkIsValidStr(proxy["name"]); ok {
@@ -176,7 +176,7 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscr
 		if _, ok := checkIsValidStr(proxy["id"]); !ok {
 			id, err := uuid.NewV4()
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			proxy["id"] = id.String()
 		}
@@ -191,9 +191,9 @@ func AddProxies(proxies []map[string]interface{}, subscriptionUrl string, subscr
 
 	err = Write(data)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return data.Proxy, nil
+	return data.Proxy, data.Subscriptions, nil
 }
 
 var addMux sync.Mutex

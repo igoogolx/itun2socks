@@ -298,7 +298,7 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError("invalid proxies"))
 		return
 	}
-	newProxies, err := configuration.AddProxies(proxies, req.SubscriptionUrl, req.SubscriptionName, req.SubscriptionRemark)
+	newProxies, newSubscriptions, err := configuration.AddProxies(proxies, req.SubscriptionUrl, req.SubscriptionName, req.SubscriptionRemark)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -324,7 +324,7 @@ func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
 		}
 		conn.UpdateProxy(proxy)
 	}
-	render.JSON(w, r, render.M{"proxies": newProxies})
+	render.JSON(w, r, render.M{"proxies": newProxies, "subscriptions": newSubscriptions})
 }
 
 func updateProxy(w http.ResponseWriter, r *http.Request) {
