@@ -235,6 +235,8 @@ func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]inter
 		newProxies = append(newProxies, proxy)
 	}
 
+	c.Proxy = newProxies
+
 	err = Write(c)
 	if err != nil {
 		return nil, err
