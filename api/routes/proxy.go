@@ -26,7 +26,6 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Get("/cur-proxy", handleGetProxy)
-	r.Post("/url", getResFromUrl)
 	r.Put("/", addProxy)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)

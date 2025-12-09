@@ -16,10 +16,11 @@ import (
 func subscriptionRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/all", getSubscriptions)
-	r.Put("/url", addSubscription)
+	r.Put("/", addSubscription)
 	r.Delete("/", deleteSubscription)
 	r.Post("/", updateSubscription)
 	r.Post("/proxies", updateSubscriptionProxies)
+	r.Post("/url", getResFromUrl)
 	return r
 }
 
