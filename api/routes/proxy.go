@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"time"
 
@@ -10,7 +9,6 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -28,58 +26,13 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Get("/cur-proxy", handleGetProxy)
-	r.Post("/url", getResFromUrl)
 	r.Put("/", addProxy)
-	r.Put("/subscription-url", addProxiesFromSubscriptionUrl)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
 	return r
-}
-
-func getResFromUrl(w http.ResponseWriter, r *http.Request) {
-	var reqParams map[string]string
-	if err := render.DecodeJSON(r.Body, &reqParams); err != nil {
-		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, ErrBadRequest)
-		return
-	}
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", reqParams["url"], nil)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Debugln("%s", log.FormatLog(log.HubPrefix, "get res from url: fail to close body"))
-		}
-	}(resp.Body)
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-
-	render.JSON(w, r, render.M{
-		"data": string(body),
-	})
 }
 
 func testProxyUdp(w http.ResponseWriter, r *http.Request) {
@@ -276,51 +229,6 @@ func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.NoContent(w, r)
-}
-
-func addProxiesFromSubscriptionUrl(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		Proxies         []map[string]interface{} `json:"proxies"`
-		SubscriptionUrl string                   `json:"subscriptionUrl"`
-	}
-	if err := render.DecodeJSON(r.Body, &req); err != nil {
-		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, ErrBadRequest)
-		return
-	}
-	proxies := req.Proxies
-	if proxies == nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError("invalid proxies"))
-		return
-	}
-	newProxies, err := configuration.AddProxies(proxies, req.SubscriptionUrl)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-	rawConfig, err := configuration.Read()
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, NewError(err.Error()))
-		return
-	}
-	if manager.GetIsStarted() && rawConfig.Setting.AutoMode.Enabled {
-		outboundOption := outbound.Option{
-			AutoMode:      rawConfig.Setting.AutoMode,
-			Proxies:       rawConfig.Proxy,
-			SelectedProxy: rawConfig.Selected.Proxy,
-		}
-		proxy, err := outbound.New(outboundOption)
-		if err != nil {
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, NewError(err.Error()))
-			return
-		}
-		conn.UpdateProxy(proxy)
-	}
-	render.JSON(w, r, render.M{"proxies": newProxies})
 }
 
 func updateProxy(w http.ResponseWriter, r *http.Request) {
