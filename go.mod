@@ -14,7 +14,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.72
 	github.com/sagernet/sing v0.7.13
-	github.com/sagernet/sing-tun v0.7.3
+	github.com/sagernet/sing-tun v0.7.11
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/atomic v1.11.0
