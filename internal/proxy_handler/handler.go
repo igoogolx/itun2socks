@@ -4,10 +4,12 @@ import (
 	"context"
 	"net"
 	"sync"
+	"time"
 
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	tun "github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/bufio"
 	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
@@ -19,8 +21,9 @@ type ConnHandler struct {
 	udpIn chan conn.UdpConnContext
 }
 
-func (uc ConnHandler) PrepareConnection(_ string, _ M.Socksaddr, _ M.Socksaddr) error {
-	return nil
+func (uc ConnHandler) PrepareConnection(_ string, _ M.Socksaddr, _ M.Socksaddr, _ tun.DirectRouteContext,
+	_ time.Duration) (tun.DirectRouteDestination, error) {
+	return nil, nil
 }
 
 func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, source M.Socksaddr, destination M.Socksaddr, _ network.CloseHandlerFunc) {
