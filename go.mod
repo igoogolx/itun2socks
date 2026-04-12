@@ -14,7 +14,7 @@ require (
 	github.com/miekg/dns v1.1.72
 	github.com/sagernet/sing v0.8.4
 	github.com/sagernet/sing-tun v0.8.7
-	github.com/samber/lo v1.51.0
+	github.com/samber/lo v1.53.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/atomic v1.11.0
