@@ -2,7 +2,6 @@ module github.com/igoogolx/itun2socks
 
 go 1.24.0
 
-
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568
 	github.com/dlclark/regexp2 v1.11.5
@@ -13,7 +12,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.72
-	github.com/sagernet/sing v0.7.18
+	github.com/sagernet/sing v0.8.4
 	github.com/sagernet/sing-tun v0.7.11
 	github.com/samber/lo v1.51.0
 	github.com/sirupsen/logrus v1.9.4
