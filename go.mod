@@ -2,7 +2,6 @@ module github.com/igoogolx/itun2socks
 
 go 1.24.0
 
-replace github.com/Dreamacro/clash v1.18.0 => github.com/igoogolx/clash v1.32.0
 
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568
