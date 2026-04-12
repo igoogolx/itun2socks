@@ -2,9 +2,10 @@ package manager
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"sync"
 )
 
 var (

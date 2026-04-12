@@ -2,12 +2,13 @@ package routes
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/gorilla/websocket"
 	"github.com/igoogolx/itun2socks/internal/manager"
-	"net/http"
-	"time"
 )
 
 func heartbeatRouter() http.Handler {

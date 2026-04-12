@@ -2,9 +2,10 @@ package rule_engine
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"path/filepath"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
 type builtIn struct {

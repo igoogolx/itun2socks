@@ -2,13 +2,14 @@ package tunnel
 
 import (
 	"fmt"
+	"net"
+	"sync"
+
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/sagernet/sing/common/bufio"
-	"net"
-	"sync"
 )
 
 var (

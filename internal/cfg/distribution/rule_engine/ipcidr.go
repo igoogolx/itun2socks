@@ -2,8 +2,9 @@ package rule_engine
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"net/netip"
+
+	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
 type IpCidr struct {

@@ -1,8 +1,9 @@
 package local_server
 
 import (
-	"github.com/igoogolx/itun2socks/internal/configuration"
 	"strconv"
+
+	"github.com/igoogolx/itun2socks/internal/configuration"
 )
 
 type Cfg struct {

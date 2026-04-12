@@ -2,12 +2,13 @@ package api
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/api/routes"
-	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
 	"os"
 	"strconv"
+
+	"github.com/igoogolx/itun2socks/api/routes"
+	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 func getFreePort() (int, error) {

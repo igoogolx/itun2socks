@@ -1,10 +1,11 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"net/http"
 )
 
 func versionRouter() http.Handler {

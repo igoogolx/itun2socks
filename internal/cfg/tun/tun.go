@@ -1,9 +1,10 @@
 package tun
 
 import (
+	"net/netip"
+
 	"github.com/igoogolx/itun2socks/internal/constants"
 	sTun "github.com/sagernet/sing-tun"
-	"net/netip"
 )
 
 type Config struct {

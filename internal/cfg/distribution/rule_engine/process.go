@@ -2,12 +2,13 @@ package rule_engine
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"os"
 	"path/filepath"
 	"runtime"
 	"slices"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
 type Process struct {

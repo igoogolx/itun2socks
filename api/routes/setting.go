@@ -1,13 +1,14 @@
 package routes
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
-	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
+	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
 )
 
 func settingRouter() http.Handler {

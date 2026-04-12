@@ -3,12 +3,13 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/pkg/log"
 
 	"github.com/go-chi/render"
 	"github.com/gorilla/websocket"

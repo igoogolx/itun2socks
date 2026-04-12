@@ -1,9 +1,10 @@
 package rule_engine
 
 import (
+	"testing"
+
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var BYPASS_IP = "119.29.29.29"

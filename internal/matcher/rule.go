@@ -1,8 +1,9 @@
 package matcher
 
 import (
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"sync"
+
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 )
 
 var defaultRuleEngine *rule_engine.Engine

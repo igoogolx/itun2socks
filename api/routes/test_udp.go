@@ -1,10 +1,11 @@
 package routes
 
 import (
-	"github.com/igoogolx/itun2socks/pkg/log"
-	"github.com/miekg/dns"
 	"net"
 	"time"
+
+	"github.com/igoogolx/itun2socks/pkg/log"
+	"github.com/miekg/dns"
 )
 
 const DnsMsg = "google.com."

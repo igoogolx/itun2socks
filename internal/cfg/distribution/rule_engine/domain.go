@@ -2,9 +2,10 @@ package rule_engine
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"regexp"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/internal/constants"
 )
 
 type Domain struct {

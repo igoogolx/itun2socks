@@ -2,6 +2,9 @@ package proxy_handler
 
 import (
 	"context"
+	"net"
+	"sync"
+
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
@@ -9,8 +12,6 @@ import (
 	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
-	"net"
-	"sync"
 )
 
 type ConnHandler struct {
