@@ -2,10 +2,11 @@ package dns
 
 import (
 	"context"
-	"github.com/Dreamacro/clash/component/fakeip"
-	"github.com/Dreamacro/clash/component/resolver"
-	D "github.com/miekg/dns"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	D "github.com/miekg/dns"
 )
 
 type fakeIpClient struct {

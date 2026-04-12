@@ -2,17 +2,18 @@ package config
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/component/auth"
-	"github.com/Dreamacro/clash/component/fakeip"
-	"github.com/Dreamacro/clash/component/trie"
-	C "github.com/Dreamacro/clash/constant"
-	providerTypes "github.com/Dreamacro/clash/constant/provider"
-	"github.com/Dreamacro/clash/dns"
-	"github.com/Dreamacro/clash/log"
-	T "github.com/Dreamacro/clash/tunnel"
 	"net"
 	"net/url"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/pkg/clash/component/auth"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/trie"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	providerTypes "github.com/igoogolx/itun2socks/pkg/clash/constant/provider"
+	"github.com/igoogolx/itun2socks/pkg/clash/dns"
+	"github.com/igoogolx/itun2socks/pkg/clash/log"
+	T "github.com/igoogolx/itun2socks/pkg/clash/tunnel"
 )
 
 // General config

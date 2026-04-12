@@ -3,16 +3,17 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	cLog "github.com/Dreamacro/clash/log"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
-	"github.com/gorilla/websocket"
-	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
+	"github.com/gorilla/websocket"
+	"github.com/igoogolx/itun2socks/internal/constants"
+	cLog "github.com/igoogolx/itun2socks/pkg/clash/log"
+	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 type Log struct {

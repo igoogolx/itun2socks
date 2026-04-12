@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	C "github.com/Dreamacro/clash/constant"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 )
 
 func addrToMetadata(rawAddress string) (addr *C.Metadata, err error) {

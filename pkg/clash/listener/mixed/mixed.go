@@ -3,13 +3,13 @@ package mixed
 import (
 	"net"
 
-	"github.com/Dreamacro/clash/common/cache"
-	N "github.com/Dreamacro/clash/common/net"
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/listener/http"
-	"github.com/Dreamacro/clash/listener/socks"
-	"github.com/Dreamacro/clash/transport/socks4"
-	"github.com/Dreamacro/clash/transport/socks5"
+	"github.com/igoogolx/itun2socks/pkg/clash/common/cache"
+	N "github.com/igoogolx/itun2socks/pkg/clash/common/net"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/listener/http"
+	"github.com/igoogolx/itun2socks/pkg/clash/listener/socks"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/socks4"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/socks5"
 )
 
 type Listener struct {

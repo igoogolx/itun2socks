@@ -6,7 +6,6 @@ import (
 	"net/netip"
 	"time"
 
-	cResolver "github.com/Dreamacro/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
@@ -17,6 +16,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
+	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"

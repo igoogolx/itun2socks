@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Dreamacro/clash/component/dialer"
-	"github.com/Dreamacro/clash/component/resolver"
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/transport/gun"
-	"github.com/Dreamacro/clash/transport/socks5"
-	"github.com/Dreamacro/clash/transport/vmess"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/gun"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/socks5"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/vmess"
 
 	"golang.org/x/net/http2"
 )

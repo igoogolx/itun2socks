@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/Dreamacro/clash/adapter/outbound"
-	"github.com/Dreamacro/clash/common/singledo"
-	"github.com/Dreamacro/clash/component/dialer"
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/constant/provider"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter/outbound"
+	"github.com/igoogolx/itun2socks/pkg/clash/common/singledo"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/constant/provider"
 )
 
 type Fallback struct {

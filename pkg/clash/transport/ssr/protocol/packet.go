@@ -3,7 +3,7 @@ package protocol
 import (
 	"net"
 
-	"github.com/Dreamacro/clash/common/pool"
+	"github.com/igoogolx/itun2socks/pkg/clash/common/pool"
 )
 
 type PacketConn struct {

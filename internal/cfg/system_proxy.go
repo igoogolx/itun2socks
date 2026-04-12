@@ -1,11 +1,11 @@
 package cfg
 
 import (
-	"github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution"
 	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
 	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/pkg/clash/constant"
 )
 
 type SystemProxyConfig struct {

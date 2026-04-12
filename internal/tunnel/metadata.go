@@ -2,13 +2,14 @@ package tunnel
 
 import (
 	"errors"
-	P "github.com/Dreamacro/clash/component/process"
-	"github.com/Dreamacro/clash/constant"
-	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
 	"net/netip"
 	"strconv"
 	"sync"
+
+	P "github.com/igoogolx/itun2socks/pkg/clash/component/process"
+	"github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 var defaultShouldFindProcess bool

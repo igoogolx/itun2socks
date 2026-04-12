@@ -1,12 +1,13 @@
 package resolver
 
 import (
-	"github.com/Dreamacro/clash/component/fakeip"
-	cResolver "github.com/Dreamacro/clash/component/resolver"
-	"github.com/Dreamacro/clash/config"
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/dns"
 	_ "unsafe"
+
+	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
+	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	"github.com/igoogolx/itun2socks/pkg/clash/config"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/dns"
 )
 
 func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error), disableCache bool, fakeIpPool *fakeip.Pool) (cResolver.Resolver, error) {

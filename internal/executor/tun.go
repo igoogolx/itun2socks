@@ -2,15 +2,16 @@ package executor
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/component/iface"
+	"sync"
+
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/iface"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
-	"sync"
 )
 
 type DnsDetail struct {

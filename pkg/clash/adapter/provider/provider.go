@@ -6,11 +6,11 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Dreamacro/clash/adapter"
-	"github.com/Dreamacro/clash/adapter/outbound"
-	"github.com/Dreamacro/clash/common/singledo"
-	C "github.com/Dreamacro/clash/constant"
-	types "github.com/Dreamacro/clash/constant/provider"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter/outbound"
+	"github.com/igoogolx/itun2socks/pkg/clash/common/singledo"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	types "github.com/igoogolx/itun2socks/pkg/clash/constant/provider"
 
 	regexp "github.com/dlclark/regexp2"
 	"github.com/samber/lo"

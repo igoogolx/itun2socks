@@ -2,13 +2,14 @@ package dns
 
 import (
 	"context"
-	"github.com/Dreamacro/clash/component/resolver"
-	"github.com/Dreamacro/clash/component/system_dns"
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/log"
 	"net"
 	"net/netip"
 	"sync"
+
+	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/log"
 
 	D "github.com/miekg/dns"
 )

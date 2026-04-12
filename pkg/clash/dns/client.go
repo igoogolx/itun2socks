@@ -4,14 +4,15 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	C "github.com/Dreamacro/clash/constant"
 	"math/rand"
 	"net"
 	"strconv"
 	"strings"
 
-	"github.com/Dreamacro/clash/component/dialer"
-	"github.com/Dreamacro/clash/component/resolver"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+
+	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 
 	D "github.com/miekg/dns"
 )

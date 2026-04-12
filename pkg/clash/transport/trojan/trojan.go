@@ -12,9 +12,9 @@ import (
 	"net/http"
 	"sync"
 
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/transport/socks5"
-	"github.com/Dreamacro/clash/transport/vmess"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/socks5"
+	"github.com/igoogolx/itun2socks/pkg/clash/transport/vmess"
 
 	"github.com/Dreamacro/protobytes"
 )

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Dreamacro/clash/common/cache"
-	"github.com/Dreamacro/clash/component/trie"
+	"github.com/igoogolx/itun2socks/pkg/clash/common/cache"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/trie"
 )
 
 type store interface {

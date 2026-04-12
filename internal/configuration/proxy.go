@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
 
 func GetSelectedProxy() (map[string]interface{}, error) {

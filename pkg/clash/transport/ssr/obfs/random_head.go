@@ -7,7 +7,7 @@ import (
 	mathRand "math/rand"
 	"net"
 
-	"github.com/Dreamacro/clash/common/pool"
+	"github.com/igoogolx/itun2socks/pkg/clash/common/pool"
 )
 
 func init() {

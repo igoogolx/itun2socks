@@ -1,13 +1,14 @@
 package log
 
 import (
-	cLog "github.com/Dreamacro/clash/log"
+	"os"
+	"runtime"
+
 	"github.com/igoogolx/itun2socks/internal/constants"
+	cLog "github.com/igoogolx/itun2socks/pkg/clash/log"
 	"github.com/igoogolx/itun2socks/pkg/is_elevated"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
-	"runtime"
 )
 
 type output struct {

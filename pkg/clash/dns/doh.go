@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	C "github.com/Dreamacro/clash/constant"
 	"io"
 	"net"
 	"net/http"
 	"strconv"
+
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 
 	D "github.com/miekg/dns"
 )
