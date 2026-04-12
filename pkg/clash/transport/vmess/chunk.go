@@ -83,10 +83,7 @@ func (cw *chunkWriter) Write(b []byte) (n int, err error) {
 		if length == 0 {
 			break
 		}
-		readLen := chunkSize
-		if length < chunkSize {
-			readLen = length
-		}
+		readLen := min(length, chunkSize)
 		payloadBuf := buf[lenSize : lenSize+chunkSize]
 		copy(payloadBuf, b[n:n+readLen])
 

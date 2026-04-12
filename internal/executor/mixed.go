@@ -13,7 +13,7 @@ type MixedProxyClient struct {
 	tunClient *TunClient
 }
 
-func (m *MixedProxyClient) RuntimeDetail(hubAddress string) (interface{}, error) {
+func (m *MixedProxyClient) RuntimeDetail(hubAddress string) (any, error) {
 	return m.tunClient.RuntimeDetail(hubAddress)
 }
 

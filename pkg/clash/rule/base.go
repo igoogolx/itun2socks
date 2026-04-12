@@ -2,6 +2,7 @@ package rules
 
 import (
 	"errors"
+	"slices"
 )
 
 var (
@@ -11,10 +12,5 @@ var (
 )
 
 func HasNoResolve(params []string) bool {
-	for _, p := range params {
-		if p == noResolve {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(params, noResolve)
 }

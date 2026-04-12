@@ -139,7 +139,7 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	proxies := make([]interface{}, 0)
+	proxies := make([]any, 0)
 	for _, proxy := range proxiesMap {
 		proxies = append(proxies, proxy)
 	}
@@ -189,7 +189,7 @@ func handleGetProxy(w http.ResponseWriter, r *http.Request) {
 }
 
 func addProxy(w http.ResponseWriter, r *http.Request) {
-	var req map[string]interface{}
+	var req map[string]any
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
@@ -233,13 +233,13 @@ func deleteAllProxies(w http.ResponseWriter, r *http.Request) {
 
 func updateProxy(w http.ResponseWriter, r *http.Request) {
 	proxyId := chi.URLParam(r, "proxyId")
-	var req interface{}
+	var req any
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
-	if err := configuration.UpdateProxy(proxyId, req.(map[string]interface{})); err != nil {
+	if err := configuration.UpdateProxy(proxyId, req.(map[string]any)); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return

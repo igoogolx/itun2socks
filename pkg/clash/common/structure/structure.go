@@ -5,6 +5,7 @@ package structure
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -30,7 +31,7 @@ func NewDecoder(option Option) *Decoder {
 
 // Decode transform a map[string]any to a struct
 func (d *Decoder) Decode(src map[string]any, dst any) error {
-	if reflect.TypeOf(dst).Kind() != reflect.Ptr {
+	if reflect.TypeOf(dst).Kind() != reflect.Pointer {
 		return fmt.Errorf("Decode must recive a ptr struct")
 	}
 	t := reflect.TypeOf(dst).Elem()
@@ -315,11 +316,8 @@ func (d *Decoder) decodeStructFromMap(name string, dataVal, val reflect.Value) e
 			// If "squash" is specified in the tag, we squash the field down.
 			squash := false
 			tagParts := strings.Split(fieldType.Tag.Get(d.option.TagName), ",")
-			for _, tag := range tagParts[1:] {
-				if tag == "squash" {
-					squash = true
-					break
-				}
+			if slices.Contains(tagParts[1:], "squash") {
+				squash = true
 			}
 
 			if squash {

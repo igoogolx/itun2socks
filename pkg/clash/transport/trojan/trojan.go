@@ -141,10 +141,7 @@ func WritePacket(w io.Writer, socks5Addr, payload []byte) (int, error) {
 	offset := 0
 	total := len(payload)
 	for {
-		cursor := offset + maxLength
-		if cursor > total {
-			cursor = total
-		}
+		cursor := min(offset+maxLength, total)
 
 		n, err := writePacket(w, socks5Addr, payload[offset:cursor])
 		if err != nil {
@@ -184,10 +181,7 @@ func ReadPacket(r io.Reader, payload []byte) (net.Addr, int, int, error) {
 		return nil, 0, 0, errors.New("read crlf error")
 	}
 
-	length := len(payload)
-	if total < length {
-		length = total
-	}
+	length := min(total, len(payload))
 
 	if _, err = io.ReadFull(r, payload[:length]); err != nil {
 		return nil, 0, 0, errors.New("read packet error")
@@ -215,10 +209,7 @@ func (pc *PacketConn) ReadFrom(b []byte) (int, net.Addr, error) {
 	pc.mux.Lock()
 	defer pc.mux.Unlock()
 	if pc.remain != 0 {
-		length := len(b)
-		if pc.remain < length {
-			length = pc.remain
-		}
+		length := min(pc.remain, len(b))
 
 		n, err := pc.Conn.Read(b[:length])
 		if err != nil {

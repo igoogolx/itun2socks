@@ -59,10 +59,8 @@ func (p *Picker) Error() error {
 // Go calls the given function in a new goroutine.
 // The first call to return a nil error cancels the group; its result will be returned by Wait.
 func (p *Picker) Go(f func() (any, error)) {
-	p.wg.Add(1)
 
-	go func() {
-		defer p.wg.Done()
+	p.wg.Go(func() {
 
 		if ret, err := f(); err == nil {
 			p.once.Do(func() {
@@ -76,5 +74,5 @@ func (p *Picker) Go(f func() (any, error)) {
 				p.err = err
 			})
 		}
-	}()
+	})
 }

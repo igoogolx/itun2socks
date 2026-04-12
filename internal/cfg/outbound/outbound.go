@@ -12,7 +12,7 @@ import (
 
 type Option struct {
 	AutoMode      configuration.AutoMode
-	Proxies       []map[string]interface{}
+	Proxies       []map[string]any
 	SelectedProxy string
 }
 
@@ -49,7 +49,7 @@ func New(option Option) (constant.Proxy, error) {
 			proxy = adapter.NewProxy(proxyGroup)
 		}
 	} else {
-		var selectedProxy map[string]interface{}
+		var selectedProxy map[string]any
 		for _, v := range option.Proxies {
 			if v["id"] == option.SelectedProxy {
 				selectedProxy = v

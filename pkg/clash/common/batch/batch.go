@@ -2,6 +2,7 @@ package batch
 
 import (
 	"context"
+	"maps"
 	"sync"
 )
 
@@ -20,7 +21,7 @@ type Error struct {
 func WithConcurrencyNum(n int) Option {
 	return func(b *Batch) {
 		q := make(chan struct{}, n)
-		for i := 0; i < n; i++ {
+		for range n {
 			q <- struct{}{}
 		}
 		b.queue = q
@@ -39,9 +40,7 @@ type Batch struct {
 }
 
 func (b *Batch) Go(key string, fn func() (any, error)) {
-	b.wg.Add(1)
-	go func() {
-		defer b.wg.Done()
+	b.wg.Go(func() {
 		if b.queue != nil {
 			<-b.queue
 			defer func() {
@@ -63,7 +62,7 @@ func (b *Batch) Go(key string, fn func() (any, error)) {
 		b.mux.Lock()
 		defer b.mux.Unlock()
 		b.result[key] = ret
-	}()
+	})
 }
 
 func (b *Batch) Wait() *Error {
@@ -83,9 +82,7 @@ func (b *Batch) Result() map[string]Result {
 	b.mux.Lock()
 	defer b.mux.Unlock()
 	copy := map[string]Result{}
-	for k, v := range b.result {
-		copy[k] = v
-	}
+	maps.Copy(copy, b.result)
 	return copy
 }
 

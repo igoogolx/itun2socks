@@ -38,7 +38,7 @@ type TunClient struct {
 	isLocalServerEnabled bool
 }
 
-func (c *TunClient) RuntimeDetail(hubAddress string) (interface{}, error) {
+func (c *TunClient) RuntimeDetail(hubAddress string) (any, error) {
 	networkInterface, err := iface.ResolveInterface(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err

@@ -1,8 +1,8 @@
 package configuration
 
 type Config struct {
-	Proxy         []map[string]interface{} `json:"proxy"`
-	Subscriptions []SubscriptionCfg        `json:"subscriptions,omitempty"`
+	Proxy         []map[string]any  `json:"proxy"`
+	Subscriptions []SubscriptionCfg `json:"subscriptions,omitempty"`
 	Selected      struct {
 		Proxy string `json:"proxy"`
 		Rule  string `json:"rule"`

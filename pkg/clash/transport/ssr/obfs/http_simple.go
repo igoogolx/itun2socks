@@ -136,7 +136,7 @@ func (c *httpConn) Write(b []byte) (int, error) {
 
 func packURLEncodedHeadData(buf *bytes.Buffer, data []byte) {
 	dataLength := len(data)
-	for i := 0; i < dataLength; i++ {
+	for i := range dataLength {
 		buf.WriteRune('%')
 		buf.WriteString(hex.EncodeToString(data[i : i+1]))
 	}
@@ -145,7 +145,7 @@ func packURLEncodedHeadData(buf *bytes.Buffer, data []byte) {
 func packBoundary(buf *bytes.Buffer) {
 	buf.WriteString("Content-Type: multipart/form-data; boundary=")
 	set := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	for i := 0; i < 32; i++ {
+	for range 32 {
 		buf.WriteByte(set[rand.Intn(62)])
 	}
 	buf.WriteString("\r\n")
