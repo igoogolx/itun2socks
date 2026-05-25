@@ -95,7 +95,7 @@ func newDoHClient(url string, getDialer func() (C.Proxy, error)) *dohClient {
 					return nil, err
 				}
 
-				numPort, err := strconv.Atoi(port)
+				numPort, err := strconv.ParseUint(port, 10, 16)
 
 				if err != nil {
 					return nil, err
