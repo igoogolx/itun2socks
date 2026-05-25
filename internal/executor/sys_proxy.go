@@ -20,7 +20,7 @@ type SystemProxyClient struct {
 	activeInterface string
 }
 
-func (c *SystemProxyClient) RuntimeDetail(hubAddress string) (interface{}, error) {
+func (c *SystemProxyClient) RuntimeDetail(hubAddress string) (any, error) {
 	return &SysProxyDetail{hubAddress, network_iface.GetLanV4Address()}, nil
 }
 

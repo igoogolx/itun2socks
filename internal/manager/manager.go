@@ -2,9 +2,10 @@ package manager
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"sync"
 )
 
 var (
@@ -59,6 +60,6 @@ func GetIsStarted() bool {
 	return client != nil
 }
 
-func RuntimeDetail(hubAddress string) (interface{}, error) {
+func RuntimeDetail(hubAddress string) (any, error) {
 	return client.RuntimeDetail(hubAddress)
 }

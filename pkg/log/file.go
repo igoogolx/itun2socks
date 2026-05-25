@@ -1,10 +1,11 @@
 package log
 
 import (
+	"os"
+
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/list"
 	log "github.com/sirupsen/logrus"
-	"os"
 )
 
 func ReadFile(maxLen int) ([]string, error) {

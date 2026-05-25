@@ -2,12 +2,13 @@ package distribution
 
 import (
 	"fmt"
-	cResolver "github.com/Dreamacro/clash/component/resolver"
-	C "github.com/Dreamacro/clash/constant"
+
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
+	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 )
 
 type SystemProxyConfig struct {

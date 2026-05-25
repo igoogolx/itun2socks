@@ -7,8 +7,8 @@ import (
 	"net/netip"
 	"strings"
 
-	"github.com/Dreamacro/clash/component/trie"
 	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/trie"
 	D "github.com/miekg/dns"
 )
 

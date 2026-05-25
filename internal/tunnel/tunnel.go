@@ -5,10 +5,7 @@ import (
 )
 
 func process() {
-	numUDPWorkers := 4
-	if runtime.NumCPU() > numUDPWorkers {
-		numUDPWorkers = runtime.NumCPU()
-	}
+	numUDPWorkers := max(runtime.NumCPU(), 4)
 	for i := 0; i < numUDPWorkers; i++ {
 		go processUDP()
 	}

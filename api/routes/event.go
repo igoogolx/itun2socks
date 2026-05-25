@@ -143,7 +143,7 @@ func (c *Client) writePump() {
 			}
 
 			n := len(c.send)
-			for i := 0; i < n; i++ {
+			for range n {
 				_, err = w.Write(newline)
 				if err != nil {
 					return

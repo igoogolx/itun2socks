@@ -28,7 +28,7 @@ func FreeBytes(b []byte) {
 
 func init() {
 	SetBufferPool(&sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return make([]byte, BufSize)
 		},
 	})

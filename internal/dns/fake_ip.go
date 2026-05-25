@@ -1,9 +1,10 @@
 package dns
 
 import (
-	"github.com/Dreamacro/clash/component/fakeip"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"net"
+
+	"github.com/igoogolx/itun2socks/internal/constants"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 )
 
 var _, ipRange, _ = net.ParseCIDR(constants.FakeIpRange)

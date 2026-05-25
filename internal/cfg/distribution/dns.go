@@ -1,12 +1,12 @@
 package distribution
 
 import (
-	"github.com/Dreamacro/clash/component/fakeip"
-	cResolver "github.com/Dreamacro/clash/component/resolver"
-	C "github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/resolver"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
+	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 )
 
 func NewDnsDistribution(

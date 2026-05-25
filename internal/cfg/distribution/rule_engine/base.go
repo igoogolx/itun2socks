@@ -2,9 +2,10 @@ package rule_engine
 
 import (
 	"errors"
+	"slices"
+
 	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"slices"
 )
 
 type Rule interface {

@@ -1,7 +1,8 @@
 package routes
 
 import (
-	"github.com/Dreamacro/clash/adapter"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	configuration2 "github.com/igoogolx/itun2socks/internal/configuration"
@@ -9,7 +10,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	"net/http"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
 
 func selectedRouter() http.Handler {

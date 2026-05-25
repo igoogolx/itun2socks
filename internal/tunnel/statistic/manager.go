@@ -1,11 +1,12 @@
 package statistic
 
 import (
+	"time"
+
 	"github.com/hashicorp/golang-lru/v2"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"go.uber.org/atomic"
-	"time"
 )
 
 var DefaultManager *Manager

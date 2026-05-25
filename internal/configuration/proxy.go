@@ -6,11 +6,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Dreamacro/clash/adapter"
 	"github.com/gofrs/uuid/v5"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
 
-func GetSelectedProxy() (map[string]interface{}, error) {
+func GetSelectedProxy() (map[string]any, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
@@ -18,7 +18,7 @@ func GetSelectedProxy() (map[string]interface{}, error) {
 	return GetProxy(data.Selected.Proxy)
 }
 
-func GetProxy(id string) (map[string]interface{}, error) {
+func GetProxy(id string) (map[string]any, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func GetProxy(id string) (map[string]interface{}, error) {
 	return nil, fmt.Errorf("error getting selected proxy,id:%v,err:%v", id, err)
 }
 
-func GetProxies() ([]map[string]interface{}, error) {
+func GetProxies() ([]map[string]any, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func DeleteSubscription(id string) error {
 		}
 	}
 
-	newProxy := make([]map[string]interface{}, 0)
+	newProxy := make([]map[string]any, 0)
 
 	for _, v := range data.Proxy {
 		subscriptionId, ok := v["subscription"].(string)
@@ -88,7 +88,7 @@ func DeleteProxies(ids []string) error {
 	if err != nil {
 		return err
 	}
-	newProxy := make([]map[string]interface{}, 0)
+	newProxy := make([]map[string]any, 0)
 	for _, v := range data.Proxy {
 		if id, ok := v["id"].(string); ok && len(id) != 0 {
 			if !slices.Contains(ids, id) {
@@ -109,12 +109,12 @@ func DeleteAllProxies() error {
 	if err != nil {
 		return err
 	}
-	data.Proxy = make([]map[string]interface{}, 0)
+	data.Proxy = make([]map[string]any, 0)
 	err = Write(data)
 	return err
 }
 
-func UpdateProxy(id string, proxy map[string]interface{}) error {
+func UpdateProxy(id string, proxy map[string]any) error {
 	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
 		return fmt.Errorf("fail to update proxy,error:%v", err)
@@ -136,7 +136,7 @@ func UpdateProxy(id string, proxy map[string]interface{}) error {
 	return nil
 }
 
-func checkIsValidStr(value interface{}) (string, bool) {
+func checkIsValidStr(value any) (string, bool) {
 	str, ok := value.(string)
 	if !ok {
 		return "", false
@@ -147,7 +147,7 @@ func checkIsValidStr(value interface{}) (string, bool) {
 	return str, true
 }
 
-func AddSubscription(proxies []map[string]interface{}, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]interface{}, []SubscriptionCfg, error) {
+func AddSubscription(proxies []map[string]any, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]any, []SubscriptionCfg, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, nil, err
@@ -160,7 +160,7 @@ func AddSubscription(proxies []map[string]interface{}, subscriptionUrl string, s
 
 	subscriptionId := subscriptionUuid.String()
 
-	newProxyWithIds := make([]map[string]interface{}, 0)
+	newProxyWithIds := make([]map[string]any, 0)
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
@@ -204,13 +204,13 @@ func UpdateSubscription(subscription SubscriptionCfg) error {
 	return Write(c)
 }
 
-func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]interface{}) ([]map[string]interface{}, error) {
+func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]any) ([]map[string]any, error) {
 	c, err := Read()
 	if err != nil {
 		return nil, err
 	}
 
-	newProxies := make([]map[string]interface{}, 0)
+	newProxies := make([]map[string]any, 0)
 
 	for _, p := range c.Proxy {
 		if value, ok := p["subscription"].(string); ok && value == subscriptionId {
@@ -247,7 +247,7 @@ func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]inter
 
 var addMux sync.Mutex
 
-func AddProxy(proxy map[string]interface{}) (string, error) {
+func AddProxy(proxy map[string]any) (string, error) {
 	addMux.Lock()
 	defer addMux.Unlock()
 	_, err := adapter.ParseProxy(proxy)

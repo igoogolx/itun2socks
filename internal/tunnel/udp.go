@@ -2,6 +2,8 @@ package tunnel
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
@@ -11,7 +13,6 @@ import (
 	D "github.com/miekg/dns"
 	"github.com/sagernet/sing/common/bufio"
 	"github.com/sagernet/sing/common/network"
-	"sync"
 )
 
 var (

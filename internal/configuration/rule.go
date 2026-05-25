@@ -2,9 +2,10 @@ package configuration
 
 import (
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"slices"
 	"strings"
+
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 )
 
 func GetSelectedRule() (string, error) {

@@ -1,13 +1,14 @@
 package statistic
 
 import (
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
-	"github.com/igoogolx/itun2socks/internal/conn"
-	"github.com/igoogolx/itun2socks/internal/dns"
 	"net"
 	"time"
 
-	C "github.com/Dreamacro/clash/constant"
+	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
+	"github.com/igoogolx/itun2socks/internal/conn"
+	"github.com/igoogolx/itun2socks/internal/dns"
+
+	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 
 	"github.com/gofrs/uuid/v5"
 	"go.uber.org/atomic"

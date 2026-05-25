@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	cResolver "github.com/Dreamacro/clash/component/resolver"
-	"github.com/Dreamacro/clash/constant"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
+	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
+	"github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	D "github.com/miekg/dns"
 )

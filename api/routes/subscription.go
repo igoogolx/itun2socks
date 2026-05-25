@@ -69,10 +69,10 @@ func getResFromUrl(w http.ResponseWriter, r *http.Request) {
 
 func addSubscription(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Proxies            []map[string]interface{} `json:"proxies"`
-		SubscriptionUrl    string                   `json:"subscriptionUrl"`
-		SubscriptionName   string                   `json:"subscriptionName"`
-		SubscriptionRemark string                   `json:"subscriptionRemark"`
+		Proxies            []map[string]any `json:"proxies"`
+		SubscriptionUrl    string           `json:"subscriptionUrl"`
+		SubscriptionName   string           `json:"subscriptionName"`
+		SubscriptionRemark string           `json:"subscriptionRemark"`
 	}
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)
@@ -164,8 +164,8 @@ func updateSubscription(w http.ResponseWriter, r *http.Request) {
 
 func updateSubscriptionProxies(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		SubscriptionId string                   `json:"subscriptionId"`
-		Proxies        []map[string]interface{} `json:"proxies"`
+		SubscriptionId string           `json:"subscriptionId"`
+		Proxies        []map[string]any `json:"proxies"`
 	}
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		render.Status(r, http.StatusBadRequest)

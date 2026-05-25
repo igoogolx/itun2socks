@@ -2,16 +2,17 @@ package outbound
 
 import (
 	"fmt"
-	"github.com/Dreamacro/clash/adapter"
-	"github.com/Dreamacro/clash/adapter/outboundgroup"
-	"github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/constant/provider"
+
 	"github.com/igoogolx/itun2socks/internal/configuration"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
+	"github.com/igoogolx/itun2socks/pkg/clash/adapter/outboundgroup"
+	"github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/clash/constant/provider"
 )
 
 type Option struct {
 	AutoMode      configuration.AutoMode
-	Proxies       []map[string]interface{}
+	Proxies       []map[string]any
 	SelectedProxy string
 }
 
@@ -48,7 +49,7 @@ func New(option Option) (constant.Proxy, error) {
 			proxy = adapter.NewProxy(proxyGroup)
 		}
 	} else {
-		var selectedProxy map[string]interface{}
+		var selectedProxy map[string]any
 		for _, v := range option.Proxies {
 			if v["id"] == option.SelectedProxy {
 				selectedProxy = v
