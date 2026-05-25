@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/rc4"
 	"encoding/base64"
 	"encoding/binary"
 	"net"
