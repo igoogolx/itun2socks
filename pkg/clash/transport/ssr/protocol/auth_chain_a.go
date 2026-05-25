@@ -2,9 +2,9 @@ package protocol
 
 import (
 	"bytes"
+	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/rc4"
 	"encoding/base64"
 	"encoding/binary"
 	"net"
@@ -171,12 +171,13 @@ func (a *authChainA) DecodePacket(b []byte) ([]byte, error) {
 	randDataLength := udpGetRandLength(md5Data, &a.randomServer)
 
 	key := core.Kdf(base64.StdEncoding.EncodeToString(a.userKey)+base64.StdEncoding.EncodeToString(md5Data), 16)
-	rc4Cipher, err := rc4.NewCipher(key)
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
+	stream := cipher.NewCTR(block, make([]byte, aes.BlockSize))
 	wantedData := b[:len(b)-8-randDataLength]
-	rc4Cipher.XORKeyStream(wantedData, wantedData)
+	stream.XORKeyStream(wantedData, wantedData)
 	return wantedData, nil
 }
 
@@ -190,11 +191,12 @@ func (a *authChainA) EncodePacket(buf *bytes.Buffer, b []byte) error {
 	randDataLength := udpGetRandLength(md5Data, &a.randomClient)
 
 	key := core.Kdf(base64.StdEncoding.EncodeToString(a.userKey)+base64.StdEncoding.EncodeToString(md5Data), 16)
-	rc4Cipher, err := rc4.NewCipher(key)
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return err
 	}
-	rc4Cipher.XORKeyStream(b, b)
+	stream := cipher.NewCTR(block, make([]byte, aes.BlockSize))
+	stream.XORKeyStream(b, b)
 
 	buf.Write(b)
 	tools.AppendRandBytes(buf, randDataLength)
