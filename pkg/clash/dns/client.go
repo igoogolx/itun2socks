@@ -64,7 +64,7 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 		options = append(options, dialer.WithInterface(c.iface))
 	}
 
-	numPort, err := strconv.Atoi(c.port)
+	numPort, err := strconv.ParseUint(c.port, 10, 16)
 
 	if err != nil {
 		return nil, err
