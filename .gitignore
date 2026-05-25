@@ -1,6 +1,6 @@
 *.log
 .idea
-core
+./core
 dist
 dist-ui
 *.tar.gz
