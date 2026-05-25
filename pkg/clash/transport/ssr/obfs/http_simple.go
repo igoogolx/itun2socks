@@ -2,9 +2,10 @@ package obfs
 
 import (
 	"bytes"
+	cryptorand "crypto/rand"
 	"encoding/hex"
 	"io"
-	"math/rand"
+	"math/big"
 	"net"
 	"strconv"
 	"strings"
@@ -14,6 +15,17 @@ import (
 
 func init() {
 	register("http_simple", newHTTPSimple, 0)
+}
+
+func cryptoRandIntn(n int) int {
+	if n <= 0 {
+		return 0
+	}
+	v, err := cryptorand.Int(cryptorand.Reader, big.NewInt(int64(n)))
+	if err != nil {
+		return 0
+	}
+	return int(v.Int64())
 }
 
 type httpObfs struct {
@@ -81,7 +93,7 @@ func (c *httpConn) Write(b []byte) (int, error) {
 	bLength := len(b)
 	headDataLength := bLength
 	if bLength-headLength > 64 {
-		headDataLength = headLength + rand.Intn(65)
+		headDataLength = headLength + cryptoRandIntn(65)
 	}
 	headData := b[:headDataLength]
 	b = b[headDataLength:]
@@ -99,7 +111,7 @@ func (c *httpConn) Write(b []byte) (int, error) {
 		}
 	}
 	hosts := strings.Split(host, ",")
-	host = hosts[rand.Intn(len(hosts))]
+	host = hosts[cryptoRandIntn(len(hosts))]
 
 	buf := pool.GetBuffer()
 	defer pool.PutBuffer(buf)
@@ -118,7 +130,7 @@ func (c *httpConn) Write(b []byte) (int, error) {
 		buf.WriteString(body + "\r\n\r\n")
 	} else {
 		buf.WriteString("User-Agent: ")
-		buf.WriteString(userAgent[rand.Intn(len(userAgent))])
+		buf.WriteString(userAgent[cryptoRandIntn(len(userAgent))])
 		buf.WriteString("\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-US,en;q=0.8\r\nAccept-Encoding: gzip, deflate\r\n")
 		if c.post {
 			packBoundary(buf)

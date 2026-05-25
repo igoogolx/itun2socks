@@ -5,7 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"encoding/binary"
-	mathRand "math/rand"
+	"math/big"
 	"net"
 	"strings"
 	"time"
@@ -17,6 +17,17 @@ import (
 func init() {
 	register("tls1.2_ticket_auth", newTLS12Ticket, 5)
 	register("tls1.2_ticket_fastauth", newTLS12Ticket, 5)
+}
+
+func cryptoRandIntnTLS(n int) int {
+	if n <= 0 {
+		return 0
+	}
+	v, err := rand.Int(rand.Reader, big.NewInt(int64(n)))
+	if err != nil {
+		return 0
+	}
+	return int(v.Int64())
 }
 
 type tls12Ticket struct {
@@ -194,7 +205,7 @@ func packSNIData(buf *bytes.Buffer, u string) {
 }
 
 func (c *tls12TicketConn) packTicketBuf(buf *bytes.Buffer, u string) {
-	length := 16 * (mathRand.Intn(17) + 8)
+	length := 16 * (cryptoRandIntnTLS(17) + 8)
 	buf.Write([]byte{0, 0x23})
 	binary.Write(buf, binary.BigEndian, uint16(length))
 	tools.AppendRandBytes(buf, length)
@@ -219,6 +230,6 @@ func (t *tls12Ticket) getHost() string {
 		host = ""
 	}
 	hosts := strings.Split(host, ",")
-	host = hosts[mathRand.Intn(len(hosts))]
+	host = hosts[cryptoRandIntnTLS(len(hosts))]
 	return host
 }
