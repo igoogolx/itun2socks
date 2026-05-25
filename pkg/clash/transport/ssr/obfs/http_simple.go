@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"io"
 	"math/big"
+	"math/rand"
 	"net"
 	"strconv"
 	"strings"
