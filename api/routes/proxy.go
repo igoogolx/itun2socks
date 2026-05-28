@@ -26,6 +26,7 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Get("/cur-proxy", handleGetProxy)
+	r.Get("/{proxyId}", getProxy) // NEW: get single proxy with password
 	r.Put("/", addProxy)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)
@@ -126,6 +127,8 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// getProxies returns all proxies with passwords STRIPPED for security.
+// The web dashboard cannot see passwords through this endpoint.
 func getProxies(w http.ResponseWriter, r *http.Request) {
 	proxiesMap, err := configuration.GetProxies()
 	if err != nil {
@@ -141,12 +144,31 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 	}
 	proxies := make([]any, 0)
 	for _, proxy := range proxiesMap {
-		proxies = append(proxies, proxy)
+		// Strip passwords from the list — use getProxy/:id to retrieve them
+		proxies = append(proxies, configuration.StripProxyPasswords(proxy))
 	}
 	render.JSON(w, r, render.M{
 		"proxies":    proxies,
 		"selectedId": selectedId,
 	})
+}
+
+// getProxy returns a single proxy INCLUDING its password.
+// The Flutter app uses this endpoint after admin elevation to show the password.
+func getProxy(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	proxy, err := configuration.GetProxy(proxyId)
+	if err != nil {
+		render.Status(r, http.StatusNotFound)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.JSON(w, r, proxy)
 }
 
 func getCurProxy() (string, string) {
@@ -177,7 +199,6 @@ func getCurProxy() (string, string) {
 	}
 
 	return name, addr
-
 }
 
 func handleGetProxy(w http.ResponseWriter, r *http.Request) {

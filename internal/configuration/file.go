@@ -37,13 +37,26 @@ func Read() (Config, error) {
 		config.Subscriptions = []SubscriptionCfg{}
 	}
 
+	// Decrypt passwords so the rest of the app always works with plaintext
+	for i, proxy := range config.Proxy {
+		config.Proxy[i] = decryptProxyPasswords(proxy)
+	}
+
 	return *config, nil
 }
 
 func Write(c Config) error {
 	mux.Lock()
 	defer mux.Unlock()
-	err := writeFile(c)
+
+	// Encrypt passwords before persisting to disk
+	encrypted := c
+	encrypted.Proxy = make([]map[string]any, len(c.Proxy))
+	for i, proxy := range c.Proxy {
+		encrypted.Proxy[i] = encryptProxyPasswords(proxy)
+	}
+
+	err := writeFile(encrypted)
 	if err != nil {
 		return fmt.Errorf("fail to write file: %v", err)
 	}
