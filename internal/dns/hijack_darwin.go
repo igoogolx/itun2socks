@@ -39,7 +39,7 @@ func Hijack(networkService string, dnsServer string, shouldReset bool) ([]string
 	cmd := exec.Command("networksetup", "-setdnsservers", networkService, dnsServer)
 	_, err = cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("failed to hajack DNS servers: %v", err)
+		return nil, fmt.Errorf("failed to hijack DNS servers: %v, target network service: %v", err, networkService)
 	}
 	return originalDnsServers, nil
 }
