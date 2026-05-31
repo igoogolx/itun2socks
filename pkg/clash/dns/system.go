@@ -49,7 +49,7 @@ func (s *systemClient) ExchangeContext(ctx context.Context, m *D.Msg) (msg *D.Ms
 		go func() {
 			err := s.update()
 			if err != nil {
-				log.Warnln("Batch exchange failed:", err)
+				log.Warnln("Batch exchange failed: %v", err)
 			}
 		}()
 	}
@@ -60,9 +60,9 @@ func (s *systemClient) update() error {
 	dns, err := system_dns.ResolveServers(s.ifaceName)
 	if err != nil {
 		return err
-	} else {
-		log.Infoln("System DNS resolve: %s\n", dns)
 	}
+
+	log.Infoln("System DNS resolve: %s\n", dns)
 	var res []dnsClient
 	nameserver := make([]NameServer, 0, len(dns))
 	for _, item := range dns {
@@ -87,7 +87,7 @@ func newSystemClient(ifaceName string, getDialer func() (C.Proxy, error)) *syste
 	newClient := &systemClient{ifaceName: ifaceName, getDialer: getDialer}
 	err := newClient.update()
 	if err != nil {
-		log.Warnln("System DNS init failed:", err)
+		log.Warnln("System DNS init failed: %v", err)
 	}
 	return newClient
 }
