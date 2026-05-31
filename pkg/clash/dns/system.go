@@ -60,9 +60,9 @@ func (s *systemClient) update() error {
 	dns, err := system_dns.ResolveServers(s.ifaceName)
 	if err != nil {
 		return err
-	} else {
-		log.Infoln("System DNS resolve: %s\n", dns)
 	}
+
+	log.Infoln("System DNS resolve: %s\n", dns)
 	var res []dnsClient
 	nameserver := make([]NameServer, 0, len(dns))
 	for _, item := range dns {
