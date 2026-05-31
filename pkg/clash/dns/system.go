@@ -49,7 +49,7 @@ func (s *systemClient) ExchangeContext(ctx context.Context, m *D.Msg) (msg *D.Ms
 		go func() {
 			err := s.update()
 			if err != nil {
-				log.Warnln("Batch exchange failed:", err)
+				log.Warnln("Batch exchange failed: %v", err)
 			}
 		}()
 	}
@@ -87,7 +87,7 @@ func newSystemClient(ifaceName string, getDialer func() (C.Proxy, error)) *syste
 	newClient := &systemClient{ifaceName: ifaceName, getDialer: getDialer}
 	err := newClient.update()
 	if err != nil {
-		log.Warnln("System DNS init failed:", err)
+		log.Warnln("System DNS init failed: %v", err)
 	}
 	return newClient
 }
