@@ -125,6 +125,13 @@ func UpdateProxy(id string, proxy map[string]any) error {
 	}
 	for i, v := range c.Proxy {
 		if v["id"] == id {
+			// If the update includes a non-empty password, clear the lock
+			for _, field := range passwordFields {
+				if val, ok := proxy[field].(string); ok && val != "" {
+					delete(proxy, "passwordLocked")
+					break
+				}
+			}
 			c.Proxy[i] = proxy
 			break
 		}

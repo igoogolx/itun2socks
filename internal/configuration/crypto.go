@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -16,7 +17,9 @@ import (
 const encPrefix = "enc:"
 
 // getMachineKey derives a 32-byte AES key from a machine-specific identifier.
-// On Windows it uses the MachineGuid registry value; falls back to hostname.
+// On Windows it uses the MachineGuid registry value.
+// On macOS it uses the hardware UUID from IOPlatformExpertDevice.
+// Falls back to hostname on other platforms.
 func getMachineKey() ([]byte, error) {
 	var machineID string
 
@@ -29,6 +32,20 @@ func getMachineKey() ([]byte, error) {
 					parts := strings.Fields(line)
 					if len(parts) >= 3 {
 						machineID = strings.TrimSpace(parts[len(parts)-1])
+						break
+					}
+				}
+			}
+		}
+	} else if runtime.GOOS == "darwin" {
+		// Use macOS hardware UUID which is stable across reboots and hostname changes
+		out, err := exec.Command("ioreg", "-rd1", "-c", "IOPlatformExpertDevice").Output()
+		if err == nil {
+			for _, line := range strings.Split(string(out), "\n") {
+				if strings.Contains(line, "IOPlatformUUID") {
+					parts := strings.Split(line, "=")
+					if len(parts) >= 2 {
+						machineID = strings.Trim(strings.TrimSpace(parts[1]), "\"")
 						break
 					}
 				}
@@ -177,4 +194,86 @@ func stripProxyPasswords(proxy map[string]any) map[string]any {
 // StripProxyPasswords is the exported version for use by other packages.
 func StripProxyPasswords(proxy map[string]any) map[string]any {
 	return stripProxyPasswords(proxy)
+}
+
+// LockProxyPassword sets the passwordLocked flag on a proxy.
+// The password is kept intact (encrypted on disk) so the proxy still works,
+// but the API will refuse to reveal it until unlocked.
+func LockProxyPassword(proxyId string) error {
+	config, err := Read()
+	if err != nil {
+		return err
+	}
+
+	found := false
+	for i, proxy := range config.Proxy {
+		if id, ok := proxy["id"].(string); ok && id == proxyId {
+			config.Proxy[i]["passwordLocked"] = true
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("proxy not found: %s", proxyId)
+	}
+
+	return Write(config)
+}
+
+// ResetProxyPassword removes the lock AND wipes the stored password.
+// The user must re-enter the password via the edit form afterward.
+func ResetProxyPassword(proxyId string) error {
+	config, err := Read()
+	if err != nil {
+		return err
+	}
+
+	found := false
+	for i, proxy := range config.Proxy {
+		if id, ok := proxy["id"].(string); ok && id == proxyId {
+			config.Proxy[i]["passwordLocked"] = false
+			for _, field := range passwordFields {
+				config.Proxy[i][field] = ""
+			}
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("proxy not found: %s", proxyId)
+	}
+
+	return Write(config)
+}
+
+// MigrateEncryptPasswords checks if any proxy passwords are stored in plaintext
+// and encrypts them. Called once at startup to transparently upgrade old configs.
+func MigrateEncryptPasswords() error {
+	config, err := Read()
+	if err != nil {
+		return err
+	}
+
+	needsWrite := false
+	for _, proxy := range config.Proxy {
+		for _, field := range passwordFields {
+			if val, ok := proxy[field]; ok {
+				if str, ok := val.(string); ok && str != "" && !isEncrypted(str) {
+					needsWrite = true
+					break
+				}
+			}
+		}
+		if needsWrite {
+			break
+		}
+	}
+
+	if needsWrite {
+		// Write() will encrypt all plaintext passwords
+		return Write(config)
+	}
+	return nil
 }

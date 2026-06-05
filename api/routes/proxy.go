@@ -30,6 +30,8 @@ func proxyRouter() http.Handler {
 	r.Put("/", addProxy)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)
+	r.Post("/{proxyId}/lock-password", lockProxyPassword)
+	r.Post("/{proxyId}/reset-password", resetProxyPassword)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
@@ -154,7 +156,7 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 }
 
 // getProxy returns a single proxy INCLUDING its password.
-// The Flutter app uses this endpoint after admin elevation to show the password.
+// If the proxy is locked, passwords are stripped from the response.
 func getProxy(w http.ResponseWriter, r *http.Request) {
 	proxyId := chi.URLParam(r, "proxyId")
 	if proxyId == "" {
@@ -166,6 +168,13 @@ func getProxy(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusNotFound)
 		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	// If password is locked, strip it from response
+	if locked, ok := proxy["passwordLocked"].(bool); ok && locked {
+		result := configuration.StripProxyPasswords(proxy)
+		result["passwordLocked"] = true
+		render.JSON(w, r, result)
 		return
 	}
 	render.JSON(w, r, proxy)
@@ -261,6 +270,36 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := configuration.UpdateProxy(proxyId, req.(map[string]any)); err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func lockProxyPassword(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	if err := configuration.LockProxyPassword(proxyId); err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func resetProxyPassword(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	if err := configuration.ResetProxyPassword(proxyId); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return

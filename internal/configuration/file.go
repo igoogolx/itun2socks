@@ -134,3 +134,10 @@ func fileExists(filename string) bool {
 	}
 	return !info.IsDir()
 }
+
+// Init performs one-time initialization including encrypting any plaintext passwords.
+func Init() {
+	if err := MigrateEncryptPasswords(); err != nil {
+		log.Warnln(log.FormatLog(log.ConfigurationPrefix, "failed to migrate passwords: %v"), err)
+	}
+}
