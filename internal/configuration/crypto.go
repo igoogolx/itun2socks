@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
 const encPrefix = "enc:"
@@ -274,6 +275,80 @@ func MigrateEncryptPasswords() error {
 	if needsWrite {
 		// Write() will encrypt all plaintext passwords
 		return Write(config)
+	}
+	return nil
+}
+
+// CheckPasswordExpiry checks if a proxy's password has expired based on its mode.
+// Returns true if the password should be cleared.
+func CheckPasswordExpiry(proxy map[string]any) bool {
+	mode, _ := proxy["passwordMode"].(string)
+	if mode == "" || mode == "persistent" {
+		return false
+	}
+	if mode == "timed" {
+		ttl, ok := proxy["passwordTTLMinutes"].(float64)
+		if !ok || ttl <= 0 {
+			return false
+		}
+		setAt, ok := proxy["passwordSetAt"].(string)
+		if !ok || setAt == "" {
+			return false
+		}
+		t, err := time.Parse(time.RFC3339, setAt)
+		if err != nil {
+			return false
+		}
+		return time.Since(t).Minutes() > ttl
+	}
+	return false
+}
+
+// ClearExpiredPasswords checks all proxies and clears expired timed passwords.
+func ClearExpiredPasswords() error {
+	config, err := Read()
+	if err != nil {
+		return err
+	}
+
+	changed := false
+	for i, proxy := range config.Proxy {
+		if CheckPasswordExpiry(proxy) {
+			for _, field := range passwordFields {
+				config.Proxy[i][field] = ""
+			}
+			delete(config.Proxy[i], "passwordSetAt")
+			config.Proxy[i]["passwordExpired"] = true
+			changed = true
+		}
+	}
+
+	if changed {
+		return Write(config)
+	}
+	return nil
+}
+
+// ClearOneTimePassword clears the password for a specific proxy if it's in one-time mode.
+func ClearOneTimePassword(proxyId string) error {
+	config, err := Read()
+	if err != nil {
+		return err
+	}
+
+	for i, proxy := range config.Proxy {
+		if id, ok := proxy["id"].(string); ok && id == proxyId {
+			mode, _ := proxy["passwordMode"].(string)
+			if mode == "one-time" {
+				for _, field := range passwordFields {
+					config.Proxy[i][field] = ""
+				}
+				delete(config.Proxy[i], "passwordSetAt")
+				config.Proxy[i]["passwordExpired"] = true
+				return Write(config)
+			}
+			break
+		}
 	}
 	return nil
 }

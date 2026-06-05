@@ -1,15 +1,13 @@
 package configuration
-
 import (
 	"fmt"
+	"time"
 	"slices"
 	"strings"
 	"sync"
-
 	"github.com/gofrs/uuid/v5"
 	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
-
 func GetSelectedProxy() (map[string]any, error) {
 	data, err := Read()
 	if err != nil {
@@ -17,7 +15,6 @@ func GetSelectedProxy() (map[string]any, error) {
 	}
 	return GetProxy(data.Selected.Proxy)
 }
-
 func GetProxy(id string) (map[string]any, error) {
 	data, err := Read()
 	if err != nil {
@@ -30,7 +27,6 @@ func GetProxy(id string) (map[string]any, error) {
 	}
 	return nil, fmt.Errorf("error getting selected proxy,id:%v,err:%v", id, err)
 }
-
 func GetProxies() ([]map[string]any, error) {
 	data, err := Read()
 	if err != nil {
@@ -38,7 +34,6 @@ func GetProxies() ([]map[string]any, error) {
 	}
 	return data.Proxy, nil
 }
-
 func GetSubscriptions() ([]SubscriptionCfg, error) {
 	data, err := Read()
 	if err != nil {
@@ -46,7 +41,6 @@ func GetSubscriptions() ([]SubscriptionCfg, error) {
 	}
 	return data.Subscriptions, nil
 }
-
 func DeleteSubscription(id string) error {
 	data, err := Read()
 	if err != nil {
@@ -58,9 +52,7 @@ func DeleteSubscription(id string) error {
 			newSubscriptions = append(newSubscriptions, s)
 		}
 	}
-
 	newProxy := make([]map[string]any, 0)
-
 	for _, v := range data.Proxy {
 		subscriptionId, ok := v["subscription"].(string)
 		if !ok {
@@ -71,18 +63,14 @@ func DeleteSubscription(id string) error {
 			newProxy = append(newProxy, v)
 		}
 	}
-
 	data.Subscriptions = newSubscriptions
 	data.Proxy = newProxy
-
 	err = Write(data)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
-
 func DeleteProxies(ids []string) error {
 	data, err := Read()
 	if err != nil {
@@ -103,7 +91,6 @@ func DeleteProxies(ids []string) error {
 	}
 	return nil
 }
-
 func DeleteAllProxies() error {
 	data, err := Read()
 	if err != nil {
@@ -113,7 +100,6 @@ func DeleteAllProxies() error {
 	err = Write(data)
 	return err
 }
-
 func UpdateProxy(id string, proxy map[string]any) error {
 	_, err := adapter.ParseProxy(proxy)
 	if err != nil {
@@ -129,6 +115,10 @@ func UpdateProxy(id string, proxy map[string]any) error {
 			for _, field := range passwordFields {
 				if val, ok := proxy[field].(string); ok && val != "" {
 					delete(proxy, "passwordLocked")
+					delete(proxy, "passwordExpired")
+					if mode, _ := proxy["passwordMode"].(string); mode == "timed" || mode == "one-time" {
+						proxy["passwordSetAt"] = time.Now().UTC().Format(time.RFC3339)
+					}
 					break
 				}
 			}
@@ -142,7 +132,6 @@ func UpdateProxy(id string, proxy map[string]any) error {
 	}
 	return nil
 }
-
 func checkIsValidStr(value any) (string, bool) {
 	str, ok := value.(string)
 	if !ok {
@@ -153,27 +142,22 @@ func checkIsValidStr(value any) (string, bool) {
 	}
 	return str, true
 }
-
 func AddSubscription(proxies []map[string]any, subscriptionUrl string, subscriptionName string, subscriptionRemark string) ([]map[string]any, []SubscriptionCfg, error) {
 	data, err := Read()
 	if err != nil {
 		return nil, nil, err
 	}
-
 	subscriptionUuid, err := uuid.NewV4()
 	if err != nil {
 		return nil, nil, err
 	}
-
 	subscriptionId := subscriptionUuid.String()
-
 	newProxyWithIds := make([]map[string]any, 0)
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
 			return nil, nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
-
 		if _, ok := checkIsValidStr(proxy["id"]); !ok {
 			id, err := uuid.NewV4()
 			if err != nil {
@@ -181,22 +165,18 @@ func AddSubscription(proxies []map[string]any, subscriptionUrl string, subscript
 			}
 			proxy["id"] = id.String()
 		}
-
 		proxy["subscription"] = subscriptionId
 		newProxyWithIds = append(newProxyWithIds, proxy)
 	}
-
 	newSubscription := SubscriptionCfg{Id: subscriptionId, Name: subscriptionName, Remark: subscriptionRemark, Url: subscriptionUrl}
 	data.Proxy = append(data.Proxy, newProxyWithIds...)
 	data.Subscriptions = append(data.Subscriptions, newSubscription)
-
 	err = Write(data)
 	if err != nil {
 		return nil, nil, err
 	}
 	return data.Proxy, data.Subscriptions, nil
 }
-
 func UpdateSubscription(subscription SubscriptionCfg) error {
 	c, err := Read()
 	if err != nil {
@@ -210,50 +190,39 @@ func UpdateSubscription(subscription SubscriptionCfg) error {
 	}
 	return Write(c)
 }
-
 func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]any) ([]map[string]any, error) {
 	c, err := Read()
 	if err != nil {
 		return nil, err
 	}
-
 	newProxies := make([]map[string]any, 0)
-
 	for _, p := range c.Proxy {
 		if value, ok := p["subscription"].(string); ok && value == subscriptionId {
 			continue
 		}
 		newProxies = append(newProxies, p)
 	}
-
 	for _, proxy := range proxies {
 		_, err := adapter.ParseProxy(proxy)
 		if err != nil {
 			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
-
 		id, err := uuid.NewV4()
 		if err != nil {
 			return nil, err
 		}
 		proxy["id"] = id.String()
 		proxy["subscription"] = subscriptionId
-
 		newProxies = append(newProxies, proxy)
 	}
-
 	c.Proxy = newProxies
-
 	err = Write(c)
 	if err != nil {
 		return nil, err
 	}
-
 	return newProxies, nil
 }
-
 var addMux sync.Mutex
-
 func AddProxy(proxy map[string]any) (string, error) {
 	addMux.Lock()
 	defer addMux.Unlock()

@@ -22,9 +22,11 @@ func SetSelectedId(bucket, id string) error {
 	if err != nil {
 		return err
 	}
+	var previousId string
 	if bucket == "rule" {
 		c.Selected.Rule = id
 	} else if bucket == "proxy" {
+		previousId = c.Selected.Proxy
 		c.Selected.Proxy = id
 	} else {
 		return fmt.Errorf("error seting selected id,type:%v err: invalid field", bucket)
@@ -32,6 +34,10 @@ func SetSelectedId(bucket, id string) error {
 	err = Write(c)
 	if err != nil {
 		return err
+	}
+	// Clear one-time password on the previous proxy after saving selection
+	if bucket == "proxy" && previousId != "" && previousId != id {
+		_ = ClearOneTimePassword(previousId)
 	}
 	return nil
 }
