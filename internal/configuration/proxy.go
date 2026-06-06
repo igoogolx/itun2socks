@@ -239,6 +239,12 @@ func AddProxy(proxy map[string]any) (string, error) {
 		return "", err
 	}
 	proxy["id"] = id.String()
+	// Set passwordSetAt for timed/one-time modes
+	if mode, _ := proxy["passwordMode"].(string); mode == "timed" || mode == "one-time" {
+		if pw, _ := proxy["password"].(string); pw != "" {
+			proxy["passwordSetAt"] = time.Now().UTC().Format(time.RFC3339)
+		}
+	}
 	data.Proxy = append(data.Proxy, proxy)
 	err = Write(data)
 	if err != nil {

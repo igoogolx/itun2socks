@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"go.uber.org/atomic"
@@ -144,4 +145,14 @@ func Init() {
 	if err := ClearExpiredPasswords(); err != nil {
 		log.Warnln(log.FormatLog(log.ConfigurationPrefix, "failed to clear expired passwords: %v"), err)
 	}
+	// Background goroutine: check and clear expired timed passwords every minute
+	go func() {
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			if err := ClearExpiredPasswords(); err != nil {
+				log.Warnln(log.FormatLog(log.ConfigurationPrefix, "periodic expiry check failed: %v"), err)
+			}
+		}
+	}()
 }
