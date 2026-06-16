@@ -43,6 +43,36 @@ func StartMonitor() error {
 	}
 	if len(setting.DefaultInterface) != 0 {
 		update(setting.DefaultInterface)
+		// Create a NetworkUpdateMonitor and DefaultInterfaceMonitor even when
+		// DefaultInterface is explicitly configured — sing-tun requires a non-nil
+		// InterfaceMonitor for TUN/mixed mode (NativeTun.Start calls RegisterMyInterface).
+		networkUpdateMonitor, err = tun.NewNetworkUpdateMonitor(logrus.StandardLogger())
+		if err != nil {
+			return E.Cause(err, "create NetworkUpdateMonitor")
+		}
+		err = networkUpdateMonitor.Start()
+		if err != nil {
+			return E.Cause(err, "start NetworkUpdateMonitor")
+		}
+		defaultInterfaceMonitor, err = tun.NewDefaultInterfaceMonitor(
+			networkUpdateMonitor,
+			logrus.StandardLogger(),
+			tun.DefaultInterfaceMonitorOptions{
+				OverrideAndroidVPN: true,
+				InterfaceFinder:    control.NewDefaultInterfaceFinder(),
+			})
+		if err != nil {
+			return E.Cause(err, "create DefaultInterfaceMonitor")
+		}
+		monitorCallback = defaultInterfaceMonitor.RegisterCallback(func(defaultInterface *control.Interface, flags int) {
+			if defaultInterface != nil {
+				update(defaultInterface.Name)
+			}
+		})
+		err = defaultInterfaceMonitor.Start()
+		if err != nil {
+			return E.Cause(err, "start DefaultInterfaceMonitor")
+		}
 		return nil
 	}
 	networkUpdateMonitor, err = tun.NewNetworkUpdateMonitor(logrus.StandardLogger())
