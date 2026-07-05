@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568
+	github.com/anytls/sing-anytls v0.0.11
 	github.com/dlclark/regexp2 v1.12.0
 	github.com/go-chi/chi/v5 v5.3.0
 	github.com/go-chi/cors v1.2.2
