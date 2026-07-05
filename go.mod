@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.72
 	github.com/sagernet/sing v0.8.11
-	github.com/sagernet/sing-tun v0.8.9
+	github.com/sagernet/sing-tun v0.8.11
 	github.com/samber/lo v1.53.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
