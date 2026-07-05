@@ -14,9 +14,12 @@ import (
 	singMetadata "github.com/sagernet/sing/common/metadata"
 )
 
+type connContextKey string
+
 type AnyTls struct {
 	*Base
-	client *anytls.Client
+	client        *anytls.Client
+	diaOutConnKey connContextKey
 }
 
 type AnyTlsOption struct {
@@ -31,20 +34,31 @@ type AnyTlsOption struct {
 	UDP                      bool               `proxy:"udp,omitempty"`
 }
 
-func (at *AnyTls) StreamConn(_ net.Conn, metadata *C.Metadata) (net.Conn, error) {
+func (at *AnyTls) StreamConn(c net.Conn, metadata *C.Metadata) (net.Conn, error) {
 
 	if at.client == nil {
 		return nil, fmt.Errorf("invalid AnyTls client")
 	}
 
-	addr, err := netip.ParseAddr(metadata.DstIP.String())
-
-	if err != nil {
-
-		return nil, fmt.Errorf("invalid addr for AnyTls client: %s, error: %s", addr, err)
+	dest := singMetadata.Socksaddr{
+		Port: uint16(metadata.DstPort),
 	}
 
-	return at.client.CreateProxy(context.Background(), singMetadata.SocksaddrFrom(addr, uint16(metadata.DstPort)))
+	if len(metadata.Host) != 0 {
+		dest.Fqdn = metadata.Host
+	} else {
+
+		addr, err := netip.ParseAddr(metadata.DstIP.String())
+
+		if err != nil {
+
+			return nil, fmt.Errorf("invalid addr for AnyTls client: %s, error: %s", addr, err)
+		}
+		dest.Addr = addr
+
+	}
+
+	return at.client.CreateProxy(context.WithValue(context.Background(), at.diaOutConnKey, c), dest)
 }
 
 func (at *AnyTls) DialContext(ctx context.Context, metadata *C.Metadata, opts ...dialer.Option) (_ C.Conn, err error) {
@@ -55,9 +69,9 @@ func (at *AnyTls) DialContext(ctx context.Context, metadata *C.Metadata, opts ..
 	}
 	tcpKeepAlive(c)
 
-	defer func(c net.Conn) {
-		safeConnClose(c, err)
-	}(c)
+	//defer func(c net.Conn) {
+	//	safeConnClose(c, err)
+	//}(c)
 
 	c, err = at.StreamConn(c, metadata)
 	if err != nil {
@@ -66,6 +80,15 @@ func (at *AnyTls) DialContext(ctx context.Context, metadata *C.Metadata, opts ..
 
 	return NewConn(c, at), nil
 
+}
+
+func (at *AnyTls) dialOut(ctx context.Context) (net.Conn, error) {
+
+	if v, ok := ctx.Value(at.diaOutConnKey).(net.Conn); ok {
+		return v, nil
+	}
+
+	return nil, fmt.Errorf("no conn found")
 }
 
 func NewAnyTls(option AnyTlsOption) *AnyTls {
@@ -84,6 +107,7 @@ func NewAnyTls(option AnyTlsOption) *AnyTls {
 			iface: option.Interface,
 			rmark: option.RoutingMark,
 		},
+		diaOutConnKey: connContextKey("connKey"),
 	}
 
 	client, err := anytls.NewClient(ctx, anytls.ClientConfig{
@@ -91,6 +115,7 @@ func NewAnyTls(option AnyTlsOption) *AnyTls {
 		IdleSessionCheckInterval: option.IdleSessionCheckInterval.Build(),
 		IdleSessionTimeout:       option.IdleSessionTimeout.Build(),
 		MinIdleSession:           option.MinIdleSession,
+		DialOut:                  anyTlsClient.dialOut,
 	})
 	if err == nil {
 		anyTlsClient.client = client
