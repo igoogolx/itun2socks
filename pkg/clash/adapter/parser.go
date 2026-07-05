@@ -80,6 +80,13 @@ func ParseProxy(mapping map[string]any) (C.Proxy, error) {
 			break
 		}
 		proxy, err = outbound.NewTrojan(*trojanOption)
+	case "anytls":
+		anyTlsOption := &outbound.AnyTlsOption{}
+		err = decoder.Decode(mapping, anyTlsOption)
+		if err != nil {
+			break
+		}
+		proxy = outbound.NewAnyTls(*anyTlsOption)
 	default:
 		return nil, fmt.Errorf("unsupport proxy type: %s", proxyType)
 	}
