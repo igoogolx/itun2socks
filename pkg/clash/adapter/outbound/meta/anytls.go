@@ -20,8 +20,9 @@ import (
 
 type AnyTLS struct {
 	*metaOutbound.Base
-	client *anytls.Client
-	option *AnyTLSOption
+	client                *anytls.Client
+	option                *AnyTLSOption
+	dialOptionsContextKey connOptionsContextKey
 }
 
 type AnyTLSOption struct {
