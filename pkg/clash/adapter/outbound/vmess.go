@@ -260,7 +260,7 @@ func (v *Vmess) ListenPacketContext(ctx context.Context, metadata *C.Metadata, o
 		return nil, fmt.Errorf("new vmess client error: %v", err)
 	}
 
-	return newPacketConn(&vmessPacketConn{Conn: c, rAddr: metadata.UDPAddr()}, v), nil
+	return NewPacketConn(&vmessPacketConn{Conn: c, rAddr: metadata.UDPAddr()}, v), nil
 }
 
 func NewVmess(option VmessOption) (*Vmess, error) {

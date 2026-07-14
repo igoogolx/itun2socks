@@ -89,7 +89,7 @@ func (ssr *ShadowSocksR) ListenPacketContext(ctx context.Context, metadata *C.Me
 
 	pc = ssr.cipher.PacketConn(pc)
 	pc = ssr.protocol.PacketConn(pc)
-	return newPacketConn(&ssPacketConn{PacketConn: pc, rAddr: addr}, ssr), nil
+	return NewPacketConn(&ssPacketConn{PacketConn: pc, rAddr: addr}, ssr), nil
 }
 
 func NewShadowSocksR(option ShadowSocksROption) (*ShadowSocksR, error) {
