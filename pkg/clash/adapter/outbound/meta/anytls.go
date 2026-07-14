@@ -14,32 +14,34 @@ import (
 
 	M "github.com/metacubex/sing/common/metadata"
 	"github.com/metacubex/sing/common/uot"
+
+	metaOutbound "github.com/metacubex/mihomo/adapter/outbound"
 )
 
 type AnyTLS struct {
-	*Base
+	*metaOutbound.Base
 	client *anytls.Client
 	option *AnyTLSOption
 }
 
 type AnyTLSOption struct {
-	BasicOption
-	Name                     string     `proxy:"name"`
-	Server                   string     `proxy:"server"`
-	Port                     int        `proxy:"port"`
-	Password                 string     `proxy:"password"`
-	ALPN                     []string   `proxy:"alpn,omitempty"`
-	SNI                      string     `proxy:"sni,omitempty"`
-	ECHOpts                  ECHOptions `proxy:"ech-opts,omitempty"`
-	ClientFingerprint        string     `proxy:"client-fingerprint,omitempty"`
-	SkipCertVerify           bool       `proxy:"skip-cert-verify,omitempty"`
-	Fingerprint              string     `proxy:"fingerprint,omitempty"`
-	Certificate              string     `proxy:"certificate,omitempty"`
-	PrivateKey               string     `proxy:"private-key,omitempty"`
-	UDP                      bool       `proxy:"udp,omitempty"`
-	IdleSessionCheckInterval int        `proxy:"idle-session-check-interval,omitempty"`
-	IdleSessionTimeout       int        `proxy:"idle-session-timeout,omitempty"`
-	MinIdleSession           int        `proxy:"min-idle-session,omitempty"`
+	metaOutbound.BasicOption
+	Name                     string                  `proxy:"name"`
+	Server                   string                  `proxy:"server"`
+	Port                     int                     `proxy:"port"`
+	Password                 string                  `proxy:"password"`
+	ALPN                     []string                `proxy:"alpn,omitempty"`
+	SNI                      string                  `proxy:"sni,omitempty"`
+	ECHOpts                  metaOutbound.ECHOptions `proxy:"ech-opts,omitempty"`
+	ClientFingerprint        string                  `proxy:"client-fingerprint,omitempty"`
+	SkipCertVerify           bool                    `proxy:"skip-cert-verify,omitempty"`
+	Fingerprint              string                  `proxy:"fingerprint,omitempty"`
+	Certificate              string                  `proxy:"certificate,omitempty"`
+	PrivateKey               string                  `proxy:"private-key,omitempty"`
+	UDP                      bool                    `proxy:"udp,omitempty"`
+	IdleSessionCheckInterval int                     `proxy:"idle-session-check-interval,omitempty"`
+	IdleSessionTimeout       int                     `proxy:"idle-session-timeout,omitempty"`
+	MinIdleSession           int                     `proxy:"min-idle-session,omitempty"`
 }
 
 func (t *AnyTLS) DialContext(ctx context.Context, metadata *C.Metadata) (_ C.Conn, err error) {
@@ -86,7 +88,7 @@ func (t *AnyTLS) Close() error {
 func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 	addr := net.JoinHostPort(option.Server, strconv.Itoa(option.Port))
 	outbound := &AnyTLS{
-		Base: NewBase(BaseOption{
+		Base: metaOutbound.NewBase(metaOutbound.BaseOption{
 			Name:         option.Name,
 			Addr:         addr,
 			Type:         C.AnyTLS,
