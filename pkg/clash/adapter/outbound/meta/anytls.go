@@ -6,8 +6,10 @@ import (
 	"strconv"
 	"time"
 
+	clashOutbound "github.com/igoogolx/itun2socks/pkg/clash/adapter/outbound"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
+	clashC "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	N "github.com/metacubex/mihomo/common/net"
-	"github.com/metacubex/mihomo/component/proxydialer"
 	C "github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/transport/anytls"
 	"github.com/metacubex/mihomo/transport/vmess"
@@ -45,28 +47,57 @@ type AnyTLSOption struct {
 	MinIdleSession           int                     `proxy:"min-idle-session,omitempty"`
 }
 
-func (t *AnyTLS) DialContext(ctx context.Context, metadata *C.Metadata) (_ C.Conn, err error) {
-	c, err := t.client.CreateProxy(ctx, M.ParseSocksaddrHostPort(metadata.String(), metadata.DstPort))
+func (t *AnyTLS) Type() clashC.AdapterType {
+	return clashC.AnyTls
+}
+
+func (t *AnyTLS) StreamConn(c net.Conn, metadata *clashC.Metadata) (net.Conn, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *AnyTLS) Unwrap(metadata *clashC.Metadata) clashC.Proxy {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *AnyTLS) DialContext(ctx context.Context, m *clashC.Metadata, opts ...dialer.Option) (_ clashC.Conn, err error) {
+
+	metadata, err := convertMeta(m)
+	if err != nil {
+		return nil, err
+
+	}
+
+	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialOptionsContextKey, opts), M.ParseSocksaddrHostPort(metadata.String(), metadata.DstPort))
 	if err != nil {
 		return nil, err
 	}
-	return NewConn(c, t), nil
+
+	return clashOutbound.NewConn(c, t), nil
 }
 
-func (t *AnyTLS) ListenPacketContext(ctx context.Context, metadata *C.Metadata) (_ C.PacketConn, err error) {
+func (t *AnyTLS) ListenPacketContext(ctx context.Context, m *clashC.Metadata, opts ...dialer.Option) (_ clashC.PacketConn, err error) {
+
+	metadata, err := convertMeta(m)
+	if err != nil {
+		return nil, err
+
+	}
+
 	if err = t.ResolveUDP(ctx, metadata); err != nil {
 		return nil, err
 	}
 
 	// create tcp
-	c, err := t.client.CreateProxy(ctx, uot.RequestDestination(2))
+	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialOptionsContextKey, opts), uot.RequestDestination(2))
 	if err != nil {
 		return nil, err
 	}
 
 	// create uot on tcp
 	destination := M.SocksaddrFromNet(metadata.UDPAddr())
-	return NewPacketConn(N.NewThreadSafePacketConn(uot.NewLazyConn(c, uot.Request{Destination: destination})), t), nil
+	return clashOutbound.NewPacketConn(N.NewThreadSafePacketConn(uot.NewLazyConn(c, uot.Request{Destination: destination})), t), nil
 }
 
 // SupportUOT implements C.ProxyAdapter
@@ -101,15 +132,17 @@ func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 			RoutingMark:  option.RoutingMark,
 			Prefer:       option.IPVersion,
 		}),
-		option: &option,
+		option:                &option,
+		dialOptionsContextKey: connOptionsContextKey("dialOptionsConnKey"),
 	}
-	outbound.dialer = option.NewDialer(outbound.DialOptions())
-	singDialer := proxydialer.NewSingDialer(outbound.dialer)
 
 	tOption := anytls.ClientConfig{
-		Password:                 option.Password,
-		Server:                   M.ParseSocksaddrHostPort(option.Server, uint16(option.Port)),
-		Dialer:                   singDialer,
+		Password: option.Password,
+		Server:   M.ParseSocksaddrHostPort(option.Server, uint16(option.Port)),
+		Dialer: AnyTLSDialer{
+			addr:          addr,
+			diaOutConnKey: outbound.dialOptionsContextKey,
+		},
 		IdleSessionCheckInterval: time.Duration(option.IdleSessionCheckInterval) * time.Second,
 		IdleSessionTimeout:       time.Duration(option.IdleSessionTimeout) * time.Second,
 		MinIdleSession:           option.MinIdleSession,
