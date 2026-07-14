@@ -57,8 +57,7 @@ func (t *AnyTLS) StreamConn(c net.Conn, metadata *clashC.Metadata) (net.Conn, er
 }
 
 func (t *AnyTLS) Unwrap(metadata *clashC.Metadata) clashC.Proxy {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (t *AnyTLS) DialContext(ctx context.Context, m *clashC.Metadata, opts ...dialer.Option) (_ clashC.Conn, err error) {
