@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/adapter/outbound"
+	clashMeta "github.com/igoogolx/itun2socks/pkg/clash/adapter/outbound/meta"
 	"github.com/igoogolx/itun2socks/pkg/clash/common/structure"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 )
@@ -81,12 +82,12 @@ func ParseProxy(mapping map[string]any) (C.Proxy, error) {
 		}
 		proxy, err = outbound.NewTrojan(*trojanOption)
 	case "anytls":
-		anyTlsOption := &outbound.AnyTlsOption{}
+		anyTlsOption := &clashMeta.AnyTLSOption{}
 		err = decoder.Decode(mapping, anyTlsOption)
 		if err != nil {
 			break
 		}
-		proxy = outbound.NewAnyTls(*anyTlsOption)
+		proxy, err = clashMeta.NewAnyTLS(*anyTlsOption)
 	default:
 		return nil, fmt.Errorf("unsupport proxy type: %s", proxyType)
 	}
