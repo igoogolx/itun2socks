@@ -2,6 +2,7 @@ package clashMeta
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strconv"
 	"time"
@@ -22,9 +23,9 @@ import (
 
 type AnyTLS struct {
 	*metaOutbound.Base
-	client                *anytls.Client
-	option                *AnyTLSOption
-	dialOptionsContextKey connOptionsContextKey
+	client             *anytls.Client
+	option             *AnyTLSOption
+	dialConnContextKey connContextKey
 }
 
 type AnyTLSOption struct {
@@ -51,12 +52,24 @@ func (t *AnyTLS) Type() clashC.AdapterType {
 	return clashC.AnyTls
 }
 
-func (t *AnyTLS) StreamConn(c net.Conn, metadata *clashC.Metadata) (net.Conn, error) {
-	//TODO implement me
-	panic("implement me")
+func (t *AnyTLS) StreamConn(c net.Conn, m *clashC.Metadata) (net.Conn, error) {
+
+	metadata, err := convertMeta(m)
+	if err != nil {
+		return nil, err
+
+	}
+
+	proxyC, err := t.client.CreateProxy(context.WithValue(context.Background(), t.dialConnContextKey, c), M.ParseSocksaddrHostPort(metadata.String(), metadata.DstPort))
+	if err != nil {
+		return nil, err
+	}
+
+	return proxyC, nil
+
 }
 
-func (t *AnyTLS) Unwrap(metadata *clashC.Metadata) clashC.Proxy {
+func (t *AnyTLS) Unwrap(_ *clashC.Metadata) clashC.Proxy {
 	return nil
 }
 
@@ -68,7 +81,12 @@ func (t *AnyTLS) DialContext(ctx context.Context, m *clashC.Metadata, opts ...di
 
 	}
 
-	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialOptionsContextKey, opts), M.ParseSocksaddrHostPort(metadata.String(), metadata.DstPort))
+	dialOutConn, err := dialer.DialContext(ctx, "tcp", t.Addr(), opts...)
+	if err != nil {
+		return nil, fmt.Errorf("%s connect error: %w", t.Addr(), err)
+	}
+
+	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialConnContextKey, dialOutConn), M.ParseSocksaddrHostPort(metadata.String(), metadata.DstPort))
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +106,13 @@ func (t *AnyTLS) ListenPacketContext(ctx context.Context, m *clashC.Metadata, op
 		return nil, err
 	}
 
+	dialOutPc, err := dialer.ListenPacket(ctx, "udp", "", opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	// create tcp
-	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialOptionsContextKey, opts), uot.RequestDestination(2))
+	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialConnContextKey, dialOutPc), uot.RequestDestination(2))
 	if err != nil {
 		return nil, err
 	}
@@ -131,8 +154,8 @@ func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 			RoutingMark:  option.RoutingMark,
 			Prefer:       option.IPVersion,
 		}),
-		option:                &option,
-		dialOptionsContextKey: connOptionsContextKey("dialOptionsConnKey"),
+		option:             &option,
+		dialConnContextKey: connContextKey("dialOptionsConnKey"),
 	}
 
 	tOption := anytls.ClientConfig{
@@ -140,7 +163,7 @@ func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 		Server:   M.ParseSocksaddrHostPort(option.Server, uint16(option.Port)),
 		Dialer: AnyTLSDialer{
 			addr:          addr,
-			diaOutConnKey: outbound.dialOptionsContextKey,
+			diaOutConnKey: outbound.dialConnContextKey,
 		},
 		IdleSessionCheckInterval: time.Duration(option.IdleSessionCheckInterval) * time.Second,
 		IdleSessionTimeout:       time.Duration(option.IdleSessionTimeout) * time.Second,

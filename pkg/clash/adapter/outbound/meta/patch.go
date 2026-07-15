@@ -6,51 +6,40 @@ import (
 	"net"
 	"net/netip"
 
-	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	clashC "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	metaC "github.com/metacubex/mihomo/constant"
 
 	M "github.com/metacubex/sing/common/metadata"
 )
 
-type connOptionsContextKey string
+type connContextKey string
 
 type AnyTLSDialer struct {
-	diaOutConnKey connOptionsContextKey
+	diaOutConnKey connContextKey
 	addr          string
 }
 
-func (a AnyTLSDialer) DialContext(ctx context.Context, network string, destination M.Socksaddr) (net.Conn, error) {
+func (a AnyTLSDialer) DialContext(ctx context.Context, _ string, _ M.Socksaddr) (net.Conn, error) {
 
-	v, ok := ctx.Value(a.diaOutConnKey).([]dialer.Option)
+	v, ok := ctx.Value(a.diaOutConnKey).(net.Conn)
 
 	if !ok {
 		return nil, fmt.Errorf("invalid dialer options")
 	}
 
-	c, err := dialer.DialContext(ctx, network, a.addr, v...)
-	if err != nil {
-		return nil, fmt.Errorf("%s connect error: %w", a.addr, err)
-	}
-
-	return c, nil
+	return v, nil
 
 }
 
-func (a AnyTLSDialer) ListenPacket(ctx context.Context, destination M.Socksaddr) (net.PacketConn, error) {
+func (a AnyTLSDialer) ListenPacket(ctx context.Context, _ M.Socksaddr) (net.PacketConn, error) {
 
-	v, ok := ctx.Value(a.diaOutConnKey).([]dialer.Option)
+	v, ok := ctx.Value(a.diaOutConnKey).(net.PacketConn)
 
 	if !ok {
 		return nil, fmt.Errorf("invalid dialer options")
 	}
 
-	pc, err := dialer.ListenPacket(ctx, "udp", "", v...)
-	if err != nil {
-		return nil, err
-	}
-
-	return pc, nil
+	return v, nil
 
 }
 
