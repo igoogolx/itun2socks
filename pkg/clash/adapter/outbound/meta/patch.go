@@ -24,7 +24,7 @@ func (a AnyTLSDialer) DialContext(ctx context.Context, _ string, _ M.Socksaddr) 
 	v, ok := ctx.Value(a.diaOutConnKey).(net.Conn)
 
 	if !ok {
-		return nil, fmt.Errorf("invalid dialer options")
+		return nil, fmt.Errorf("invalid dialer")
 	}
 
 	return v, nil
@@ -36,7 +36,7 @@ func (a AnyTLSDialer) ListenPacket(ctx context.Context, _ M.Socksaddr) (net.Pack
 	v, ok := ctx.Value(a.diaOutConnKey).(net.PacketConn)
 
 	if !ok {
-		return nil, fmt.Errorf("invalid dialer options")
+		return nil, fmt.Errorf("invalid dialer")
 	}
 
 	return v, nil
