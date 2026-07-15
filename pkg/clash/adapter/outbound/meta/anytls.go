@@ -106,13 +106,13 @@ func (t *AnyTLS) ListenPacketContext(ctx context.Context, m *clashC.Metadata, op
 		return nil, err
 	}
 
-	dialOutPc, err := dialer.ListenPacket(ctx, "udp", "", opts...)
+	dialOutConn, err := dialer.DialContext(ctx, "tcp", t.Addr(), opts...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s connect error: %w", t.Addr(), err)
 	}
 
 	// create tcp
-	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialConnContextKey, dialOutPc), uot.RequestDestination(2))
+	c, err := t.client.CreateProxy(context.WithValue(ctx, t.dialConnContextKey, dialOutConn), uot.RequestDestination(2))
 	if err != nil {
 		return nil, err
 	}
