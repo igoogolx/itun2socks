@@ -34,6 +34,7 @@ func (o ECHOptions) Parse() (*ech.Config, error) {
 			if o.QueryServerName != "" { // overrides the domain name used for ECH HTTPS record queries
 				serverName = o.QueryServerName
 			}
+			//FIXME: implement ProxyServerHostResolver
 			return resolver.ResolveECHWithResolver(ctx, serverName, resolver.ProxyServerHostResolver)
 		}
 	}
