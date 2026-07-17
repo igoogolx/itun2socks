@@ -22,7 +22,7 @@ import (
 )
 
 type AnyTLS struct {
-	*metaOutbound.Base
+	*clashOutbound.Base
 	client             *anytls.Client
 	option             *AnyTLSOption
 	dialConnContextKey connContextKey
@@ -102,10 +102,6 @@ func (t *AnyTLS) ListenPacketContext(ctx context.Context, m *clashC.Metadata, op
 
 	}
 
-	if err = t.ResolveUDP(ctx, metadata); err != nil {
-		return nil, err
-	}
-
 	dialOutConn, err := dialer.DialContext(ctx, "tcp", t.Addr(), opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s connect error: %w", t.Addr(), err)
@@ -127,13 +123,6 @@ func (t *AnyTLS) SupportUOT() bool {
 	return true
 }
 
-// ProxyInfo implements C.ProxyAdapter
-func (t *AnyTLS) ProxyInfo() C.ProxyInfo {
-	info := t.Base.ProxyInfo()
-	info.DialerProxy = t.option.DialerProxy
-	return info
-}
-
 // Close implements C.ProxyAdapter
 func (t *AnyTLS) Close() error {
 	return t.client.Close()
@@ -142,17 +131,13 @@ func (t *AnyTLS) Close() error {
 func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 	addr := net.JoinHostPort(option.Server, strconv.Itoa(option.Port))
 	outbound := &AnyTLS{
-		Base: metaOutbound.NewBase(metaOutbound.BaseOption{
-			Name:         option.Name,
-			Addr:         addr,
-			Type:         C.AnyTLS,
-			ProviderName: option.ProviderName,
-			UDP:          option.UDP,
-			TFO:          option.TFO,
-			MPTCP:        option.MPTCP,
-			Interface:    option.Interface,
-			RoutingMark:  option.RoutingMark,
-			Prefer:       option.IPVersion,
+		Base: clashOutbound.NewBase(clashOutbound.BaseOption{
+			Name:        option.Name,
+			Addr:        addr,
+			Type:        clashC.AnyTls,
+			UDP:         option.UDP,
+			Interface:   option.Interface,
+			RoutingMark: option.RoutingMark,
 		}),
 		option:             &option,
 		dialConnContextKey: connContextKey("dialOptionsConnKey"),
