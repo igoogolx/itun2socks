@@ -151,10 +151,11 @@ func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 		IdleSessionTimeout:       time.Duration(option.IdleSessionTimeout) * time.Second,
 		MinIdleSession:           option.MinIdleSession,
 	}
-	echConfig, err := option.ECHOpts.Parse()
-	if err != nil {
-		return nil, err
-	}
+	//FIXME: implement ech
+	//echConfig, err := option.ECHOpts.Parse()
+	//if err != nil {
+	//	return nil, err
+	//}
 	tlsConfig := &vmess.TLSConfig{
 		Host:              option.SNI,
 		SkipCertVerify:    option.SkipCertVerify,
@@ -163,7 +164,7 @@ func NewAnyTLS(option AnyTLSOption) (*AnyTLS, error) {
 		Certificate:       option.Certificate,
 		PrivateKey:        option.PrivateKey,
 		ClientFingerprint: option.ClientFingerprint,
-		ECH:               echConfig,
+		//ECH:               echConfig,
 	}
 	if tlsConfig.Host == "" {
 		tlsConfig.Host = option.Server
