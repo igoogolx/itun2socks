@@ -86,7 +86,6 @@ type Config struct {
 	Hosts        *trie.DomainTrie
 	Profile      *Profile
 	Inbounds     []C.Inbound
-	Rules        []C.Rule
 	Users        []auth.AuthUser
 	Proxies      map[string]C.Proxy
 	Providers    map[string]providerTypes.ProxyProvider
