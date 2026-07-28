@@ -13,7 +13,6 @@ import (
 	providerTypes "github.com/igoogolx/itun2socks/pkg/clash/constant/provider"
 	"github.com/igoogolx/itun2socks/pkg/clash/dns"
 	"github.com/igoogolx/itun2socks/pkg/clash/log"
-	T "github.com/igoogolx/itun2socks/pkg/clash/tunnel"
 )
 
 // General config
@@ -21,7 +20,6 @@ type General struct {
 	LegacyInbound
 	Controller
 	Authentication []string     `json:"authentication"`
-	Mode           T.TunnelMode `json:"mode"`
 	LogLevel       log.LogLevel `json:"log-level"`
 	IPv6           bool         `json:"ipv6"`
 	Interface      string       `json:"-"`
