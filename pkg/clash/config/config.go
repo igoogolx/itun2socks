@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"strings"
 
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/clash/dns"
 )
 
