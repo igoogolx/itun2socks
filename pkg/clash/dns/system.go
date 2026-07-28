@@ -3,7 +3,6 @@ package dns
 import (
 	"context"
 	"net"
-	"net/netip"
 	"sync"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
@@ -57,7 +56,7 @@ func (s *systemClient) ExchangeContext(ctx context.Context, m *D.Msg) (msg *D.Ms
 }
 
 func (s *systemClient) update() error {
-	dns, err := system_dns.ResolveServers(s.ifaceName)
+	dns, err := system_dns.ResolverV4Servers(s.ifaceName)
 	if err != nil {
 		return err
 	}
@@ -66,13 +65,10 @@ func (s *systemClient) update() error {
 	var res []dnsClient
 	nameserver := make([]NameServer, 0, len(dns))
 	for _, item := range dns {
-		itemAddr, err := netip.ParseAddr(item)
-		if err == nil && itemAddr.Is4() {
-			nameserver = append(nameserver, NameServer{
-				Addr:      net.JoinHostPort(item, "53"),
-				Interface: s.ifaceName,
-			})
-		}
+		nameserver = append(nameserver, NameServer{
+			Addr:      net.JoinHostPort(item, "53"),
+			Interface: s.ifaceName,
+		})
 
 	}
 

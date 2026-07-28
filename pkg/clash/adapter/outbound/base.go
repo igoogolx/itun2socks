@@ -133,6 +133,6 @@ func (c *packetConn) AppendToChains(a C.ProxyAdapter) {
 	c.chain = append(c.chain, a.Name())
 }
 
-func newPacketConn(pc net.PacketConn, a C.ProxyAdapter) C.PacketConn {
+func NewPacketConn(pc net.PacketConn, a C.ProxyAdapter) C.PacketConn {
 	return &packetConn{pc, []string{a.Name()}}
 }

@@ -101,7 +101,7 @@ func (s *Snell) ListenPacketContext(ctx context.Context, metadata *C.Metadata, o
 	}
 
 	pc := snell.PacketConn(c)
-	return newPacketConn(pc, s), nil
+	return NewPacketConn(pc, s), nil
 }
 
 func NewSnell(option SnellOption) (*Snell, error) {

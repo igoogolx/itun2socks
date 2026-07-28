@@ -28,7 +28,7 @@ func (d *Direct) ListenPacketContext(ctx context.Context, metadata *C.Metadata, 
 	if err != nil {
 		return nil, err
 	}
-	return newPacketConn(&directPacketConn{pc}, d), nil
+	return NewPacketConn(&directPacketConn{pc}, d), nil
 }
 
 type directPacketConn struct {

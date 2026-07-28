@@ -101,5 +101,4 @@ type RuleProvider interface {
 	Behavior() RuleType
 	Match(*constant.Metadata) bool
 	ShouldResolveIP() bool
-	AsRule(adaptor string) constant.Rule
 }

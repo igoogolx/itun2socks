@@ -28,6 +28,7 @@ const (
 	Fallback
 	URLTest
 	LoadBalance
+	AnyTls
 )
 
 const (

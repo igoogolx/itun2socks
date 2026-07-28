@@ -21,7 +21,7 @@ func (r *Reject) DialContext(ctx context.Context, metadata *C.Metadata, opts ...
 
 // ListenPacketContext implements C.ProxyAdapter
 func (r *Reject) ListenPacketContext(ctx context.Context, metadata *C.Metadata, opts ...dialer.Option) (C.PacketConn, error) {
-	return newPacketConn(&nopPacketConn{}, r), nil
+	return NewPacketConn(&nopPacketConn{}, r), nil
 }
 
 func NewReject() *Reject {

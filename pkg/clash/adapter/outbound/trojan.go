@@ -155,7 +155,7 @@ func (t *Trojan) ListenPacketContext(ctx context.Context, metadata *C.Metadata, 
 	}
 
 	pc := t.instance.PacketConn(c)
-	return newPacketConn(pc, t), err
+	return NewPacketConn(pc, t), err
 }
 
 func NewTrojan(option TrojanOption) (*Trojan, error) {
