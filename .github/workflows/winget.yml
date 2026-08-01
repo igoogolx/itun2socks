@@ -12,6 +12,7 @@ jobs:
       - name: Upload Installers
         uses: vedantmgoyal9/winget-releaser@main
         with:
+          release-tag: v1.35.1
           identifier: igoogolx.itun2socks
           max-versions-to-keep: 5 # keep only the latest 5 versions
           installers-regex: '.*windows_amd64.zip$' # Only .zip files
