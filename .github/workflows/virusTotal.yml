@@ -1,8 +1,6 @@
 name: Run VirusTotal Scan
 
-on:
-  release:
-    types: [workflow_dispatch]
+on: workflow_dispatch
 
 jobs:
   virustotal:

@@ -1,8 +1,6 @@
 name: Publish to WinGet
 
-on:
-  release:
-    types: [workflow_dispatch]
+on: workflow_dispatch
 
 jobs:
   publish:
