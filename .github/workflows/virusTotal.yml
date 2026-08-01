@@ -1,15 +1,12 @@
 name: Run VirusTotal Scan
 
-on:
-  release:
-    types: [published]
+on: workflow_dispatch
 
 jobs:
   virustotal:
     runs-on: ubuntu-latest
     steps:
-      - if: ${{ !contains(github.ref, '-beat.') }}
-        name: VirusTotal Scan
+      - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
