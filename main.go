@@ -50,6 +50,7 @@ func main() {
 	log.InitLog()
 	log.Infoln(log.FormatLog(log.InitPrefix, "using config: %v"), constants.Path.ConfigFilePath())
 	configuration.SetConfigFilePath(constants.Path.ConfigFilePath())
+	configuration.Init()
 	api.Start(port, secret)
 
 	defer func() {

@@ -26,9 +26,13 @@ func proxyRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", getProxies)
 	r.Get("/cur-proxy", handleGetProxy)
+	r.Get("/{proxyId}", getProxy) // NEW: get single proxy with password
 	r.Put("/", addProxy)
 	r.Delete("/all", deleteAllProxies)
 	r.Delete("/", deleteProxies)
+	r.Post("/{proxyId}/lock-password", lockProxyPassword)
+	r.Post("/{proxyId}/reset-password", resetProxyPassword)
+	r.Get("/{proxyId}/password-status", getPasswordStatus)
 	r.Post("/{proxyId}", updateProxy)
 	r.Get("/delay/{proxyId}", getProxyDelay)
 	r.Get("/udp-test/{proxyId}", testProxyUdp)
@@ -126,6 +130,8 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// getProxies returns all proxies with passwords STRIPPED for security.
+// The web dashboard cannot see passwords through this endpoint.
 func getProxies(w http.ResponseWriter, r *http.Request) {
 	proxiesMap, err := configuration.GetProxies()
 	if err != nil {
@@ -141,12 +147,38 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 	}
 	proxies := make([]any, 0)
 	for _, proxy := range proxiesMap {
-		proxies = append(proxies, proxy)
+		// Strip passwords from the list — use getProxy/:id to retrieve them
+		proxies = append(proxies, configuration.StripProxyPasswords(proxy))
 	}
 	render.JSON(w, r, render.M{
 		"proxies":    proxies,
 		"selectedId": selectedId,
 	})
+}
+
+// getProxy returns a single proxy INCLUDING its password.
+// If the proxy is locked, passwords are stripped from the response.
+func getProxy(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	proxy, err := configuration.GetProxy(proxyId)
+	if err != nil {
+		render.Status(r, http.StatusNotFound)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	// If password is locked, strip it from response
+	if locked, ok := proxy["passwordLocked"].(bool); ok && locked {
+		result := configuration.StripProxyPasswords(proxy)
+		result["passwordLocked"] = true
+		render.JSON(w, r, result)
+		return
+	}
+	render.JSON(w, r, proxy)
 }
 
 func getCurProxy() (string, string) {
@@ -177,7 +209,6 @@ func getCurProxy() (string, string) {
 	}
 
 	return name, addr
-
 }
 
 func handleGetProxy(w http.ResponseWriter, r *http.Request) {
@@ -239,10 +270,92 @@ func updateProxy(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrBadRequest)
 		return
 	}
+
+	// Auto stop/start if the manager is running (allows save while active)
+	wasRunning := manager.GetIsStarted()
+	if wasRunning {
+		_ = manager.Close()
+	}
+
 	if err := configuration.UpdateProxy(proxyId, req.(map[string]any)); err != nil {
+		// Restart if we stopped
+		if wasRunning {
+			_ = manager.Start()
+		}
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+
+	// Restart if it was running
+	if wasRunning {
+		_ = manager.Start()
+	}
+
+	render.NoContent(w, r)
+}
+
+func lockProxyPassword(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	if err := configuration.LockProxyPassword(proxyId); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
 	render.NoContent(w, r)
+}
+
+func resetProxyPassword(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	if err := configuration.ResetProxyPassword(proxyId); err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+}
+
+func getPasswordStatus(w http.ResponseWriter, r *http.Request) {
+	proxyId := chi.URLParam(r, "proxyId")
+	if proxyId == "" {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+	proxy, err := configuration.GetProxy(proxyId)
+	if err != nil {
+		render.Status(r, http.StatusNotFound)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+
+	mode, _ := proxy["passwordMode"].(string)
+	locked, _ := proxy["passwordLocked"].(bool)
+	expired := configuration.CheckPasswordExpiry(proxy)
+	hasPassword := false
+	for _, field := range []string{"password", "passwd", "auth_str"} {
+		if val, ok := proxy[field].(string); ok && val != "" {
+			hasPassword = true
+			break
+		}
+	}
+
+	render.JSON(w, r, render.M{
+		"mode":        mode,
+		"locked":      locked,
+		"expired":     expired,
+		"hasPassword": hasPassword,
+		"setAt":       proxy["passwordSetAt"],
+		"ttlMinutes":  proxy["passwordTTLMinutes"],
+	})
 }

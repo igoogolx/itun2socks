@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"go.uber.org/atomic"
@@ -37,13 +38,26 @@ func Read() (Config, error) {
 		config.Subscriptions = []SubscriptionCfg{}
 	}
 
+	// Decrypt passwords so the rest of the app always works with plaintext
+	for i, proxy := range config.Proxy {
+		config.Proxy[i] = decryptProxyPasswords(proxy)
+	}
+
 	return *config, nil
 }
 
 func Write(c Config) error {
 	mux.Lock()
 	defer mux.Unlock()
-	err := writeFile(c)
+
+	// Encrypt passwords before persisting to disk
+	encrypted := c
+	encrypted.Proxy = make([]map[string]any, len(c.Proxy))
+	for i, proxy := range c.Proxy {
+		encrypted.Proxy[i] = encryptProxyPasswords(proxy)
+	}
+
+	err := writeFile(encrypted)
 	if err != nil {
 		return fmt.Errorf("fail to write file: %v", err)
 	}
@@ -120,4 +134,25 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+// Init performs one-time initialization including encrypting any plaintext passwords
+// and clearing expired timed passwords.
+func Init() {
+	if err := MigrateEncryptPasswords(); err != nil {
+		log.Warnln(log.FormatLog(log.ConfigurationPrefix, "failed to migrate passwords: %v"), err)
+	}
+	if err := ClearExpiredPasswords(); err != nil {
+		log.Warnln(log.FormatLog(log.ConfigurationPrefix, "failed to clear expired passwords: %v"), err)
+	}
+	// Background goroutine: check and clear expired timed passwords every minute
+	go func() {
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			if err := ClearExpiredPasswords(); err != nil {
+				log.Warnln(log.FormatLog(log.ConfigurationPrefix, "periodic expiry check failed: %v"), err)
+			}
+		}
+	}()
 }
