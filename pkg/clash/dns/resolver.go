@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -52,11 +53,11 @@ func (r *Resolver) GetServers() []string {
 }
 
 // LookupIP request with TypeA and TypeAAAA, priority return TypeA
-func (r *Resolver) LookupIP(ctx context.Context, host string) (ip []net.IP, err error) {
+func (r *Resolver) LookupIP(ctx context.Context, host string) (ip []netip.Addr, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	ch := make(chan []net.IP, 1)
+	ch := make(chan []netip.Addr, 1)
 
 	go func() {
 		defer close(ch)
@@ -81,44 +82,44 @@ func (r *Resolver) LookupIP(ctx context.Context, host string) (ip []net.IP, err 
 }
 
 // ResolveIP request with TypeA and TypeAAAA, priority return TypeA
-func (r *Resolver) ResolveIP(host string) (ip net.IP, err error) {
+func (r *Resolver) ResolveIP(host string) (ip netip.Addr, err error) {
 	ips, err := r.LookupIP(context.Background(), host)
 	if err != nil {
-		return nil, err
+		return netip.Addr{}, err
 	} else if len(ips) == 0 {
-		return nil, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, host)
+		return netip.Addr{}, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, host)
 	}
 	return ips[rand.Intn(len(ips))], nil
 }
 
 // LookupIPv4 request with TypeA
-func (r *Resolver) LookupIPv4(ctx context.Context, host string) ([]net.IP, error) {
+func (r *Resolver) LookupIPv4(ctx context.Context, host string) ([]netip.Addr, error) {
 	return r.lookupIP(ctx, host, D.TypeA)
 }
 
 // ResolveIPv4 request with TypeA
-func (r *Resolver) ResolveIPv4(host string) (ip net.IP, err error) {
+func (r *Resolver) ResolveIPv4(host string) (ip netip.Addr, err error) {
 	ips, err := r.lookupIP(context.Background(), host, D.TypeA)
 	if err != nil {
-		return nil, err
+		return netip.Addr{}, err
 	} else if len(ips) == 0 {
-		return nil, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, host)
+		return netip.Addr{}, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, host)
 	}
 	return ips[rand.Intn(len(ips))], nil
 }
 
 // LookupIPv6 request with TypeAAAA
-func (r *Resolver) LookupIPv6(ctx context.Context, host string) ([]net.IP, error) {
+func (r *Resolver) LookupIPv6(ctx context.Context, host string) ([]netip.Addr, error) {
 	return r.lookupIP(ctx, host, D.TypeAAAA)
 }
 
 // ResolveIPv6 request with TypeAAAA
-func (r *Resolver) ResolveIPv6(host string) (ip net.IP, err error) {
+func (r *Resolver) ResolveIPv6(host string) (ip netip.Addr, err error) {
 	ips, err := r.lookupIP(context.Background(), host, D.TypeAAAA)
 	if err != nil {
-		return nil, err
+		return netip.Addr{}, err
 	} else if len(ips) == 0 {
-		return nil, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, host)
+		return netip.Addr{}, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, host)
 	}
 	return ips[rand.Intn(len(ips))], nil
 }
@@ -255,15 +256,14 @@ func (r *Resolver) ipExchange(ctx context.Context, m *D.Msg) (msg *D.Msg, err er
 	return
 }
 
-func (r *Resolver) lookupIP(ctx context.Context, host string, dnsType uint16) ([]net.IP, error) {
-	ip := net.ParseIP(host)
-	if ip != nil {
-		ip4 := ip.To4()
-		isIPv4 := ip4 != nil
+func (r *Resolver) lookupIP(ctx context.Context, host string, dnsType uint16) ([]netip.Addr, error) {
+	ip, err := netip.ParseAddr(host)
+	if err == nil {
+		isIPv4 := ip.Is4()
 		if dnsType == D.TypeAAAA && !isIPv4 {
-			return []net.IP{ip}, nil
+			return []netip.Addr{ip}, nil
 		} else if dnsType == D.TypeA && isIPv4 {
-			return []net.IP{ip4}, nil
+			return []netip.Addr{ip}, nil
 		} else {
 			return nil, resolver.ErrIPVersion
 		}

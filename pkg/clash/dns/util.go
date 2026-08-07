@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -141,15 +142,23 @@ func handleMsgWithEmptyAnswer(r *D.Msg) *D.Msg {
 	return msg
 }
 
-func msgToIP(msg *D.Msg) []net.IP {
-	ips := []net.IP{}
+func msgToIP(msg *D.Msg) []netip.Addr {
+	var ips []netip.Addr
 
 	for _, answer := range msg.Answer {
 		switch ans := answer.(type) {
 		case *D.AAAA:
-			ips = append(ips, ans.AAAA)
+			addr, ok := netip.AddrFromSlice(ans.AAAA)
+			if !ok {
+				continue
+			}
+			ips = append(ips, addr)
 		case *D.A:
-			ips = append(ips, ans.A)
+			addr, ok := netip.AddrFromSlice(ans.A)
+			if !ok {
+				continue
+			}
+			ips = append(ips, addr)
 		}
 	}
 

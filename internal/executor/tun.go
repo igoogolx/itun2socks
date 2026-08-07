@@ -2,6 +2,7 @@ package executor
 
 import (
 	"fmt"
+	"net/netip"
 	"sync"
 
 	"github.com/igoogolx/itun2socks/internal/cfg"
@@ -43,7 +44,7 @@ func (c *TunClient) RuntimeDetail(hubAddress string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	addr, err := networkInterface.PickIPv4Addr(nil)
+	addr, err := networkInterface.PickIPv4Addr(netip.Addr{})
 	if err != nil {
 		return nil, err
 	}

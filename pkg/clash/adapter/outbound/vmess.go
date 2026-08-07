@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"net/netip"
 	"strconv"
 	"strings"
 
@@ -229,11 +228,8 @@ func (v *Vmess) ListenPacketContext(ctx context.Context, metadata *C.Metadata, o
 		if err != nil {
 			return nil, errors.New("can't resolve ip")
 		}
-		dstIp, ok := netip.AddrFromSlice(ip)
-		if !ok {
-			return nil, errors.New("can't parse ip")
-		}
-		metadata.DstIP = dstIp
+
+		metadata.DstIP = ip
 	}
 
 	var c net.Conn

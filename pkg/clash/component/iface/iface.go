@@ -3,6 +3,7 @@ package iface
 import (
 	"errors"
 	"net"
+	"net/netip"
 	"time"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/common/singledo"
@@ -74,19 +75,19 @@ func FlushCache() {
 	interfaces.Reset()
 }
 
-func (iface *Interface) PickIPv4Addr(destination net.IP) (*net.IPNet, error) {
+func (iface *Interface) PickIPv4Addr(destination netip.Addr) (*net.IPNet, error) {
 	return iface.pickIPAddr(destination, func(addr *net.IPNet) bool {
 		return addr.IP.To4() != nil
 	})
 }
 
-func (iface *Interface) PickIPv6Addr(destination net.IP) (*net.IPNet, error) {
+func (iface *Interface) PickIPv6Addr(destination netip.Addr) (*net.IPNet, error) {
 	return iface.pickIPAddr(destination, func(addr *net.IPNet) bool {
 		return addr.IP.To4() == nil
 	})
 }
 
-func (iface *Interface) pickIPAddr(destination net.IP, accept func(addr *net.IPNet) bool) (*net.IPNet, error) {
+func (iface *Interface) pickIPAddr(destination netip.Addr, accept func(addr *net.IPNet) bool) (*net.IPNet, error) {
 	var fallback *net.IPNet
 
 	for _, addr := range iface.Addrs {
@@ -97,12 +98,12 @@ func (iface *Interface) pickIPAddr(destination net.IP, accept func(addr *net.IPN
 		if fallback == nil && !addr.IP.IsLinkLocalUnicast() {
 			fallback = addr
 
-			if destination == nil {
+			if !destination.IsValid() {
 				break
 			}
 		}
 
-		if destination != nil && addr.Contains(destination) {
+		if destination.IsValid() && addr.Contains(destination.AsSlice()) {
 			return addr, nil
 		}
 	}

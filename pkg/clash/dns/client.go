@@ -53,11 +53,8 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 			return nil, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, c.host)
 		}
 
-		rawIp := ips[rand.Intn(len(ips))]
-		addr, ok := netip.AddrFromSlice(rawIp)
-		if ok {
-			ip = addr
-		}
+		ip = ips[rand.Intn(len(ips))]
+
 	}
 
 	network := C.UDP
