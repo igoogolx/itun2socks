@@ -34,7 +34,7 @@ func TunName() string {
 }
 
 const (
-	TunGateway  = "10.255.0.1/30"
+	TunGateway  = "10.255.0.1/16"
 	TunMtu      = 1500
 	HijackedDns = "10.255.0.2"
 )
