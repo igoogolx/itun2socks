@@ -167,7 +167,7 @@ func LookupIPWithResolver(ctx context.Context, host string, r Resolver) ([]netip
 	return ips, nil
 }
 
-// ResolveIP with a host, return ip
+// LookupIP with context and a host, return ip
 func LookupIP(ctx context.Context, host string) ([]netip.Addr, error) {
 	return LookupIPWithResolver(ctx, host, DefaultResolver)
 }
