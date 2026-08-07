@@ -9,6 +9,8 @@ import (
 	D "github.com/miekg/dns"
 )
 
+var dnsDefaultTTL uint32 = 600
+
 type fakeIpClient struct {
 	pool *fakeip.Pool
 }
