@@ -106,9 +106,9 @@ func (m *Metadata) Resolved() bool {
 // when dialing proxy connection in DNSMapping mode.
 func (m *Metadata) Pure() *Metadata {
 	if m.DNSMode == DNSMapping && m.DstIP.IsValid() {
-		copy := *m
-		copy.Host = ""
-		return &copy
+		copiedValue := *m
+		copiedValue.Host = ""
+		return &copiedValue
 	}
 
 	return m
