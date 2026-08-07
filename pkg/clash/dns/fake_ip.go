@@ -38,7 +38,7 @@ func (f *fakeIpClient) ExchangeContext(ctx context.Context, m *D.Msg) (msg *D.Ms
 	rr := &D.A{}
 	rr.Hdr = D.RR_Header{Name: q.Name, Rrtype: D.TypeA, Class: D.ClassINET, Ttl: dnsDefaultTTL}
 	ip := f.pool.Lookup(host)
-	rr.A = ip
+	rr.A = ip.AsSlice()
 	msg = m.Copy()
 	msg.Answer = []D.RR{rr}
 

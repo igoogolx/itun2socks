@@ -133,7 +133,7 @@ func withFakeIP(fakePool *fakeip.Pool) middleware {
 			rr := &D.A{}
 			rr.Hdr = D.RR_Header{Name: q.Name, Rrtype: D.TypeA, Class: D.ClassINET, Ttl: dnsDefaultTTL}
 			ip := fakePool.Lookup(host)
-			rr.A = ip
+			rr.A = ip.AsSlice()
 			msg := r.Copy()
 			msg.Answer = []D.RR{rr}
 

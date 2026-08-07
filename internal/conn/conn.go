@@ -73,7 +73,7 @@ func handleMetadata(metadata *C.Metadata) rule_engine.Rule {
 	}
 
 	if rule.GetPolicy() == constants.PolicyProxy && defaultIsFakeIpEnabled {
-		hostByFakeIp, ok := dns.FakeIpPool.LookBack(metadata.DstIP.AsSlice())
+		hostByFakeIp, ok := dns.FakeIpPool.LookBack(metadata.DstIP)
 		if ok {
 			metadata.Host = hostByFakeIp
 		}
