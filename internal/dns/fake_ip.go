@@ -7,7 +7,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 )
 
-var ipRange, _ = netip.ParsePrefix(constants.FakeIpRange)
+var ipRange, _ = netip.ParsePrefix(constants.TunGateway)
 
 var FakeIpPool, _ = fakeip.New(fakeip.Options{
 	IPNet: &ipRange,
