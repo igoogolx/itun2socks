@@ -335,7 +335,6 @@ type Config struct {
 	Main, Fallback []NameServer
 	Default        []NameServer
 	IPv6           bool
-	EnhancedMode   C.DNSMode
 	FallbackFilter FallbackFilter
 	Pool           *fakeip.Pool
 	Hosts          *trie.DomainTrie

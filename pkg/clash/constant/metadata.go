@@ -72,7 +72,6 @@ type Metadata struct {
 	SrcPort     Port       `json:"sourcePort"`
 	DstPort     Port       `json:"destinationPort"`
 	Host        string     `json:"host"`
-	DNSMode     DNSMode    `json:"dnsMode"`
 	ProcessPath string     `json:"processPath"`
 
 	OriginDst netip.AddrPort `json:"-"`
@@ -99,18 +98,6 @@ func (m *Metadata) AddrType() int {
 
 func (m *Metadata) Resolved() bool {
 	return m.DstIP.IsValid()
-}
-
-// Pure is used to solve unexpected behavior
-// when dialing proxy connection in DNSMapping mode.
-func (m *Metadata) Pure() *Metadata {
-	if m.DNSMode == DNSMapping && m.DstIP.IsValid() {
-		copiedValue := *m
-		copiedValue.Host = ""
-		return &copiedValue
-	}
-
-	return m
 }
 
 func (m *Metadata) UDPAddr() *net.UDPAddr {
