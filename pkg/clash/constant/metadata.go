@@ -65,16 +65,15 @@ func (t Type) MarshalJSON() ([]byte, error) {
 
 // Metadata is used to store connection address
 type Metadata struct {
-	NetWork      NetWork    `json:"network"`
-	Type         Type       `json:"type"`
-	SrcIP        netip.Addr `json:"sourceIP"`
-	DstIP        netip.Addr `json:"destinationIP"`
-	SrcPort      Port       `json:"sourcePort"`
-	DstPort      Port       `json:"destinationPort"`
-	Host         string     `json:"host"`
-	DNSMode      DNSMode    `json:"dnsMode"`
-	ProcessPath  string     `json:"processPath"`
-	SpecialProxy string     `json:"specialProxy"`
+	NetWork     NetWork    `json:"network"`
+	Type        Type       `json:"type"`
+	SrcIP       netip.Addr `json:"sourceIP"`
+	DstIP       netip.Addr `json:"destinationIP"`
+	SrcPort     Port       `json:"sourcePort"`
+	DstPort     Port       `json:"destinationPort"`
+	Host        string     `json:"host"`
+	DNSMode     DNSMode    `json:"dnsMode"`
+	ProcessPath string     `json:"processPath"`
 
 	OriginDst netip.AddrPort `json:"-"`
 }
