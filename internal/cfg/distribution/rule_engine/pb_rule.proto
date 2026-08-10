@@ -4,9 +4,9 @@ package rule_engine;
 option go_package = "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine";
 
 message PbRule {
-  string RuleType = 1;
-  string Payload = 2;
-  string Policy = 3;
+  string ruleType = 1;
+  string payload = 2;
+  string rulePolicy = 3;
 }
 
 message PbBook {

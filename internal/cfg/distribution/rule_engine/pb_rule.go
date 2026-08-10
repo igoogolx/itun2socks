@@ -4,7 +4,7 @@ import "github.com/igoogolx/itun2socks/internal/constants"
 
 func (x *PbRule) parse() (Rule, error) {
 
-	return ParseItem(x.RuleType, x.Payload, x.Policy)
+	return ParseItem(x.RuleType, x.Payload, x.RulePolicy)
 
 }
 
@@ -39,6 +39,17 @@ func (x *PbRule) Type() constants.RuleType {
 		return ""
 	}
 	return item.Type()
+
+}
+
+func (x *PbRule) GetPolicy() constants.Policy {
+
+	item, err := x.parse()
+
+	if err != nil {
+		return constants.PolicyProxy
+	}
+	return item.GetPolicy()
 
 }
 
