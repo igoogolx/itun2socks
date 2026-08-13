@@ -3,11 +3,11 @@ package conn
 import (
 	"sync"
 
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	"github.com/igoogolx/itun2socks/pkg/rule_engine"
 )
 
 var defaultConnMatchers []Matcher

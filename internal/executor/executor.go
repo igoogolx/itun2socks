@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/igoogolx/itun2socks/internal/cfg"
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/conn"
@@ -19,6 +18,7 @@ import (
 	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
+	"github.com/igoogolx/itun2socks/pkg/rule_engine"
 	sTun "github.com/sagernet/sing-tun"
 	"github.com/sirupsen/logrus"
 )

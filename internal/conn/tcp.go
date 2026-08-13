@@ -5,9 +5,9 @@ import (
 	"net"
 	"sync"
 
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/igoogolx/itun2socks/pkg/rule_engine"
 )
 
 type TcpConnContext struct {

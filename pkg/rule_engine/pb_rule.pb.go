@@ -137,7 +137,7 @@ const file_pb_rule_proto_rawDesc = "" +
 	"rulePolicy\x18\x03 \x01(\tR\n" +
 	"rulePolicy\"1\n" +
 	"\x06PbBook\x12'\n" +
-	"\x04rule\x18\x01 \x03(\v2\x13.rule_engine.PbRuleR\x04ruleBFZDgithub.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engineb\x06proto3"
+	"\x04rule\x18\x01 \x03(\v2\x13.rule_engine.PbRuleR\x04ruleBFZDgithub.com/igoogolx/itun2socks/pkg/rule_engineb\x06proto3"
 
 var (
 	file_pb_rule_proto_rawDescOnce sync.Once

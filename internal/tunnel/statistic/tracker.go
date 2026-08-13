@@ -4,9 +4,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
+	"github.com/igoogolx/itun2socks/pkg/rule_engine"
 
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 

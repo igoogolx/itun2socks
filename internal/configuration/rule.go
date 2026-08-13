@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
+	"github.com/igoogolx/itun2socks/pkg/rule_engine"
 )
 
 func GetSelectedRule() (string, error) {
