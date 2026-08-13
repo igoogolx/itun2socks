@@ -1,7 +1,7 @@
 syntax = "proto3";
 package rule_engine;
 
-option go_package = "github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine";
+option go_package = "github.com/igoogolx/itun2socks/pkg/rule_engine";
 
 message PbRule {
   string ruleType = 1;
