@@ -23,7 +23,7 @@ func trimArr(arr []string) (r []string) {
 }
 
 func GetRuleIds() ([]string, error) {
-	ruleFiles, err := data.ReadDir("rules")
+	ruleFiles, err := data.ReadDir("rules/proto")
 	var rules []string
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func GetRuleIds() ([]string, error) {
 func Parse(name string, extraRules []string) ([]Rule, error) {
 	var err error
 	var rules []Rule
-	builtInItems, err := readFile("rules/" + name)
+	builtInItems, err := readFile("rules/proto" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,6 @@ dist-ui
 geoData
 ./config.json
 tmp
-rules
+pkg/rule_engine/rules/proto
 .Ds_Store
 temp
