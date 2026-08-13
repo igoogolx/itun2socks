@@ -59,7 +59,7 @@ func Parse(name string, extraRules []string) ([]Rule, error) {
 func ParseRawValue(line string) (Rule, error) {
 	chunks := trimArr(strings.Split(strings.TrimSpace(line), ","))
 	if len(chunks) != 3 {
-		return nil, fmt.Errorf("invald rule line")
+		return nil, fmt.Errorf("invalid rule line")
 	}
 	return ParseItem(chunks[0], chunks[1], chunks[2])
 
