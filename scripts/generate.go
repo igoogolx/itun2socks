@@ -142,7 +142,7 @@ func unarchiveFile(archiveFilePath string) error {
 
 		default:
 			fmt.Printf(
-				"ExtractTarGz: uknown type: %v in %s",
+				"ExtractTarGz: unknown type: %v in %s",
 				header.Typeflag,
 				header.Name)
 		}
