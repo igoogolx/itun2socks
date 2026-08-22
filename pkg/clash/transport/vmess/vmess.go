@@ -5,8 +5,7 @@ import (
 	"math/rand"
 	"net"
 	"runtime"
-
-	"github.com/gofrs/uuid/v5"
+	"uuid"
 )
 
 // Version of vmess
@@ -78,7 +77,7 @@ func (c *Client) StreamConn(conn net.Conn, dst *DstAddr) (net.Conn, error) {
 
 // NewClient return Client instance
 func NewClient(config Config) (*Client, error) {
-	uid, err := uuid.FromString(config.UUID)
+	uid, err := uuid.Parse(config.UUID)
 	if err != nil {
 		return nil, err
 	}

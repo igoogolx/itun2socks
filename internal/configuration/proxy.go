@@ -5,8 +5,8 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"uuid"
 
-	"github.com/gofrs/uuid/v5"
 	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
 
@@ -153,10 +153,7 @@ func AddSubscription(proxies []map[string]any, subscriptionUrl string, subscript
 		return nil, nil, err
 	}
 
-	subscriptionUuid, err := uuid.NewV4()
-	if err != nil {
-		return nil, nil, err
-	}
+	subscriptionUuid := uuid.NewV4()
 
 	subscriptionId := subscriptionUuid.String()
 
@@ -168,10 +165,8 @@ func AddSubscription(proxies []map[string]any, subscriptionUrl string, subscript
 		}
 
 		if _, ok := checkIsValidStr(proxy["id"]); !ok {
-			id, err := uuid.NewV4()
-			if err != nil {
-				return nil, nil, err
-			}
+			id := uuid.NewV4()
+
 			proxy["id"] = id.String()
 		}
 
@@ -225,10 +220,8 @@ func UpdateSubscriptionProxies(subscriptionId string, proxies []map[string]any) 
 			return nil, fmt.Errorf("fail to parse proxy,error:%v", err)
 		}
 
-		id, err := uuid.NewV4()
-		if err != nil {
-			return nil, err
-		}
+		id := uuid.NewV4()
+
 		proxy["id"] = id.String()
 		proxy["subscription"] = subscriptionId
 
@@ -258,10 +251,8 @@ func AddProxy(proxy map[string]any) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	id, err := uuid.NewV4()
-	if err != nil {
-		return "", err
-	}
+	id := uuid.NewV4()
+
 	proxy["id"] = id.String()
 	data.Proxy = append(data.Proxy, proxy)
 	err = Write(data)

@@ -3,6 +3,7 @@ package statistic
 import (
 	"net"
 	"time"
+	"uuid"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/conn"
@@ -10,7 +11,6 @@ import (
 
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 
-	"github.com/gofrs/uuid/v5"
 	"go.uber.org/atomic"
 )
 
@@ -61,7 +61,7 @@ func (tt *TcpTracker) Close() error {
 }
 
 func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule rule_engine.Rule) *TcpTracker {
-	uid, _ := uuid.NewV4()
+	uid := uuid.NewV4()
 
 	t := &TcpTracker{
 		Conn:    conn,
@@ -119,7 +119,7 @@ func (ut *UdpTracker) Close() error {
 }
 
 func NewUDPTracker(conn conn.CopyablePacketConn, manager *Manager, metadata *C.Metadata, rule rule_engine.Rule) *UdpTracker {
-	uid, _ := uuid.NewV4()
+	uid := uuid.NewV4()
 
 	ut := &UdpTracker{
 		CopyablePacketConn: conn,
