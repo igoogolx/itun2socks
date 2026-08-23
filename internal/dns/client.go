@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/netip"
 	"strings"
 	"sync"
 	"time"
@@ -55,14 +56,20 @@ func getDnsQuestion(msg *D.Msg) (string, uint16, error) {
 	return name, qType, nil
 }
 
-func getResponseIp(msg *D.Msg) []net.IP {
-	var ips []net.IP
+func getResponseIp(msg *D.Msg) []netip.Addr {
+	var ips []netip.Addr
 	for _, a := range msg.Answer {
 		if a.Header().Rrtype == D.TypeA {
-			ip := net.ParseIP(a.(*D.A).A.String())
+			ip, err := netip.ParseAddr(a.(*D.A).A.String())
+			if err != nil {
+				continue
+			}
 			ips = append(ips, ip)
 		} else if a.Header().Rrtype == D.TypeAAAA {
-			ip := net.ParseIP(a.(*D.AAAA).AAAA.String())
+			ip, err := netip.ParseAddr(a.(*D.AAAA).AAAA.String())
+			if err != nil {
+				continue
+			}
 			ips = append(ips, ip)
 		} else {
 			continue
@@ -153,7 +160,7 @@ func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
 
 	resIps := getResponseIp(res)
 	for _, resIp := range resIps {
-		if resIp != nil {
+		if resIp.IsValid() {
 			log.Debugln(log.FormatLog(log.DnsPrefix, "add cache, resIp:%v, question: %v, rule: %v"), resIp, question, dnsRule.GetPolicy())
 			addCachedDnsItem(resIp.String(), question)
 			curRuleEngine.AddCache(resIp.String(), dnsRule)

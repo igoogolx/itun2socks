@@ -1,16 +1,16 @@
 package dns
 
 import (
-	"net"
+	"net/netip"
 
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 )
 
-var _, ipRange, _ = net.ParseCIDR(constants.FakeIpRange)
+var ipRange, _ = netip.ParsePrefix(constants.TunGateway)
 
 var FakeIpPool, _ = fakeip.New(fakeip.Options{
-	IPNet: ipRange,
+	IPNet: &ipRange,
 	Host:  nil,
 	Size:  4 * 1024,
 })

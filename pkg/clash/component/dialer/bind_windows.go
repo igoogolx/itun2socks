@@ -3,6 +3,7 @@ package dialer
 import (
 	"encoding/binary"
 	"net"
+	"net/netip"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -77,7 +78,7 @@ func bindSocketToInterface6(handle windows.Handle, ifaceIdx int) error {
 	return windows.SetsockoptInt(handle, windows.IPPROTO_IPV6, IPV6_UNICAST_IF, ifaceIdx)
 }
 
-func bindIfaceToDialer(ifaceName string, dialer *net.Dialer, _ string, _ net.IP) error {
+func bindIfaceToDialer(ifaceName string, dialer *net.Dialer, _ string, _ netip.Addr) error {
 	ifaceObj, err := iface.ResolveInterface(ifaceName)
 	if err != nil {
 		return err

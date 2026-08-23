@@ -228,6 +228,7 @@ func (v *Vmess) ListenPacketContext(ctx context.Context, metadata *C.Metadata, o
 		if err != nil {
 			return nil, errors.New("can't resolve ip")
 		}
+
 		metadata.DstIP = ip
 	}
 
@@ -355,11 +356,11 @@ func parseVmessAddr(metadata *C.Metadata) *vmess.DstAddr {
 	case socks5.AtypIPv4:
 		addrType = vmess.AtypIPv4
 		addr = make([]byte, net.IPv4len)
-		copy(addr[:], metadata.DstIP.To4())
+		copy(addr[:], metadata.DstIP.AsSlice())
 	case socks5.AtypIPv6:
 		addrType = vmess.AtypIPv6
 		addr = make([]byte, net.IPv6len)
-		copy(addr[:], metadata.DstIP.To16())
+		copy(addr[:], metadata.DstIP.AsSlice())
 	case socks5.AtypDomainName:
 		addrType = vmess.AtypDomainName
 		addr = make([]byte, len(metadata.Host)+1)

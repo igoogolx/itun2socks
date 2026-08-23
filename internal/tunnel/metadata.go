@@ -22,10 +22,8 @@ func UpdateShouldFindProcess(value bool) {
 }
 
 func findProcessPath(metadata constant.Metadata) string {
-	srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
-	if ok && metadata.OriginDst.IsValid() {
-		srcIP = srcIP.Unmap()
-		path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
+	if metadata.OriginDst.IsValid() {
+		path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(metadata.SrcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
 		if err != nil {
 			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), err)
 		} else {
@@ -36,12 +34,12 @@ func findProcessPath(metadata constant.Metadata) string {
 	return ""
 }
 
-func CreateUdpMetadata(srcAddr, destAddr net.UDPAddr) constant.Metadata {
+func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 	metadata := constant.Metadata{
-		SrcIP:   srcAddr.IP,
-		SrcPort: constant.Port(srcAddr.Port),
-		DstIP:   destAddr.IP,
-		DstPort: constant.Port(destAddr.Port),
+		SrcIP:   srcAddr.Addr(),
+		SrcPort: constant.Port(srcAddr.Port()),
+		DstIP:   destAddr.Addr(),
+		DstPort: constant.Port(destAddr.Port()),
 		NetWork: constant.UDP,
 	}
 	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
@@ -54,12 +52,12 @@ func CreateUdpMetadata(srcAddr, destAddr net.UDPAddr) constant.Metadata {
 	return metadata
 }
 
-func CreateTcpMetadata(srcAddr, destAddr net.TCPAddr) constant.Metadata {
+func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 	metadata := constant.Metadata{
-		SrcIP:   srcAddr.IP,
-		SrcPort: constant.Port(srcAddr.Port),
-		DstIP:   destAddr.IP,
-		DstPort: constant.Port(destAddr.Port),
+		SrcIP:   srcAddr.Addr(),
+		SrcPort: constant.Port(srcAddr.Port()),
+		DstIP:   destAddr.Addr(),
+		DstPort: constant.Port(destAddr.Port()),
 		NetWork: constant.TCP,
 	}
 	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
@@ -73,23 +71,23 @@ func CreateTcpMetadata(srcAddr, destAddr net.TCPAddr) constant.Metadata {
 
 func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*constant.Metadata, error) {
 	var srcHost, srcPort string
-	var srcIp net.IP
+	var srcIp netip.Addr
 	var err error
 	if len(srcAddr) != 0 {
 		srcHost, srcPort, err = net.SplitHostPort(srcAddr)
 		if err != nil {
 			return nil, err
 		}
-		srcIp = net.ParseIP(srcHost)
-		if srcIp == nil {
+		srcIp, err = netip.ParseAddr(srcHost)
+		if err != nil {
 			return nil, errors.New("fail to parse src host")
 		}
 	}
 
 	destHost, destPort, err := net.SplitHostPort(destAddr)
 
-	destIp := net.ParseIP(destHost)
-	if destIp == nil {
+	destIp, err := netip.ParseAddr(destHost)
+	if err != nil {
 		return nil, errors.New("fail to parse dest host")
 	}
 	metaSrcPort, err := strconv.Atoi(srcPort)

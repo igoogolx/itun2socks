@@ -2,21 +2,22 @@ package fakeip
 
 import (
 	"errors"
-	"net"
+	"net/netip"
 	"strings"
 	"sync"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/common/cache"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/trie"
+	"go4.org/netipx"
 )
 
 type store interface {
-	GetByHost(host string) (net.IP, bool)
-	PutByHost(host string, ip net.IP)
-	GetByIP(ip net.IP) (string, bool)
-	PutByIP(ip net.IP, host string)
-	DelByIP(ip net.IP)
-	Exist(ip net.IP) bool
+	GetByHost(host string) (netip.Addr, bool)
+	PutByHost(host string, ip netip.Addr)
+	GetByIP(ip netip.Addr) (string, bool)
+	PutByIP(ip netip.Addr, host string)
+	DelByIP(ip netip.Addr)
+	Exist(ip netip.Addr) bool
 	CloneTo(store)
 }
 
@@ -28,12 +29,12 @@ type Pool struct {
 	offset  uint32
 	mux     sync.Mutex
 	host    *trie.DomainTrie
-	ipnet   *net.IPNet
+	ipnet   *netip.Prefix
 	store   store
 }
 
 // Lookup return a fake ip with host
-func (p *Pool) Lookup(host string) net.IP {
+func (p *Pool) Lookup(host string) netip.Addr {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
@@ -49,11 +50,11 @@ func (p *Pool) Lookup(host string) net.IP {
 }
 
 // LookBack return host with the fake ip
-func (p *Pool) LookBack(ip net.IP) (string, bool) {
+func (p *Pool) LookBack(ip netip.Addr) (string, bool) {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
-	if ip = ip.To4(); ip == nil {
+	if !ip.Is4() {
 		return "", false
 	}
 
@@ -69,11 +70,11 @@ func (p *Pool) ShouldSkipped(domain string) bool {
 }
 
 // Exist returns if given ip exists in fake-ip pool
-func (p *Pool) Exist(ip net.IP) bool {
+func (p *Pool) Exist(ip netip.Addr) bool {
 	p.mux.Lock()
 	defer p.mux.Unlock()
 
-	if ip = ip.To4(); ip == nil {
+	if !ip.Is4() {
 		return false
 	}
 
@@ -81,12 +82,12 @@ func (p *Pool) Exist(ip net.IP) bool {
 }
 
 // Gateway return gateway ip
-func (p *Pool) Gateway() net.IP {
+func (p *Pool) Gateway() netip.Addr {
 	return uintToIP(p.gateway)
 }
 
 // IPNet return raw ipnet
-func (p *Pool) IPNet() *net.IPNet {
+func (p *Pool) IPNet() *netip.Prefix {
 	return p.ipnet
 }
 
@@ -95,7 +96,7 @@ func (p *Pool) CloneFrom(o *Pool) {
 	o.store.CloneTo(p.store)
 }
 
-func (p *Pool) get(host string) net.IP {
+func (p *Pool) get(host string) netip.Addr {
 	current := p.offset
 	for {
 		ip := uintToIP(p.min + p.offset)
@@ -117,7 +118,8 @@ func (p *Pool) get(host string) net.IP {
 	return ip
 }
 
-func ipToUint(ip net.IP) uint32 {
+func ipToUint(addr netip.Addr) uint32 {
+	ip := addr.AsSlice()
 	v := uint32(ip[0]) << 24
 	v += uint32(ip[1]) << 16
 	v += uint32(ip[2]) << 8
@@ -125,12 +127,16 @@ func ipToUint(ip net.IP) uint32 {
 	return v
 }
 
-func uintToIP(v uint32) net.IP {
-	return net.IP{byte(v >> 24), byte(v >> 16), byte(v >> 8), byte(v)}
+func uintToIP(v uint32) netip.Addr {
+	addr, ok := netip.AddrFromSlice([]byte{byte(v >> 24), byte(v >> 16), byte(v >> 8), byte(v)})
+	if !ok {
+		return netip.Addr{}
+	}
+	return addr
 }
 
 type Options struct {
-	IPNet *net.IPNet
+	IPNet *netip.Prefix
 	Host  *trie.DomainTrie
 
 	// Size sets the maximum number of entries in memory
@@ -140,20 +146,23 @@ type Options struct {
 
 // New return Pool instance
 func New(options Options) (*Pool, error) {
-	min := ipToUint(options.IPNet.IP) + 2
 
-	ones, bits := options.IPNet.Mask.Size()
-	total := 1<<uint(bits-ones) - 2
+	var (
+		hostAddr = options.IPNet.Masked().Addr()
+		gateway  = hostAddr.Next()
+		first    = gateway.Next().Next().Next() // default start with 198.18.0.4
+		last     = netipx.PrefixLastIP(*options.IPNet)
+	)
 
-	if total <= 0 {
+	if !options.IPNet.IsValid() || !first.IsValid() || !first.Less(last) {
 		return nil, errors.New("ipnet don't have valid ip")
 	}
 
-	max := min + uint32(total) - 1
+	minValue := ipToUint(first)
 	pool := &Pool{
-		min:     min,
-		max:     max,
-		gateway: min - 1,
+		min:     minValue,
+		max:     ipToUint(last),
+		gateway: minValue - 1,
 		host:    options.Host,
 		ipnet:   options.IPNet,
 	}

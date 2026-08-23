@@ -58,9 +58,9 @@ func (vc *Conn) Read(b []byte) (int, error) {
 func (vc *Conn) sendRequest() error {
 	if vc.isVless {
 		buf := protobytes.BytesWriter{}
-		buf.PutUint8(0)                  // Protocol Version
-		buf.PutSlice(vc.id.UUID.Bytes()) // UUID
-		buf.PutUint8(0)                  // Addons Length
+		buf.PutUint8(0)             // Protocol Version
+		buf.PutSlice(vc.id.UUID[:]) // UUID
+		buf.PutUint8(0)             // Addons Length
 		// buf.PutString("")             // Addons Data
 
 		// Command
@@ -84,7 +84,7 @@ func (vc *Conn) sendRequest() error {
 	mbuf := protobytes.BytesWriter{}
 
 	if !vc.isAead {
-		h := hmac.New(md5.New, vc.id.UUID.Bytes())
+		h := hmac.New(md5.New, vc.id.UUID[:])
 		binary.Write(h, binary.BigEndian, uint64(timestamp.Unix()))
 		mbuf.PutSlice(h.Sum(nil))
 	}

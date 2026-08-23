@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net"
+	"net/netip"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 )
@@ -16,7 +17,7 @@ func DialContext(ctx context.Context, network, address string, options ...Option
 			return nil, err
 		}
 
-		var ip net.IP
+		var ip netip.Addr
 		switch network {
 		case "tcp4", "udp4":
 			ip, err = resolver.ResolveIPv4(host)
@@ -75,7 +76,7 @@ func ListenPacket(ctx context.Context, network, address string, options ...Optio
 	return lc.ListenPacket(ctx, network, address)
 }
 
-func dialContext(ctx context.Context, network string, destination net.IP, port string, options []Option) (net.Conn, error) {
+func dialContext(ctx context.Context, network string, destination netip.Addr, port string, options []Option) (net.Conn, error) {
 	opt := &option{
 		interfaceName: DefaultInterface.Load(),
 		routingMark:   int(DefaultRoutingMark.Load()),
@@ -139,7 +140,7 @@ func dualStackDialContext(ctx context.Context, network, address string, options 
 			}
 		}()
 
-		var ip net.IP
+		var ip netip.Addr
 		if ipv6 {
 			ip, result.error = resolver.ResolveIPv6(host)
 		} else {

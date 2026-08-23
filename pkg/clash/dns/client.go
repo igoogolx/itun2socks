@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"net/netip"
 	"strconv"
 	"strings"
 
@@ -36,12 +37,12 @@ func (c *client) Exchange(m *D.Msg) (*D.Msg, error) {
 
 func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) {
 	var (
-		ip  net.IP
+		ip  netip.Addr
 		err error
 	)
 	if c.r == nil {
 		// a default ip dns
-		if ip = net.ParseIP(c.host); ip == nil {
+		if ip, err = netip.ParseAddr(c.host); err != nil {
 			return nil, fmt.Errorf("dns %s not a valid ip", c.host)
 		}
 	} else {
@@ -51,7 +52,9 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 		} else if len(ips) == 0 {
 			return nil, fmt.Errorf("%w: %s", resolver.ErrIPNotFound, c.host)
 		}
+
 		ip = ips[rand.Intn(len(ips))]
+
 	}
 
 	network := C.UDP
@@ -77,7 +80,7 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 	if network == C.TCP {
 		conn, err = connDial.DialContext(ctx, &C.Metadata{
 			NetWork: network,
-			SrcIP:   nil,
+			SrcIP:   netip.Addr{},
 			DstIP:   ip,
 			SrcPort: 0,
 			DstPort: C.Port(numPort),

@@ -2,16 +2,19 @@ name: Publish to WinGet
 
 on: workflow_dispatch
 
+env:
+  VERSION: 1.35.2
+
 jobs:
   publish:
-    # Action can only be run on windows
+    # Action can only be run on Windows
     runs-on: windows-latest
     steps:
       - name: Upload Installers
         uses: vedantmgoyal9/winget-releaser@main
         with:
-          version: 1.35.1
-          release-tag: v1.35.1
+          version: $VERSION
+          release-tag: v$VERSION
           identifier: igoogolx.itun2socks
           max-versions-to-keep: 5 # keep only the latest 5 versions
           installers-regex: '.*windows_amd64.zip$' # Only .zip files

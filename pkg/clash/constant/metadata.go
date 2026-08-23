@@ -65,16 +65,14 @@ func (t Type) MarshalJSON() ([]byte, error) {
 
 // Metadata is used to store connection address
 type Metadata struct {
-	NetWork      NetWork `json:"network"`
-	Type         Type    `json:"type"`
-	SrcIP        net.IP  `json:"sourceIP"`
-	DstIP        net.IP  `json:"destinationIP"`
-	SrcPort      Port    `json:"sourcePort"`
-	DstPort      Port    `json:"destinationPort"`
-	Host         string  `json:"host"`
-	DNSMode      DNSMode `json:"dnsMode"`
-	ProcessPath  string  `json:"processPath"`
-	SpecialProxy string  `json:"specialProxy"`
+	NetWork     NetWork    `json:"network"`
+	Type        Type       `json:"type"`
+	SrcIP       netip.Addr `json:"sourceIP"`
+	DstIP       netip.Addr `json:"destinationIP"`
+	SrcPort     Port       `json:"sourcePort"`
+	DstPort     Port       `json:"destinationPort"`
+	Host        string     `json:"host"`
+	ProcessPath string     `json:"processPath"`
 
 	OriginDst netip.AddrPort `json:"-"`
 }
@@ -89,9 +87,9 @@ func (m *Metadata) SourceAddress() string {
 
 func (m *Metadata) AddrType() int {
 	switch true {
-	case m.Host != "" || m.DstIP == nil:
+	case m.Host != "" || !m.DstIP.IsValid():
 		return socks5.AtypDomainName
-	case m.DstIP.To4() != nil:
+	case m.DstIP.Is4():
 		return socks5.AtypIPv4
 	default:
 		return socks5.AtypIPv6
@@ -99,27 +97,15 @@ func (m *Metadata) AddrType() int {
 }
 
 func (m *Metadata) Resolved() bool {
-	return m.DstIP != nil
-}
-
-// Pure is used to solve unexpected behavior
-// when dialing proxy connection in DNSMapping mode.
-func (m *Metadata) Pure() *Metadata {
-	if m.DNSMode == DNSMapping && m.DstIP != nil {
-		copy := *m
-		copy.Host = ""
-		return &copy
-	}
-
-	return m
+	return m.DstIP.IsValid()
 }
 
 func (m *Metadata) UDPAddr() *net.UDPAddr {
-	if m.NetWork != UDP || m.DstIP == nil {
+	if m.NetWork != UDP || !m.DstIP.IsValid() {
 		return nil
 	}
 	return &net.UDPAddr{
-		IP:   m.DstIP,
+		IP:   m.DstIP.AsSlice(),
 		Port: int(m.DstPort),
 	}
 }
@@ -127,15 +113,15 @@ func (m *Metadata) UDPAddr() *net.UDPAddr {
 func (m *Metadata) String() string {
 	if m.Host != "" {
 		return m.Host
-	} else if m.DstIP != nil {
+	} else if m.DstIP.IsValid() {
 		return m.DstIP.String()
-	} else {
-		return "<nil>"
 	}
+
+	return "<nil>"
 }
 
 func (m *Metadata) Valid() bool {
-	return m.Host != "" || m.DstIP != nil
+	return m.Host != "" || m.DstIP.IsValid()
 }
 
 // Port is used to compatible with old version

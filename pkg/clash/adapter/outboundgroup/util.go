@@ -3,6 +3,7 @@ package outboundgroup
 import (
 	"fmt"
 	"net"
+	"net/netip"
 	"strconv"
 	"time"
 
@@ -16,19 +17,19 @@ func addrToMetadata(rawAddress string) (addr *C.Metadata, err error) {
 		return
 	}
 
-	ip := net.ParseIP(host)
+	ip, err := netip.ParseAddr(host)
 	p, _ := strconv.ParseUint(port, 10, 16)
-	if ip == nil {
+	if err != nil {
 		addr = &C.Metadata{
 			Host:    host,
-			DstIP:   nil,
+			DstIP:   netip.Addr{},
 			DstPort: C.Port(p),
 		}
 		return
-	} else if ip4 := ip.To4(); ip4 != nil {
+	} else if ip.Is4() {
 		addr = &C.Metadata{
 			Host:    "",
-			DstIP:   ip4,
+			DstIP:   ip,
 			DstPort: C.Port(p),
 		}
 		return

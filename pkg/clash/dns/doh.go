@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/netip"
 	"strconv"
 
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
@@ -108,8 +109,8 @@ func newDoHClient(url string, getDialer func() (C.Proxy, error)) *dohClient {
 
 				return connDial.DialContext(ctx, &C.Metadata{
 					NetWork: C.TCP,
-					SrcIP:   nil,
-					DstIP:   nil,
+					SrcIP:   netip.Addr{},
+					DstIP:   netip.Addr{},
 					SrcPort: 0,
 					DstPort: C.Port(numPort),
 					Host:    host,

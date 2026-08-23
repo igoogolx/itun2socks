@@ -2,10 +2,9 @@ package context
 
 import (
 	"net"
+	"uuid"
 
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
-
-	"github.com/gofrs/uuid/v5"
 )
 
 type ConnContext struct {
@@ -15,7 +14,7 @@ type ConnContext struct {
 }
 
 func NewConnContext(conn net.Conn, metadata *C.Metadata) *ConnContext {
-	id, _ := uuid.NewV4()
+	id := uuid.NewV4()
 	return &ConnContext{
 		id:       id,
 		metadata: metadata,

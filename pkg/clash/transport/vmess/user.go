@@ -3,8 +3,7 @@ package vmess
 import (
 	"bytes"
 	"crypto/md5"
-
-	"github.com/gofrs/uuid/v5"
+	"uuid"
 )
 
 // ID cmdKey length
@@ -22,7 +21,7 @@ type ID struct {
 func newID(uuid *uuid.UUID) *ID {
 	id := &ID{UUID: uuid, CmdKey: make([]byte, IDBytesLen)}
 	md5hash := md5.New()
-	md5hash.Write(uuid.Bytes())
+	md5hash.Write(uuid[:])
 	md5hash.Write([]byte("c48619fe-8f02-49e0-b9e9-edf763e17e21"))
 	md5hash.Sum(id.CmdKey[:0])
 	return id
@@ -30,12 +29,12 @@ func newID(uuid *uuid.UUID) *ID {
 
 func nextID(u *uuid.UUID) *uuid.UUID {
 	md5hash := md5.New()
-	md5hash.Write(u.Bytes())
+	md5hash.Write(u[:])
 	md5hash.Write([]byte("16167dc8-16b6-4e6d-b8bb-65dd68113a81"))
 	var newid uuid.UUID
 	for {
 		md5hash.Sum(newid[:0])
-		if !bytes.Equal(newid.Bytes(), u.Bytes()) {
+		if !bytes.Equal(newid[:], u[:]) {
 			return &newid
 		}
 		md5hash.Write([]byte("533eff8a-4113-4b10-b5ce-0f5d76b98cd2"))

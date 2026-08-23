@@ -82,10 +82,10 @@ func (d DnsMap) ExchangeContext(_ context.Context, r *D.Msg) (*D.Msg, error) {
 	return msg, nil
 }
 
-func (d DnsMap) GetIp() (net.IP, error) {
-	ip := net.ParseIP(d.ip)
-	if ip == nil {
-		return nil, fmt.Errorf("invalid ip address: %s", d.ip)
+func (d DnsMap) GetIp() (netip.Addr, error) {
+	ip, err := netip.ParseAddr(d.ip)
+	if err != nil {
+		return netip.Addr{}, fmt.Errorf("invalid ip address: %s", d.ip)
 	}
 	return ip, nil
 }

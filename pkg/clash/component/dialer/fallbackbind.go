@@ -2,13 +2,14 @@ package dialer
 
 import (
 	"net"
+	"net/netip"
 	"strconv"
 	"strings"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/iface"
 )
 
-func lookupLocalAddr(ifaceName string, network string, destination net.IP, port int) (net.Addr, error) {
+func lookupLocalAddr(ifaceName string, network string, destination netip.Addr, port int) (net.Addr, error) {
 	ifaceObj, err := iface.ResolveInterface(ifaceName)
 	if err != nil {
 		return nil, err
@@ -21,8 +22,8 @@ func lookupLocalAddr(ifaceName string, network string, destination net.IP, port 
 	case "tcp6", "udp6":
 		addr, err = ifaceObj.PickIPv6Addr(destination)
 	default:
-		if destination != nil {
-			if destination.To4() != nil {
+		if destination.IsValid() {
+			if destination.Is4() {
 				addr, err = ifaceObj.PickIPv4Addr(destination)
 			} else {
 				addr, err = ifaceObj.PickIPv6Addr(destination)
@@ -50,7 +51,7 @@ func lookupLocalAddr(ifaceName string, network string, destination net.IP, port 
 	return nil, iface.ErrAddrNotFound
 }
 
-func fallbackBindIfaceToDialer(ifaceName string, dialer *net.Dialer, network string, destination net.IP) error {
+func fallbackBindIfaceToDialer(ifaceName string, dialer *net.Dialer, network string, destination netip.Addr) error {
 	if !destination.IsGlobalUnicast() {
 		return nil
 	}
@@ -81,7 +82,7 @@ func fallbackBindIfaceToListenConfig(ifaceName string, _ *net.ListenConfig, netw
 
 	local, _ := strconv.ParseUint(port, 10, 16)
 
-	addr, err := lookupLocalAddr(ifaceName, network, nil, int(local))
+	addr, err := lookupLocalAddr(ifaceName, network, netip.Addr{}, int(local))
 	if err != nil {
 		return "", err
 	}

@@ -29,9 +29,9 @@ func serializesSocksAddr(metadata *C.Metadata) []byte {
 		buf.PutUint8(uint8(len(metadata.Host)))
 		buf.PutString(metadata.Host)
 	case socks5.AtypIPv4:
-		buf.PutSlice(metadata.DstIP.To4())
+		buf.PutSlice(metadata.DstIP.AsSlice())
 	case socks5.AtypIPv6:
-		buf.PutSlice(metadata.DstIP.To16())
+		buf.PutSlice(metadata.DstIP.AsSlice())
 	}
 
 	buf.PutUint16be(uint16(metadata.DstPort))

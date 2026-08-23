@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	download("https://github.com/igoogolx/lux-rules/releases/download/v2.4.1/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "rule_engine", "rules.tar.gz"))
+	download("https://github.com/igoogolx/lux-rules/releases/download/v2.4.3/rules.tar.gz", filepath.Join("internal", "cfg", "distribution", "rule_engine", "rules.tar.gz"))
 	download("https://github.com/igoogolx/lux-client/releases/download/v1.22.0/dist-ui.tar.gz", filepath.Join("api", "routes", "dist.tar.gz"))
 }
 
@@ -142,7 +142,7 @@ func unarchiveFile(archiveFilePath string) error {
 
 		default:
 			fmt.Printf(
-				"ExtractTarGz: uknown type: %v in %s",
+				"ExtractTarGz: unknown type: %v in %s",
 				header.Typeflag,
 				header.Name)
 		}

@@ -31,16 +31,8 @@ func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, sou
 	if source.Addr.Is6() {
 		return
 	}
-	local, err := net.ResolveTCPAddr("tcp", source.String())
-	if err != nil {
-		return
-	}
-	remote, err := net.ResolveTCPAddr("tcp", destination.String())
-	if err != nil {
-		return
-	}
 
-	m := tunnel.CreateTcpMetadata(*local, *remote)
+	m := tunnel.CreateTcpMetadata(source.AddrPort(), destination.AddrPort())
 	var wg sync.WaitGroup
 	wg.Add(1)
 	ct, err := conn.NewTcpConnContext(ctx, netConn, &m, &wg)
@@ -56,15 +48,8 @@ func (uc ConnHandler) NewPacketConnectionEx(ctx context.Context, packetConn netw
 	if source.Addr.Is6() {
 		return
 	}
-	local, err := net.ResolveUDPAddr("udp", source.String())
-	if err != nil {
-		return
-	}
-	remote, err := net.ResolveUDPAddr("udp", destination.String())
-	if err != nil {
-		return
-	}
-	m := tunnel.CreateUdpMetadata(*local, *remote)
+
+	m := tunnel.CreateUdpMetadata(source.AddrPort(), destination.AddrPort())
 
 	if deadline.NeedAdditionalReadDeadline(packetConn) {
 		packetConn = deadline.NewFallbackPacketConn(bufio.NewNetPacketConn(packetConn)) // conn from sing should check NeedAdditionalReadDeadline
