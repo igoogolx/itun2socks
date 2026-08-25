@@ -3,6 +3,7 @@ package executor
 import (
 	"context"
 	"fmt"
+	"github.com/metacubex/mihomo/component/dialer"
 	"net/netip"
 	"time"
 
@@ -62,6 +63,8 @@ func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 		log.Infoln("%s", log.FormatLog(log.InitPrefix, "waiting for default interface name"))
 		time.Sleep(1 * time.Second)
 	}
+
+	dialer.DefaultInterfaceFinder.Store(network_iface.InterfaceFinder{})
 
 	config, err := cfg.NewTun(network_iface.GetDefaultInterfaceName())
 	if err != nil {
@@ -174,6 +177,7 @@ func newMixed() (Client, error) {
 
 func New() (Client, error) {
 	cResolver.DefaultResolver = nil
+	dialer.DefaultInterfaceFinder.Store(nil)
 	rawConfig, err := configuration.Read()
 	if err != nil {
 		return nil, err

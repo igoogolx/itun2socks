@@ -11,7 +11,8 @@ import (
 	"time"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+
+	metaC "github.com/metacubex/mihomo/constant"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/common/cache"
 	"github.com/igoogolx/itun2socks/pkg/clash/common/picker"
@@ -97,7 +98,7 @@ func isIPRequest(q D.Question) bool {
 	return q.Qclass == D.ClassINET && (q.Qtype == D.TypeA || q.Qtype == D.TypeAAAA)
 }
 
-func transform(servers []NameServer, getDialer func() (C.Proxy, error), fakeIpPool *fakeip.Pool) []dnsClient {
+func transform(servers []NameServer, getDialer func() (metaC.Proxy, error), fakeIpPool *fakeip.Pool) []dnsClient {
 	ret := []dnsClient{}
 	for _, s := range servers {
 		switch s.Net {

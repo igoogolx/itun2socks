@@ -8,7 +8,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/igoogolx/itun2socks/pkg/pool"
 	D "github.com/miekg/dns"
 	"github.com/sagernet/sing/common/bufio"
@@ -51,7 +50,7 @@ func handleUdpConn(ct conn.UdpConnContext) {
 		once.Do(cleanConn)
 	}()
 
-	localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
+	localConn, err := conn.NewUdpConn(ct.Ctx(), ct.Metadata(), ct.Rule())
 	if err != nil {
 		log.Warnln(log.FormatLog(log.UdpPrefix, "fail to get udp conn, err: %v, remote address: %v"), err, ct.Metadata().RemoteAddress())
 		return

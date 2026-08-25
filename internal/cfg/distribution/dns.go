@@ -6,7 +6,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/resolver"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 func NewDnsDistribution(
@@ -22,7 +22,7 @@ func NewDnsDistribution(
 	dd := DnsDistribution{}
 
 	//Boost
-	boostDnsClient, err := resolver.New(bootDns, defaultInterfaceName, func() (C.Proxy, error) {
+	boostDnsClient, err := resolver.New(bootDns, defaultInterfaceName, func() (metaC.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
 	}, disableCache, nil)
 	if err != nil {
@@ -34,7 +34,7 @@ func NewDnsDistribution(
 	}
 
 	//Local
-	localDnsClient, err := resolver.New(localDns, defaultInterfaceName, func() (C.Proxy, error) {
+	localDnsClient, err := resolver.New(localDns, defaultInterfaceName, func() (metaC.Proxy, error) {
 		return conn.GetProxy(constants.PolicyDirect)
 	}, disableCache, nil)
 	if err != nil {
@@ -46,7 +46,7 @@ func NewDnsDistribution(
 	}
 
 	//Remote
-	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (C.Proxy, error) {
+	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (metaC.Proxy, error) {
 		return conn.GetProxy(constants.PolicyProxy)
 	}, disableCache, fakeIpPool)
 	if err != nil {

@@ -3,12 +3,12 @@ package conn
 import (
 	"context"
 	"fmt"
+	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"net"
 	"sync"
 	"time"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
@@ -146,12 +146,12 @@ func (uc *CopyableReaderWriterConn) WriteTo(data []byte, addr net.Addr) (int, er
 	return len(data), err
 }
 
-func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule rule_engine.Rule, defaultInterface string) (*CopyablePacketConn, error) {
+func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule rule_engine.Rule) (*CopyablePacketConn, error) {
 	connDialer, err := GetProxy(rule.GetPolicy())
 	if err != nil {
 		return nil, err
 	}
-	rawConn, err := connDialer.ListenPacketContext(ctx, metadata, dialer.WithInterface(defaultInterface), dialer.WithAddrReuse(true))
+	rawConn, err := connDialer.ListenPacketContext(ctx, meta_patch.ConvertMeta(metadata))
 	if err != nil {
 		return nil, err
 	}

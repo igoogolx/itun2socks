@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"math/rand"
 	"net"
 	"net/netip"
@@ -11,6 +12,7 @@ import (
 	"strings"
 
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
@@ -24,7 +26,7 @@ type client struct {
 	port      string
 	host      string
 	iface     string
-	getDialer func() (C.Proxy, error)
+	getDialer func() (metaC.Proxy, error)
 }
 
 func (c *client) GetServers() []string {
@@ -62,11 +64,6 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 		network = C.TCP
 	}
 
-	options := []dialer.Option{}
-	if c.iface != "" {
-		options = append(options, dialer.WithInterface(c.iface))
-	}
-
 	numPort, err := strconv.ParseUint(c.port, 10, 16)
 
 	if err != nil {
@@ -78,16 +75,16 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 		return nil, err
 	}
 	if network == C.TCP {
-		conn, err = connDial.DialContext(ctx, &C.Metadata{
+		conn, err = connDial.DialContext(ctx, meta_patch.ConvertMeta(&C.Metadata{
 			NetWork: network,
 			SrcIP:   netip.Addr{},
 			DstIP:   ip,
 			SrcPort: 0,
 			DstPort: C.Port(numPort),
 			Host:    "",
-		}, options...)
+		}))
 	} else {
-		conn, err = dialer.DialContext(ctx, "udp", net.JoinHostPort(ip.String(), c.port), options...)
+		conn, err = dialer.DialContext(ctx, "udp", net.JoinHostPort(ip.String(), c.port))
 	}
 
 	if err != nil {

@@ -14,7 +14,7 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/trie"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 
 	D "github.com/miekg/dns"
 	"github.com/samber/lo"
@@ -341,7 +341,7 @@ type Config struct {
 	Policy         map[string]NameServer
 	SearchDomains  []string
 	DisableCache   bool
-	GetDialer      func() (C.Proxy, error)
+	GetDialer      func() (metaC.Proxy, error)
 }
 
 func NewResolver(config Config) *Resolver {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"io"
 	"net"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"strconv"
 
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 
 	D "github.com/miekg/dns"
 )
@@ -85,7 +87,7 @@ func (dc *dohClient) doRequest(req *http.Request) (msg *D.Msg, err error) {
 	return msg, err
 }
 
-func newDoHClient(url string, getDialer func() (C.Proxy, error)) *dohClient {
+func newDoHClient(url string, getDialer func() (metaC.Proxy, error)) *dohClient {
 	return &dohClient{
 		url: url,
 		transport: &http.Transport{
@@ -107,14 +109,14 @@ func newDoHClient(url string, getDialer func() (C.Proxy, error)) *dohClient {
 					return nil, err
 				}
 
-				return connDial.DialContext(ctx, &C.Metadata{
+				return connDial.DialContext(ctx, meta_patch.ConvertMeta(&C.Metadata{
 					NetWork: C.TCP,
 					SrcIP:   netip.Addr{},
 					DstIP:   netip.Addr{},
 					SrcPort: 0,
 					DstPort: C.Port(numPort),
 					Host:    host,
-				})
+				}))
 
 			},
 			TLSClientConfig: &tls.Config{

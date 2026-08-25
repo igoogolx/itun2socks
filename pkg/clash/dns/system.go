@@ -7,8 +7,8 @@ import (
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/clash/log"
+	metaC "github.com/metacubex/mihomo/constant"
 
 	D "github.com/miekg/dns"
 )
@@ -17,7 +17,7 @@ type systemClient struct {
 	ifaceName string
 	lock      sync.Mutex
 	clients   []dnsClient
-	getDialer func() (C.Proxy, error)
+	getDialer func() (metaC.Proxy, error)
 }
 
 func (s *systemClient) GetServers() []string {
@@ -79,7 +79,7 @@ func (s *systemClient) update() error {
 	return nil
 }
 
-func newSystemClient(ifaceName string, getDialer func() (C.Proxy, error)) *systemClient {
+func newSystemClient(ifaceName string, getDialer func() (metaC.Proxy, error)) *systemClient {
 	newClient := &systemClient{ifaceName: ifaceName, getDialer: getDialer}
 	err := newClient.update()
 	if err != nil {

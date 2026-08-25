@@ -6,11 +6,11 @@ import (
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/clash/config"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/clash/dns"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
-func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error), disableCache bool, fakeIpPool *fakeip.Pool) (cResolver.Resolver, error) {
+func New(mainServer []string, defaultInterfaceName string, getDialer func() (metaC.Proxy, error), disableCache bool, fakeIpPool *fakeip.Pool) (cResolver.Resolver, error) {
 	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
 		return nil, err

@@ -7,12 +7,12 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/tun"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/dns"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type Config struct {
 	Rule              distribution.Config
-	Proxy             constant.Proxy
+	Proxy             metaC.Proxy
 	Device            *tun.Config
 	LocalServer       local_server.Cfg
 	HijackDns         configuration.HijackDns

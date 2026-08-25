@@ -2,11 +2,11 @@ package conn
 
 import (
 	"context"
+	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"net"
 	"sync"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 )
 
@@ -53,10 +53,10 @@ func NewTcpConnContext(ctx context.Context, conn net.Conn, metadata *C.Metadata,
 
 }
 
-func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule rule_engine.Rule, defaultInterface string) (net.Conn, error) {
+func NewTcpConn(ctx context.Context, metadata *C.Metadata, rule rule_engine.Rule) (net.Conn, error) {
 	connDialer, err := GetProxy(rule.GetPolicy())
 	if err != nil {
 		return nil, err
 	}
-	return connDialer.DialContext(ctx, metadata, dialer.WithInterface(defaultInterface))
+	return connDialer.DialContext(ctx, meta_patch.ConvertMeta(metadata))
 }

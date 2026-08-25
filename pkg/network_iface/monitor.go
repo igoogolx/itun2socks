@@ -3,6 +3,7 @@ package network_iface
 import (
 	"context"
 	"net"
+	"net/netip"
 
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
@@ -18,6 +19,14 @@ import (
 var defaultInterfaceName = atomic.NewString("")
 var defaultInterfaceMonitor tun.DefaultInterfaceMonitor
 var networkUpdateMonitor tun.NetworkUpdateMonitor
+
+type InterfaceFinder struct {
+}
+
+func (i InterfaceFinder) FindInterfaceName(_ netip.Addr) string {
+
+	return GetDefaultInterfaceName()
+}
 
 func GetDefaultInterfaceName() string {
 	return defaultInterfaceName.Load()
