@@ -2,12 +2,11 @@ package configuration
 
 import (
 	"fmt"
+	"github.com/metacubex/mihomo/adapter"
 	"slices"
 	"strings"
 	"sync"
 	"uuid"
-
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
 
 func GetSelectedProxy() (map[string]any, error) {
