@@ -4,14 +4,12 @@ go 1.25.0
 
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568
-	github.com/dlclark/regexp2 v1.12.0
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/go-chi/cors v1.2.2
 	github.com/go-chi/render v1.0.3
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/metacubex/mihomo v1.19.29
-	github.com/metacubex/sing v0.5.7
 	github.com/miekg/dns v1.1.72
 	github.com/sagernet/sing v0.8.13
 	github.com/sagernet/sing-tun v0.8.11
@@ -39,6 +37,7 @@ require (
 	github.com/coder/websocket v1.8.12 // indirect
 	github.com/coreos/go-iptables v0.8.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dunglas/httpsfv v1.0.2 // indirect
 	github.com/enfein/mieru/v3 v3.34.0 // indirect
 	github.com/ericlagergren/aegis v0.0.0-20250325060835-cd0defd64358 // indirect
@@ -94,6 +93,7 @@ require (
 	github.com/metacubex/quic-go v0.59.1-0.20260606115121-0662b57ad5bf // indirect
 	github.com/metacubex/randv2 v0.2.0 // indirect
 	github.com/metacubex/restls-client-go v0.1.8 // indirect
+	github.com/metacubex/sing v0.5.7 // indirect
 	github.com/metacubex/sing-mux v0.3.10 // indirect
 	github.com/metacubex/sing-quic v0.0.0-20260527143057-68e10a6afdc3 // indirect
 	github.com/metacubex/sing-shadowsocks v0.2.12 // indirect
