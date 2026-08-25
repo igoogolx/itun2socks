@@ -16,6 +16,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 var (
@@ -157,8 +158,8 @@ func getCurProxy() (string, string) {
 	if manager.GetIsStarted() {
 		curAutoProxy, err := conn.GetProxy(constants.PolicyProxy)
 		if err == nil {
-			if curAutoProxy.Type() == C.URLTest || curAutoProxy.Type() == C.Fallback {
-				curAutoProxy = curAutoProxy.Unwrap(&C.Metadata{})
+			if curAutoProxy.Type() == metaC.URLTest || curAutoProxy.Type() == metaC.Fallback {
+				curAutoProxy = curAutoProxy.Unwrap(&metaC.Metadata{}, false)
 			}
 		}
 		if curAutoProxy != nil {

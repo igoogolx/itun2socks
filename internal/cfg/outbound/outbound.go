@@ -2,12 +2,12 @@ package outbound
 
 import (
 	"fmt"
+	"github.com/metacubex/mihomo/adapter"
+	"github.com/metacubex/mihomo/adapter/outboundgroup"
+	"github.com/metacubex/mihomo/constant/provider"
 
 	"github.com/igoogolx/itun2socks/internal/configuration"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter/outboundgroup"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant/provider"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type Option struct {
@@ -16,16 +16,17 @@ type Option struct {
 	SelectedProxy string
 }
 
-func New(option Option) (constant.Proxy, error) {
+func New(option Option) (metaC.Proxy, error) {
 
-	var proxy constant.Proxy
+	var proxy metaC.Proxy
 	var err error
 	var ids []string
+	var allProxies []string
 
 	if option.AutoMode.Enabled {
 
 		{
-			proxyMap := map[string]constant.Proxy{}
+			proxyMap := map[string]metaC.Proxy{}
 			for _, v := range option.Proxies {
 				p, err := adapter.ParseProxy(v)
 				if err != nil {
@@ -33,6 +34,7 @@ func New(option Option) (constant.Proxy, error) {
 				}
 				proxyMap[v["id"].(string)] = p
 				ids = append(ids, v["id"].(string))
+				allProxies = append(allProxies, v["name"].(string))
 			}
 			proxyGroupConfig := map[string]any{
 				"name":     "auto",
@@ -42,7 +44,7 @@ func New(option Option) (constant.Proxy, error) {
 				"type":     option.AutoMode.Type,
 			}
 
-			proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{})
+			proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{}, allProxies, []string{})
 			if err != nil {
 				return nil, fmt.Errorf("fail to parse proxy group: %v", err)
 			}
