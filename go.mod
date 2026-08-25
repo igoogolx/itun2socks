@@ -1,6 +1,6 @@
 module github.com/igoogolx/itun2socks
 
-go 1.25.0
+go 1.27.0
 
 require (
 	github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568
