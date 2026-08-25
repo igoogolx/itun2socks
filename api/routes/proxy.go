@@ -2,6 +2,8 @@ package routes
 
 import (
 	"context"
+	"github.com/igoogolx/itun2socks/internal/meta_patch"
+	"github.com/metacubex/mihomo/adapter"
 	"net/http"
 	"time"
 
@@ -12,7 +14,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
 )
@@ -64,7 +65,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	pc, err := p.ListenPacketContext(context.Background(), metadata)
+	pc, err := p.ListenPacketContext(context.Background(), meta_patch.ConvertMeta(metadata))
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -106,7 +107,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), defaultDelayTimeout)
 	defer cancel()
-	delay, _, err := p.URLTest(ctx, url)
+	delay, err := p.URLTest(ctx, url, nil)
 	if err != nil {
 		render.JSON(w, r, render.M{
 			"delay": -1,

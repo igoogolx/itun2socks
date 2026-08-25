@@ -6,7 +6,7 @@ import (
 	"net/netip"
 )
 
-func ConvertMeta(m *clashC.Metadata) (*metaC.Metadata, error) {
+func ConvertMeta(m *clashC.Metadata) *metaC.Metadata {
 
 	srcIP, err := netip.ParseAddr(m.SrcIP.String())
 	if err != nil {
@@ -29,6 +29,6 @@ func ConvertMeta(m *clashC.Metadata) (*metaC.Metadata, error) {
 		ProcessPath: m.ProcessPath,
 	}
 
-	return newMetadata, nil
+	return newMetadata
 
 }
