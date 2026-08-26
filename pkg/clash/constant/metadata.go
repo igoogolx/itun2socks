@@ -5,8 +5,6 @@ import (
 	"net"
 	"net/netip"
 	"strconv"
-
-	"github.com/igoogolx/itun2socks/pkg/clash/transport/socks5"
 )
 
 // Socks addr type
@@ -83,17 +81,6 @@ func (m *Metadata) RemoteAddress() string {
 
 func (m *Metadata) SourceAddress() string {
 	return net.JoinHostPort(m.SrcIP.String(), m.SrcPort.String())
-}
-
-func (m *Metadata) AddrType() int {
-	switch true {
-	case m.Host != "" || !m.DstIP.IsValid():
-		return socks5.AtypDomainName
-	case m.DstIP.Is4():
-		return socks5.AtypIPv4
-	default:
-		return socks5.AtypIPv6
-	}
 }
 
 func (m *Metadata) Resolved() bool {
