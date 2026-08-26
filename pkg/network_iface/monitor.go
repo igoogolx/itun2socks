@@ -6,7 +6,6 @@ import (
 	"net/netip"
 
 	"github.com/igoogolx/itun2socks/internal/configuration"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	tun "github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/control"
@@ -118,7 +117,6 @@ func StopMonitor() error {
 
 func update(name string) {
 	defaultInterfaceName.Store(name)
-	dialer.DefaultInterface.Store(name)
 	log.Infoln(log.FormatLog(log.ExecutorPrefix, "update default interface: %v"), name)
 }
 

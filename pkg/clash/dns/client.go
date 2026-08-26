@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/igoogolx/itun2socks/internal/meta_patch"
+	"github.com/metacubex/mihomo/component/dialer"
 	"math/rand"
 	"net"
 	"net/netip"
@@ -14,7 +15,6 @@ import (
 	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	metaC "github.com/metacubex/mihomo/constant"
 
-	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 
 	D "github.com/miekg/dns"

@@ -2,22 +2,24 @@ package local_server
 
 import (
 	"context"
+	"github.com/igoogolx/itun2socks/internal/meta_patch"
+	"github.com/metacubex/mihomo/adapter/inbound"
+	"github.com/metacubex/mihomo/listener/mixed"
+	"github.com/metacubex/mihomo/listener/socks"
 	"net"
+	"net/netip"
 	"sync"
 	"time"
 
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter/inbound"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
-	"github.com/igoogolx/itun2socks/pkg/clash/listener/mixed"
-	"github.com/igoogolx/itun2socks/pkg/clash/listener/socks"
+	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/sagernet/sing/common/buf"
 	M "github.com/sagernet/sing/common/metadata"
 )
 
 type udpConn struct {
-	C.UDPPacket
+	metaC.UDPPacket
 }
 
 func (u udpConn) ReadPacket(buffer *buf.Buffer) (destination M.Socksaddr, err error) {
@@ -57,30 +59,20 @@ func (u udpConn) SetWriteDeadline(_ time.Time) error {
 	return nil
 }
 
-var tcpIn = make(chan C.ConnContext, 16)
-var udpIn = make(chan *inbound.PacketAdapter, 16)
-
 type Listener struct {
 	Addr        string
-	tcpListener C.Listener
-	udpListener C.Listener
+	tcpListener metaC.Listener
+	udpListener metaC.Listener
 	Port        int
 }
 
-func process() {
-	for t := range tcpIn {
-		go processTcp(t)
-	}
-
-	for u := range udpIn {
-		go processUdp(u)
-	}
+type ListenerHandler struct {
 }
 
-func processTcp(t C.ConnContext) {
+func (l ListenerHandler) HandleTCPConn(c net.Conn, metadata *metaC.Metadata) {
 	var wg sync.WaitGroup
 	wg.Add(1)
-	ct, err := conn.NewTcpConnContext(context.Background(), t.Conn(), t.Metadata(), &wg)
+	ct, err := conn.NewTcpConnContext(context.Background(), c, meta_patch.ConvertClash(metadata), &wg)
 	if err != nil {
 		return
 	}
@@ -88,29 +80,36 @@ func processTcp(t C.ConnContext) {
 	wg.Wait()
 }
 
-func processUdp(u *inbound.PacketAdapter) {
+func (l ListenerHandler) HandleUDPPacket(packet metaC.UDPPacket, metadata *metaC.Metadata) {
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct, err := conn.NewUdpConnContext(context.Background(), udpConn{u.UDPPacket}, u.Metadata(), &wg)
+	ct, err := conn.NewUdpConnContext(context.Background(), udpConn{packet}, meta_patch.ConvertClash(metadata), &wg)
 	if err != nil {
 		return
 	}
 	tunnel.UdpQueue() <- *ct
 	return
+
 }
 
-func init() {
-	go process()
+func (l ListenerHandler) NatTable() metaC.NatTable {
+	return nil
 }
+
+var listenerHandler = ListenerHandler{}
 
 func (l *Listener) Start() error {
-	tcpListener, err := mixed.New(l.Addr, tcpIn)
+	inbound.SetAllowedIPs([]netip.Prefix{
+		netip.MustParsePrefix("0.0.0.0/0"),
+	})
+	tcpListener, err := mixed.New(l.Addr, listenerHandler)
 	if err != nil {
 		return err
 	}
 	l.tcpListener = tcpListener
-	udpListener, err := socks.NewUDP(l.Addr, udpIn)
+	udpListener, err := socks.NewUDP(l.Addr, listenerHandler)
 	if err != nil {
 		return err
 	}

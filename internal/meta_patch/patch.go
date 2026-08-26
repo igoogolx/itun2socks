@@ -32,3 +32,19 @@ func ConvertMeta(m *clashC.Metadata) *metaC.Metadata {
 	return newMetadata
 
 }
+
+func ConvertClash(m *metaC.Metadata) *clashC.Metadata {
+
+	return &clashC.Metadata{
+		NetWork:     clashC.NetWork(m.NetWork),
+		Type:        clashC.Type(m.Type),
+		SrcIP:       m.SrcIP,
+		DstIP:       m.DstIP,
+		SrcPort:     clashC.Port(m.SrcPort),
+		DstPort:     clashC.Port(m.DstPort),
+		Host:        m.Host,
+		ProcessPath: m.ProcessPath,
+		OriginDst:   netip.AddrPort{},
+	}
+
+}
