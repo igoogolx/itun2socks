@@ -19,6 +19,7 @@ builds:
     tags:
       - with_gvisor
       - no_tailscale
+      - no_zerotier
     goos:
       - windows
       - darwin
