@@ -41,9 +41,6 @@ func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 		DstPort: constant.Port(destAddr.Port()),
 		NetWork: constant.UDP,
 	}
-	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
-		metadata.OriginDst = addrPort
-	}
 
 	if defaultShouldFindProcess {
 		metadata.ProcessPath = findProcessPath(metadata)
@@ -58,9 +55,6 @@ func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 		DstIP:   destAddr.Addr(),
 		DstPort: constant.Port(destAddr.Port()),
 		NetWork: constant.TCP,
-	}
-	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
-		metadata.OriginDst = addrPort
 	}
 	if defaultShouldFindProcess {
 		metadata.ProcessPath = findProcessPath(metadata)
