@@ -1,5 +1,3 @@
-github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568 h1:q5P/QRxB2OaD1ZfIlQ0Qt92LEW8X//dEkNOEjhqbAj0=
-github.com/Dreamacro/protobytes v0.0.0-20250322142947-26d5983b9568/go.mod h1:XWtyZBEG2sKhfn/B6Y6M1FWMJBLqatoWmVXTIv3NA7k=
 github.com/RyuaNerin/go-krypto v1.3.0 h1:smavTzSMAx8iuVlGb4pEwl9MD2qicqMzuXR2QWp2/Pg=
 github.com/RyuaNerin/go-krypto v1.3.0/go.mod h1:9R9TU936laAIqAmjcHo/LsaXYOZlymudOAxjaBf62UM=
 github.com/RyuaNerin/testingutil v0.1.0 h1:IYT6JL57RV3U2ml3dLHZsVtPOP6yNK7WUVdzzlpNrss=
