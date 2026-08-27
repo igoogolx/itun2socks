@@ -2,6 +2,7 @@ package tunnel
 
 import (
 	"errors"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	P "github.com/metacubex/mihomo/component/process"
 	"net"
 	"net/netip"
@@ -9,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/constant"
-	"github.com/igoogolx/itun2socks/pkg/log"
 )
 
 var defaultShouldFindProcess bool
@@ -22,14 +22,13 @@ func UpdateShouldFindProcess(value bool) {
 }
 
 func findProcessPath(metadata constant.Metadata) string {
-	if metadata.OriginDst.IsValid() {
-		_, path, err := P.FindProcessName(metadata.NetWork.String(), metadata.SrcIP, int(metadata.SrcPort))
-		if err != nil {
-			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), err)
-		} else {
-			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), path)
-			return path
-		}
+
+	_, path, err := P.FindProcessName(metadata.NetWork.String(), metadata.SrcIP, int(metadata.SrcPort))
+	if err != nil {
+		log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), err)
+	} else {
+		log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), path)
+		return path
 	}
 	return ""
 }
