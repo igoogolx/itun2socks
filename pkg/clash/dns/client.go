@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"github.com/metacubex/mihomo/component/dialer"
 	"math/rand"
 	"net"
@@ -12,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	metaC "github.com/metacubex/mihomo/constant"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
@@ -59,9 +57,9 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 
 	}
 
-	network := C.UDP
+	network := metaC.UDP
 	if strings.HasPrefix(c.Client.Net, "tcp") {
-		network = C.TCP
+		network = metaC.TCP
 	}
 
 	numPort, err := strconv.ParseUint(c.port, 10, 16)
@@ -74,15 +72,15 @@ func (c *client) ExchangeContext(ctx context.Context, m *D.Msg) (*D.Msg, error) 
 	if err != nil {
 		return nil, err
 	}
-	if network == C.TCP {
-		conn, err = connDial.DialContext(ctx, meta_patch.ConvertMeta(&C.Metadata{
+	if network == metaC.TCP {
+		conn, err = connDial.DialContext(ctx, &metaC.Metadata{
 			NetWork: network,
 			SrcIP:   netip.Addr{},
 			DstIP:   ip,
 			SrcPort: 0,
-			DstPort: C.Port(numPort),
+			DstPort: uint16(numPort),
 			Host:    "",
-		}))
+		})
 	} else {
 		conn, err = dialer.DialContext(ctx, "udp", net.JoinHostPort(ip.String(), c.port))
 	}
