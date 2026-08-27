@@ -2,9 +2,8 @@ package log
 
 import (
 	"fmt"
+	"github.com/metacubex/mihomo/common/observable"
 	"os"
-
-	"github.com/igoogolx/itun2socks/pkg/clash/common/observable"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -57,12 +56,12 @@ func Fatalln(format string, v ...any) {
 	log.Fatalf(format, v...)
 }
 
-func Subscribe() observable.Subscription {
+func Subscribe() observable.Subscription[any] {
 	sub, _ := source.Subscribe()
 	return sub
 }
 
-func UnSubscribe(sub observable.Subscription) {
+func UnSubscribe(sub observable.Subscription[any]) {
 	source.UnSubscribe(sub)
 }
 
