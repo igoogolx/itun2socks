@@ -2,7 +2,6 @@ package local_server
 
 import (
 	"context"
-	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"github.com/metacubex/mihomo/adapter/inbound"
 	"github.com/metacubex/mihomo/listener/mixed"
 	"github.com/metacubex/mihomo/listener/socks"
@@ -72,7 +71,7 @@ type ListenerHandler struct {
 func (l ListenerHandler) HandleTCPConn(c net.Conn, metadata *metaC.Metadata) {
 	var wg sync.WaitGroup
 	wg.Add(1)
-	ct, err := conn.NewTcpConnContext(context.Background(), c, meta_patch.ConvertClash(metadata), &wg)
+	ct, err := conn.NewTcpConnContext(context.Background(), c, metadata, &wg)
 	if err != nil {
 		return
 	}
@@ -85,7 +84,7 @@ func (l ListenerHandler) HandleUDPPacket(packet metaC.UDPPacket, metadata *metaC
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
-	ct, err := conn.NewUdpConnContext(context.Background(), udpConn{packet}, meta_patch.ConvertClash(metadata), &wg)
+	ct, err := conn.NewUdpConnContext(context.Background(), udpConn{packet}, metadata, &wg)
 	if err != nil {
 		return
 	}

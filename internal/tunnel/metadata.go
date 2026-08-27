@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 var defaultShouldFindProcess bool
@@ -21,7 +21,7 @@ func UpdateShouldFindProcess(value bool) {
 	defaultShouldFindProcess = value
 }
 
-func findProcessPath(metadata constant.Metadata) string {
+func findProcessPath(metadata metaC.Metadata) string {
 
 	_, path, err := P.FindProcessName(metadata.NetWork.String(), metadata.SrcIP, int(metadata.SrcPort))
 	if err != nil {
@@ -33,13 +33,13 @@ func findProcessPath(metadata constant.Metadata) string {
 	return ""
 }
 
-func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
-	metadata := constant.Metadata{
+func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) metaC.Metadata {
+	metadata := metaC.Metadata{
 		SrcIP:   srcAddr.Addr(),
-		SrcPort: constant.Port(srcAddr.Port()),
+		SrcPort: srcAddr.Port(),
 		DstIP:   destAddr.Addr(),
-		DstPort: constant.Port(destAddr.Port()),
-		NetWork: constant.UDP,
+		DstPort: destAddr.Port(),
+		NetWork: metaC.UDP,
 	}
 
 	if defaultShouldFindProcess {
@@ -48,13 +48,13 @@ func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 	return metadata
 }
 
-func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
-	metadata := constant.Metadata{
+func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) metaC.Metadata {
+	metadata := metaC.Metadata{
 		SrcIP:   srcAddr.Addr(),
-		SrcPort: constant.Port(srcAddr.Port()),
+		SrcPort: srcAddr.Port(),
 		DstIP:   destAddr.Addr(),
-		DstPort: constant.Port(destAddr.Port()),
-		NetWork: constant.TCP,
+		DstPort: destAddr.Port(),
+		NetWork: metaC.TCP,
 	}
 	if defaultShouldFindProcess {
 		metadata.ProcessPath = findProcessPath(metadata)
@@ -62,7 +62,7 @@ func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 	return metadata
 }
 
-func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*constant.Metadata, error) {
+func CreateMetadata(srcAddr, destAddr string, network metaC.NetWork) (*metaC.Metadata, error) {
 	var srcHost, srcPort string
 	var srcIp netip.Addr
 	var err error
@@ -93,11 +93,11 @@ func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*consta
 		return nil, err
 	}
 
-	metadata := &constant.Metadata{
+	metadata := &metaC.Metadata{
 		SrcIP:   srcIp,
-		SrcPort: constant.Port(metaSrcPort),
+		SrcPort: uint16(metaSrcPort),
 		DstIP:   destIp,
-		DstPort: constant.Port(metaDestPort),
+		DstPort: uint16(metaDestPort),
 		NetWork: network,
 	}
 	return metadata, nil

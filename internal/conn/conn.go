@@ -10,7 +10,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	metaC "github.com/metacubex/mihomo/constant"
 )
@@ -28,9 +27,9 @@ var (
 	mux     sync.RWMutex
 )
 
-type Matcher func(metadata *C.Metadata, rule rule_engine.Rule) (rule_engine.Rule, error)
+type Matcher func(metadata *metaC.Metadata, rule rule_engine.Rule) (rule_engine.Rule, error)
 
-func RejectQuicMather(metadata *C.Metadata, prevRule rule_engine.Rule) (rule_engine.Rule, error) {
+func RejectQuicMather(metadata *metaC.Metadata, prevRule rule_engine.Rule) (rule_engine.Rule, error) {
 	if prevRule.GetPolicy() == constants.PolicyProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort == 443 {
 		log.Debugln("reject quic conn:%v", metadata.RemoteAddress())
 		return rule_engine.BuiltInRejectRule, nil
@@ -57,7 +56,7 @@ func GetProxy(rule constants.Policy) (metaC.Proxy, error) {
 	return connDialer, nil
 }
 
-func handleMetadata(metadata *C.Metadata) rule_engine.Rule {
+func handleMetadata(metadata *metaC.Metadata) rule_engine.Rule {
 
 	rule := resolveMetadata(metadata)
 

@@ -13,8 +13,8 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	metaC "github.com/metacubex/mihomo/constant"
 	D "github.com/miekg/dns"
 )
 
@@ -85,7 +85,7 @@ func convertRulePolicyToResolver(rule rule_engine.Rule) (rule_engine.Rule, error
 	return rule, nil
 }
 
-func getDnsResolver(domain string, metadata *constant.Metadata, curRuleEngine *rule_engine.Engine) (rule_engine.Rule, error) {
+func getDnsResolver(domain string, metadata *metaC.Metadata, curRuleEngine *rule_engine.Engine) (rule_engine.Rule, error) {
 	processPath := metadata.ProcessPath
 	var rule rule_engine.Rule
 	var err error
@@ -104,7 +104,7 @@ func getDnsResolver(domain string, metadata *constant.Metadata, curRuleEngine *r
 	return rule_engine.BuiltInProxyRule, nil
 }
 
-func Handle(dnsMessage *D.Msg, metadata *constant.Metadata) (*D.Msg, error) {
+func Handle(dnsMessage *D.Msg, metadata *metaC.Metadata) (*D.Msg, error) {
 	mux.RLock()
 	defer mux.RUnlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

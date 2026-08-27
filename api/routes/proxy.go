@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"github.com/igoogolx/itun2socks/internal/meta_patch"
 	"github.com/metacubex/mihomo/adapter"
 	"net/http"
 	"time"
@@ -14,7 +13,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	metaC "github.com/metacubex/mihomo/constant"
 )
@@ -60,13 +58,13 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	metadata, err := tunnel.CreateMetadata("0.0.0.0:0", "8.8.8.8:53", C.UDP)
+	metadata, err := tunnel.CreateMetadata("0.0.0.0:0", "8.8.8.8:53", metaC.UDP)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	pc, err := p.ListenPacketContext(context.Background(), meta_patch.ConvertMeta(metadata))
+	pc, err := p.ListenPacketContext(context.Background(), metadata)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))

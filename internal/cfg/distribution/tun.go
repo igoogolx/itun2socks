@@ -8,14 +8,14 @@ import (
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type Config struct {
 	Dns DnsDistribution
 }
 
-func (c Config) ConnMatcher(metadata *C.Metadata, _ rule_engine.Rule) (rule_engine.Rule, error) {
+func (c Config) ConnMatcher(metadata *metaC.Metadata, _ rule_engine.Rule) (rule_engine.Rule, error) {
 	processPath := metadata.ProcessPath
 	if len(processPath) != 0 {
 		if rule, err := matcher.GetRuleEngine().Match(processPath, constants.ProcessRuleTypes); err == nil {
