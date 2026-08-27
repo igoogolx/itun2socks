@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/metacubex/mihomo/common/picker"
 	"net"
 	"net/netip"
 	"strings"
@@ -15,7 +16,6 @@ import (
 	metaC "github.com/metacubex/mihomo/constant"
 
 	"github.com/igoogolx/itun2socks/pkg/clash/common/cache"
-	"github.com/igoogolx/itun2socks/pkg/clash/common/picker"
 	"github.com/igoogolx/itun2socks/pkg/clash/log"
 
 	D "github.com/miekg/dns"
@@ -167,7 +167,7 @@ func msgToIP(msg *D.Msg) []netip.Addr {
 }
 
 func batchExchange(ctx context.Context, clients []dnsClient, m *D.Msg) (msg *D.Msg, err error) {
-	fast, ctx := picker.WithContext(ctx)
+	fast, ctx := picker.WithContext[any](ctx)
 	for _, client := range clients {
 		r := client
 		fast.Go(func() (any, error) {
