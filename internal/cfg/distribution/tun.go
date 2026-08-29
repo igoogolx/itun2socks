@@ -2,12 +2,12 @@ package distribution
 
 import (
 	"fmt"
+	"github.com/metacubex/mihomo/component/fakeip"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 	metaC "github.com/metacubex/mihomo/constant"
 )
 
@@ -45,7 +45,6 @@ func NewTun(
 	boostDns []string,
 	remoteDns []string,
 	localDns []string,
-	defaultInterfaceName string,
 	disableCache bool,
 	fakeIpPool *fakeip.Pool,
 ) (Config, error) {
@@ -54,7 +53,7 @@ func NewTun(
 	}
 
 	dns.ResetCache()
-	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName, disableCache, fakeIpPool)
+	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, disableCache, fakeIpPool)
 	if err != nil {
 		return Config{}, err
 	}

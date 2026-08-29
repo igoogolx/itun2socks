@@ -2,18 +2,16 @@ package distribution
 
 import (
 	"github.com/igoogolx/itun2socks/internal/conn"
-	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/resolver"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
-	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
-	metaC "github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/component/fakeip"
+	metaResolver "github.com/metacubex/mihomo/component/resolver"
+	"github.com/metacubex/mihomo/dns"
 )
 
 func NewDnsDistribution(
 	bootDns []string,
 	remoteDns []string,
 	localDns []string,
-	defaultInterfaceName string,
 	disableCache bool,
 	fakeIpPool *fakeip.Pool,
 ) (DnsDistribution, error) {
@@ -22,52 +20,54 @@ func NewDnsDistribution(
 	dd := DnsDistribution{}
 
 	//Boost
-	boostDnsClient, err := resolver.New(bootDns, defaultInterfaceName, func() (metaC.Proxy, error) {
-		return conn.GetProxy(constants.PolicyDirect)
-	}, disableCache, nil)
+	boostDnsClient, err := resolver.New(bootDns, conn.DirectAdapter, disableCache)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
+	boostDnsService := dns.NewService(boostDnsClient, dns.NewEnhancer(dns.EnhancerConfig{}))
 	dd.Boost = SubDnsDistribution{
-		Client:    boostDnsClient,
+		Client:    boostDnsService,
 		Addresses: bootDns,
 	}
 
 	//Local
-	localDnsClient, err := resolver.New(localDns, defaultInterfaceName, func() (metaC.Proxy, error) {
-		return conn.GetProxy(constants.PolicyDirect)
-	}, disableCache, nil)
+	localDnsClient, err := resolver.New(localDns, conn.DirectAdapter, disableCache)
+
 	if err != nil {
 		return DnsDistribution{}, err
 	}
+
+	localDnsService := dns.NewService(localDnsClient, dns.NewEnhancer(dns.EnhancerConfig{}))
 	dd.Local = SubDnsDistribution{
 		Addresses: localDns,
-		Client:    localDnsClient,
+		Client:    localDnsService,
 	}
 
 	//Remote
-	remoteDnsClient, err := resolver.New(remoteDns, defaultInterfaceName, func() (metaC.Proxy, error) {
-		return conn.GetProxy(constants.PolicyProxy)
-	}, disableCache, fakeIpPool)
+	remoteDnsClient, err := resolver.New(remoteDns, conn.ProxyAdapter, disableCache)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
+
+	remoteDnsService := dns.NewService(remoteDnsClient, dns.NewEnhancer(dns.EnhancerConfig{
+		FakeIPPool: fakeIpPool,
+	}))
 	dd.Remote = SubDnsDistribution{
-		Client:    remoteDnsClient,
+		Client:    remoteDnsService,
 		Addresses: remoteDns,
 	}
 
-	cResolver.DefaultResolver = boostDnsClient
+	metaResolver.DefaultResolver = boostDnsClient
 	return dd, nil
 }
 
 type SubDnsDistribution struct {
 	Addresses []string
-	Client    cResolver.Resolver
+	Client    *dns.Service
 }
 
 func (s SubDnsDistribution) GetServers() []string {
-	return s.Client.GetServers()
+	return s.Addresses
 }
 
 type DnsDistribution struct {

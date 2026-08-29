@@ -1,33 +1,38 @@
 package resolver
 
 import (
-	_ "unsafe"
-
-	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
-	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
-	"github.com/igoogolx/itun2socks/pkg/clash/config"
-	"github.com/igoogolx/itun2socks/pkg/clash/dns"
+	_ "github.com/metacubex/mihomo/config" //init dns.ParseNameServer
 	metaC "github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/dns"
 )
 
-func New(mainServer []string, defaultInterfaceName string, getDialer func() (metaC.Proxy, error), disableCache bool, fakeIpPool *fakeip.Pool) (cResolver.Resolver, error) {
-	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
+func New(mainServer []string, proxyAdapter metaC.ProxyAdapter, disableCache bool) (dns.Resolvers, error) {
+	nameservers, err := parse(mainServer)
 	if err != nil {
-		return nil, err
+		return dns.Resolvers{}, err
+	}
+
+	for _, nameserver := range nameservers {
+
+		nameserver.ProxyAdapter = proxyAdapter
+	}
+
+	cacheMaxSize := 0
+	if disableCache {
+		//It's a little trick to disable cache because 0 means 4096 internally.
+		cacheMaxSize = 1
 	}
 
 	mainDnsClient := dns.NewResolver(dns.Config{
-		Main:         mainNameResolver,
-		GetDialer:    getDialer,
-		DisableCache: disableCache,
-		Pool:         fakeIpPool,
+		Main:         nameservers,
+		CacheMaxSize: cacheMaxSize,
 	})
 
 	return mainDnsClient, nil
 }
 
-func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, error) {
-	nameResolvers, err := config.ParseNameServer(servers)
+func parse(servers []string) ([]dns.NameServer, error) {
+	nameResolvers, err := dns.ParseNameServer(servers)
 	if err != nil {
 		return nil, err
 	}
@@ -35,9 +40,7 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 		//FIXME: remove dhcp
 		if nameResolver.Net == "system" || nameResolver.Net == "dhcp" {
 			nameResolvers[index] = dns.NameServer{
-				Net:       "system",
-				Interface: defaultInterfaceName,
-				Addr:      defaultInterfaceName,
+				Net: "system",
 			}
 		}
 	}
