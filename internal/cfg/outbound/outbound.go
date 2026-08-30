@@ -21,7 +21,6 @@ func New(option Option) (metaC.Proxy, error) {
 	var proxy metaC.Proxy
 	var err error
 	var ids []string
-	var allProxies []string
 
 	if option.AutoMode.Enabled {
 
@@ -34,17 +33,17 @@ func New(option Option) (metaC.Proxy, error) {
 				}
 				proxyMap[v["id"].(string)] = p
 				ids = append(ids, v["id"].(string))
-				allProxies = append(allProxies, v["name"].(string))
 			}
 			proxyGroupConfig := map[string]any{
-				"name":     "auto",
-				"proxies":  ids,
-				"interval": 300,
-				"url":      option.AutoMode.Url,
-				"type":     option.AutoMode.Type,
+				"name":           "auto",
+				"proxies":        ids,
+				"interval":       300,
+				"url":            option.AutoMode.Url,
+				"type":           option.AutoMode.Type,
+				"empty-fallback": ids[0],
 			}
 
-			proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{}, allProxies, []string{})
+			proxyGroup, err := outboundgroup.ParseProxyGroup(proxyGroupConfig, proxyMap, map[string]provider.ProxyProvider{}, ids, []string{})
 			if err != nil {
 				return nil, fmt.Errorf("fail to parse proxy group: %v", err)
 			}
