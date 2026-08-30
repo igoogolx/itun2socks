@@ -12,9 +12,10 @@ func New(mainServer []string, proxyAdapter metaC.ProxyAdapter, disableCache bool
 		return dns.Resolvers{}, err
 	}
 
-	for _, nameserver := range nameservers {
+	for index, nameserver := range nameservers {
 
 		nameserver.ProxyAdapter = proxyAdapter
+		nameservers[index] = nameserver
 	}
 
 	cacheMaxSize := 0
