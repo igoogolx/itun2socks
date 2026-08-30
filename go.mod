@@ -13,8 +13,8 @@ require (
 	github.com/miekg/dns v1.1.73
 	github.com/sagernet/sing v0.8.14
 	github.com/sagernet/sing-tun v0.8.15
-	github.com/sirupsen/logrus v1.9.4
-	github.com/stretchr/testify v1.11.1
+	github.com/sirupsen/logrus v1.10.2
+	github.com/stretchr/testify v1.12.1
 	go.uber.org/atomic v1.11.0
 	golang.org/x/sys v0.47.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
