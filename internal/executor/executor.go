@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/resolver"
 	"net/netip"
 	"time"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
-	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
@@ -176,7 +176,7 @@ func newMixed() (Client, error) {
 }
 
 func New() (Client, error) {
-	cResolver.DefaultResolver = nil
+	resolver.DefaultResolver = nil
 	dialer.DefaultInterfaceFinder.Store(nil)
 	rawConfig, err := configuration.Read()
 	if err != nil {
