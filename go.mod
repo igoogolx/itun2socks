@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/metacubex/mihomo v1.19.29
-	github.com/miekg/dns v1.1.72
+	github.com/miekg/dns v1.1.73
 	github.com/sagernet/sing v0.8.13
 	github.com/sagernet/sing-tun v0.8.11
 	github.com/sirupsen/logrus v1.9.4
