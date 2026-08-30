@@ -5,6 +5,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/resolver"
 	"github.com/metacubex/mihomo/component/fakeip"
 	metaResolver "github.com/metacubex/mihomo/component/resolver"
+	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/dns"
 )
 
@@ -50,7 +51,10 @@ func NewDnsDistribution(
 	}
 
 	remoteDnsService := dns.NewService(remoteDnsClient, dns.NewEnhancer(dns.EnhancerConfig{
-		FakeIPPool: fakeIpPool,
+		IPv6:          false,
+		EnhancedMode:  metaC.DNSFakeIP,
+		FakeIPPool:    fakeIpPool,
+		FakeIPSkipper: &fakeip.Skipper{Mode: metaC.FilterBlackList},
 	}))
 	dd.Remote = SubDnsDistribution{
 		Client:    remoteDnsService,
