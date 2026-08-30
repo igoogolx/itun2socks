@@ -12,7 +12,7 @@ require (
 	github.com/metacubex/mihomo v1.19.29
 	github.com/miekg/dns v1.1.73
 	github.com/sagernet/sing v0.8.14
-	github.com/sagernet/sing-tun v0.8.11
+	github.com/sagernet/sing-tun v0.8.15
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/atomic v1.11.0
