@@ -47,13 +47,14 @@ func NewTun(
 	localDns []string,
 	disableCache bool,
 	fakeIpPool *fakeip.Pool,
+	defaultInterfaceName string,
 ) (Config, error) {
 	if len(boostDns) == 0 || len(remoteDns) == 0 || len(localDns) == 0 {
 		return Config{}, fmt.Errorf("dns can't be empty")
 	}
 
 	dns.ResetCache()
-	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, disableCache, fakeIpPool)
+	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, disableCache, fakeIpPool, defaultInterfaceName)
 	if err != nil {
 		return Config{}, err
 	}

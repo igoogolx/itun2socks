@@ -45,6 +45,7 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 		rawConfig.Setting.Dns.Server.Local,
 		disableDnsCache,
 		fakeIpPool,
+		defaultInterfaceName,
 	)
 
 	if err != nil {

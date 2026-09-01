@@ -15,13 +15,15 @@ func NewDnsDistribution(
 	localDns []string,
 	disableCache bool,
 	fakeIpPool *fakeip.Pool,
+	defaultInterfaceName string,
+
 ) (DnsDistribution, error) {
 
 	var err error
 	dd := DnsDistribution{}
 
 	//Boost
-	boostDnsClient, err := resolver.New(bootDns, conn.DirectAdapter, disableCache)
+	boostDnsClient, err := resolver.New(bootDns, conn.DirectAdapter, defaultInterfaceName, disableCache)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
@@ -32,7 +34,7 @@ func NewDnsDistribution(
 	}
 
 	//Local
-	localDnsClient, err := resolver.New(localDns, conn.DirectAdapter, disableCache)
+	localDnsClient, err := resolver.New(localDns, conn.DirectAdapter, defaultInterfaceName, disableCache)
 
 	if err != nil {
 		return DnsDistribution{}, err
@@ -45,7 +47,7 @@ func NewDnsDistribution(
 	}
 
 	//Remote
-	remoteDnsClient, err := resolver.New(remoteDns, conn.ProxyAdapter, disableCache)
+	remoteDnsClient, err := resolver.New(remoteDns, conn.ProxyAdapter, defaultInterfaceName, disableCache)
 	if err != nil {
 		return DnsDistribution{}, err
 	}
