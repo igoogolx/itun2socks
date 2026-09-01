@@ -2,7 +2,7 @@ package resolver
 
 import (
 	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
-	_ "github.com/metacubex/mihomo/config" //init dns.ParseNameServer
+	_ "github.com/metacubex/mihomo/config" //Don't delete to init dns.ParseNameServer
 	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/dns"
 )
@@ -21,7 +21,7 @@ func New(mainServer []string, proxyAdapter metaC.ProxyAdapter, defaultInterfaceN
 
 	cacheMaxSize := 0
 	if disableCache {
-		//It's a little trick to disable cache because 0 means 4096 internally.
+		//FIXME:It's a little trick to disable cache because 0 means 4096 internally.
 		cacheMaxSize = 1
 	}
 
