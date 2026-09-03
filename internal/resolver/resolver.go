@@ -1,10 +1,12 @@
 package resolver
 
 import (
+	"fmt"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
 	_ "github.com/metacubex/mihomo/config" //Don't delete to init dns.ParseNameServer
 	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/dns"
+	"github.com/samber/lo"
 )
 
 func New(mainServer []string, proxyAdapter metaC.ProxyAdapter, defaultInterfaceName string, disableCache bool) (dns.Resolvers, error) {
@@ -54,13 +56,19 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 		nameResolvers = append(nameResolvers, dns.NameServer{Net: "dhcp", Addr: defaultInterfaceName})
 
 		systemDnsServers, resolveSystemDnsErr := system_dns.ResolverV4Servers(defaultInterfaceName)
+
 		if resolveSystemDnsErr == nil {
 
-			for _, server := range systemDnsServers {
-				nameResolvers = append(nameResolvers, dns.NameServer{
-					Net:  "udp",
-					Addr: server,
-				})
+			rawSysDnsServers := lo.Map(systemDnsServers, func(item string, _ int) string {
+				return fmt.Sprintf("udp:\\\\%s", item)
+			})
+
+			systemDnsNameServers, parseSystemDnsNameServersErr := dns.ParseNameServer(rawSysDnsServers)
+
+			if parseSystemDnsNameServersErr == nil {
+
+				nameResolvers = append(nameResolvers, systemDnsNameServers...)
+
 			}
 
 		}

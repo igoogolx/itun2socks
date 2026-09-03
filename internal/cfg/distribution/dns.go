@@ -52,12 +52,19 @@ func NewDnsDistribution(
 		return DnsDistribution{}, err
 	}
 
-	remoteDnsService := dns.NewService(remoteDnsClient, dns.NewEnhancer(dns.EnhancerConfig{
-		IPv6:          false,
-		EnhancedMode:  metaC.DNSFakeIP,
-		FakeIPPool:    fakeIpPool,
-		FakeIPSkipper: &fakeip.Skipper{Mode: metaC.FilterBlackList},
-	}))
+	remoteDnsEnhancerConfig := dns.EnhancerConfig{}
+
+	if fakeIpPool != nil {
+
+		remoteDnsEnhancerConfig = dns.EnhancerConfig{
+			EnhancedMode:  metaC.DNSFakeIP,
+			FakeIPPool:    fakeIpPool,
+			FakeIPSkipper: &fakeip.Skipper{Mode: metaC.FilterBlackList},
+		}
+
+	}
+
+	remoteDnsService := dns.NewService(remoteDnsClient, dns.NewEnhancer(remoteDnsEnhancerConfig))
 	dd.Remote = SubDnsDistribution{
 		Client:    remoteDnsService,
 		Addresses: remoteDns,
