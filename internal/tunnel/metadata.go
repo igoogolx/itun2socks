@@ -2,14 +2,14 @@ package tunnel
 
 import (
 	"errors"
+	P "github.com/igoogolx/itun2socks/pkg/clash/component/process"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	"net"
 	"net/netip"
 	"strconv"
 	"sync"
 
-	P "github.com/igoogolx/itun2socks/pkg/clash/component/process"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
-	"github.com/igoogolx/itun2socks/pkg/log"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 var defaultShouldFindProcess bool
@@ -21,29 +21,25 @@ func UpdateShouldFindProcess(value bool) {
 	defaultShouldFindProcess = value
 }
 
-func findProcessPath(metadata constant.Metadata) string {
-	if metadata.OriginDst.IsValid() {
-		path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(metadata.SrcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
-		if err != nil {
-			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), err)
-		} else {
-			log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), path)
-			return path
-		}
+func findProcessPath(metadata metaC.Metadata) string {
+
+	path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(metadata.SrcIP, metadata.SrcPort), netip.AddrPortFrom(metadata.DstIP, metadata.DstPort))
+	if err != nil {
+		log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), err)
+	} else {
+		log.Debugln(log.FormatLog(log.RulePrefix, "find process %s: %v"), metadata.String(), path)
+		return path
 	}
 	return ""
 }
 
-func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
-	metadata := constant.Metadata{
+func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) metaC.Metadata {
+	metadata := metaC.Metadata{
 		SrcIP:   srcAddr.Addr(),
-		SrcPort: constant.Port(srcAddr.Port()),
+		SrcPort: srcAddr.Port(),
 		DstIP:   destAddr.Addr(),
-		DstPort: constant.Port(destAddr.Port()),
-		NetWork: constant.UDP,
-	}
-	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
-		metadata.OriginDst = addrPort
+		DstPort: destAddr.Port(),
+		NetWork: metaC.UDP,
 	}
 
 	if defaultShouldFindProcess {
@@ -52,16 +48,13 @@ func CreateUdpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 	return metadata
 }
 
-func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
-	metadata := constant.Metadata{
+func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) metaC.Metadata {
+	metadata := metaC.Metadata{
 		SrcIP:   srcAddr.Addr(),
-		SrcPort: constant.Port(srcAddr.Port()),
+		SrcPort: srcAddr.Port(),
 		DstIP:   destAddr.Addr(),
-		DstPort: constant.Port(destAddr.Port()),
-		NetWork: constant.TCP,
-	}
-	if addrPort, err := netip.ParseAddrPort(destAddr.String()); err == nil {
-		metadata.OriginDst = addrPort
+		DstPort: destAddr.Port(),
+		NetWork: metaC.TCP,
 	}
 	if defaultShouldFindProcess {
 		metadata.ProcessPath = findProcessPath(metadata)
@@ -69,7 +62,7 @@ func CreateTcpMetadata(srcAddr, destAddr netip.AddrPort) constant.Metadata {
 	return metadata
 }
 
-func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*constant.Metadata, error) {
+func CreateMetadata(srcAddr, destAddr string, network metaC.NetWork) (*metaC.Metadata, error) {
 	var srcHost, srcPort string
 	var srcIp netip.Addr
 	var err error
@@ -100,11 +93,11 @@ func CreateMetadata(srcAddr, destAddr string, network constant.NetWork) (*consta
 		return nil, err
 	}
 
-	metadata := &constant.Metadata{
+	metadata := &metaC.Metadata{
 		SrcIP:   srcIp,
-		SrcPort: constant.Port(metaSrcPort),
+		SrcPort: uint16(metaSrcPort),
 		DstIP:   destIp,
-		DstPort: constant.Port(metaDestPort),
+		DstPort: uint16(metaDestPort),
 		NetWork: network,
 	}
 	return metadata, nil

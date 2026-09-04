@@ -2,16 +2,16 @@ package conn
 
 import (
 	"fmt"
+	"github.com/metacubex/mihomo/adapter"
+	"github.com/metacubex/mihomo/adapter/outbound"
 	"strings"
 	"sync"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter/outbound"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 var defaultIsFakeIpEnabled bool
@@ -23,30 +23,30 @@ func UpdateIsFakeIpEnabled(value bool) {
 }
 
 var (
-	proxies map[constants.Policy]C.Proxy
+	proxies map[constants.Policy]metaC.Proxy
 	mux     sync.RWMutex
 )
 
-type Matcher func(metadata *C.Metadata, rule rule_engine.Rule) (rule_engine.Rule, error)
+type Matcher func(metadata *metaC.Metadata, rule rule_engine.Rule) (rule_engine.Rule, error)
 
-func RejectQuicMather(metadata *C.Metadata, prevRule rule_engine.Rule) (rule_engine.Rule, error) {
-	if prevRule.GetPolicy() == constants.PolicyProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort.String() == "443" {
+func RejectQuicMather(metadata *metaC.Metadata, prevRule rule_engine.Rule) (rule_engine.Rule, error) {
+	if prevRule.GetPolicy() == constants.PolicyProxy && strings.Contains(metadata.NetWork.String(), "udp") && metadata.DstPort == 443 {
 		log.Debugln("reject quic conn:%v", metadata.RemoteAddress())
 		return rule_engine.BuiltInRejectRule, nil
 	}
 	return nil, fmt.Errorf("not quic")
 }
 
-func UpdateProxy(remoteProxy C.Proxy) {
+func UpdateProxy(remoteProxy metaC.Proxy) {
 	mux.Lock()
 	defer mux.Unlock()
-	proxies = make(map[constants.Policy]C.Proxy)
+	proxies = make(map[constants.Policy]metaC.Proxy)
 	proxies[constants.PolicyProxy] = remoteProxy
 	proxies[constants.PolicyDirect] = adapter.NewProxy(outbound.NewDirect())
 	proxies[constants.PolicyReject] = adapter.NewProxy(outbound.NewReject())
 }
 
-func GetProxy(rule constants.Policy) (C.Proxy, error) {
+func GetProxy(rule constants.Policy) (metaC.Proxy, error) {
 	mux.RLock()
 	defer mux.RUnlock()
 	connDialer := proxies[rule]
@@ -56,7 +56,7 @@ func GetProxy(rule constants.Policy) (C.Proxy, error) {
 	return connDialer, nil
 }
 
-func handleMetadata(metadata *C.Metadata) rule_engine.Rule {
+func handleMetadata(metadata *metaC.Metadata) rule_engine.Rule {
 
 	rule := resolveMetadata(metadata)
 

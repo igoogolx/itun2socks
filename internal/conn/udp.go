@@ -8,10 +8,9 @@ import (
 	"time"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/dialer"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/pool"
+	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/sagernet/sing/common/buf"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
@@ -20,7 +19,7 @@ import (
 
 type UdpConnContext struct {
 	ctx      context.Context
-	metadata *C.Metadata
+	metadata *metaC.Metadata
 	conn     network.PacketConn
 	rule     rule_engine.Rule
 	wg       *sync.WaitGroup
@@ -38,7 +37,7 @@ func (u *UdpConnContext) Rule() rule_engine.Rule {
 	return u.rule
 }
 
-func (u *UdpConnContext) Metadata() *C.Metadata {
+func (u *UdpConnContext) Metadata() *metaC.Metadata {
 	return u.metadata
 }
 
@@ -46,7 +45,7 @@ func (u *UdpConnContext) Conn() network.PacketConn {
 	return u.conn
 }
 
-func NewUdpConnContext(ctx context.Context, conn network.PacketConn, metadata *C.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
+func NewUdpConnContext(ctx context.Context, conn network.PacketConn, metadata *metaC.Metadata, wg *sync.WaitGroup) (*UdpConnContext, error) {
 
 	rule := handleMetadata(metadata)
 
@@ -146,12 +145,12 @@ func (uc *CopyableReaderWriterConn) WriteTo(data []byte, addr net.Addr) (int, er
 	return len(data), err
 }
 
-func NewUdpConn(ctx context.Context, metadata *C.Metadata, rule rule_engine.Rule, defaultInterface string) (*CopyablePacketConn, error) {
+func NewUdpConn(ctx context.Context, metadata *metaC.Metadata, rule rule_engine.Rule) (*CopyablePacketConn, error) {
 	connDialer, err := GetProxy(rule.GetPolicy())
 	if err != nil {
 		return nil, err
 	}
-	rawConn, err := connDialer.ListenPacketContext(ctx, metadata, dialer.WithInterface(defaultInterface), dialer.WithAddrReuse(true))
+	rawConn, err := connDialer.ListenPacketContext(ctx, metadata)
 	if err != nil {
 		return nil, err
 	}

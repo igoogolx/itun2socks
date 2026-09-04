@@ -3,19 +3,19 @@ package distribution
 import (
 	"fmt"
 
+	"github.com/metacubex/mihomo/component/fakeip"
+
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type Config struct {
 	Dns DnsDistribution
 }
 
-func (c Config) ConnMatcher(metadata *C.Metadata, _ rule_engine.Rule) (rule_engine.Rule, error) {
+func (c Config) ConnMatcher(metadata *metaC.Metadata, _ rule_engine.Rule) (rule_engine.Rule, error) {
 	processPath := metadata.ProcessPath
 	if len(processPath) != 0 {
 		if rule, err := matcher.GetRuleEngine().Match(processPath, constants.ProcessRuleTypes); err == nil {
@@ -45,16 +45,15 @@ func NewTun(
 	boostDns []string,
 	remoteDns []string,
 	localDns []string,
-	defaultInterfaceName string,
 	disableCache bool,
 	fakeIpPool *fakeip.Pool,
+	defaultInterfaceName string,
 ) (Config, error) {
 	if len(boostDns) == 0 || len(remoteDns) == 0 || len(localDns) == 0 {
 		return Config{}, fmt.Errorf("dns can't be empty")
 	}
 
-	dns.ResetCache()
-	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, defaultInterfaceName, disableCache, fakeIpPool)
+	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, disableCache, fakeIpPool, defaultInterfaceName)
 	if err != nil {
 		return Config{}, err
 	}

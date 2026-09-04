@@ -5,16 +5,14 @@ import (
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
-	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type SystemProxyConfig struct {
 }
 
-func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, _ rule_engine.Rule) (rule_engine.Rule, error) {
+func (c SystemProxyConfig) ConnMatcher(metadata *metaC.Metadata, _ rule_engine.Rule) (rule_engine.Rule, error) {
 
 	if metadata.Host != "" {
 		var rule, err = matcher.GetRuleEngine().Match(metadata.Host, constants.DomainRuleTypes)
@@ -35,7 +33,5 @@ func (c SystemProxyConfig) ConnMatcher(metadata *C.Metadata, _ rule_engine.Rule)
 }
 
 func NewSystemProxy() (SystemProxyConfig, error) {
-	dns.ResetCache()
-	cResolver.DefaultResolver = nil
 	return SystemProxyConfig{}, nil
 }

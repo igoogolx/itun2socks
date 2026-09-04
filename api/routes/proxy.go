@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"github.com/metacubex/mihomo/adapter"
 	"net/http"
 	"time"
 
@@ -12,9 +13,8 @@ import (
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 var (
@@ -58,7 +58,7 @@ func testProxyUdp(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, NewError(err.Error()))
 		return
 	}
-	metadata, err := tunnel.CreateMetadata("0.0.0.0:0", "8.8.8.8:53", C.UDP)
+	metadata, err := tunnel.CreateMetadata("0.0.0.0:0", "8.8.8.8:53", metaC.UDP)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, NewError(err.Error()))
@@ -106,7 +106,7 @@ func getProxyDelay(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), defaultDelayTimeout)
 	defer cancel()
-	delay, _, err := p.URLTest(ctx, url)
+	delay, err := p.URLTest(ctx, url, nil)
 	if err != nil {
 		render.JSON(w, r, render.M{
 			"delay": -1,
@@ -156,8 +156,8 @@ func getCurProxy() (string, string) {
 	if manager.GetIsStarted() {
 		curAutoProxy, err := conn.GetProxy(constants.PolicyProxy)
 		if err == nil {
-			if curAutoProxy.Type() == C.URLTest || curAutoProxy.Type() == C.Fallback {
-				curAutoProxy = curAutoProxy.Unwrap(&C.Metadata{})
+			if curAutoProxy.Type() == metaC.URLTest || curAutoProxy.Type() == metaC.Fallback {
+				curAutoProxy = curAutoProxy.Unwrap(&metaC.Metadata{}, false)
 			}
 		}
 		if curAutoProxy != nil {

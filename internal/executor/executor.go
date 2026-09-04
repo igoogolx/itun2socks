@@ -6,6 +6,9 @@ import (
 	"net/netip"
 	"time"
 
+	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/resolver"
+
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
@@ -16,7 +19,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	"github.com/igoogolx/itun2socks/internal/proxy_handler"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
-	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
@@ -63,10 +65,15 @@ func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 		time.Sleep(1 * time.Second)
 	}
 
+	dialer.DefaultInterfaceFinder.Store(network_iface.InterfaceFinder{})
+
 	config, err := cfg.NewTun(network_iface.GetDefaultInterfaceName())
 	if err != nil {
 		return nil, err
 	}
+
+	dns.InitDnsForTunProxy(*config.Rule.Dns.Boost.Resolvers)
+
 	tunOptions := sTun.Options{
 		Name:             config.Device.Name,
 		MTU:              uint32(config.Device.Mtu),
@@ -132,6 +139,11 @@ func newSysProxy() (*SystemProxyClient, error) {
 		return nil, err
 	}
 
+	err = dns.InitDnsForSysProxy()
+	if err != nil {
+		return nil, err
+	}
+
 	tunnel.UpdateShouldFindProcess(false)
 	conn.UpdateConnMatcher([]conn.Matcher{
 		config.Rule.ConnMatcher,
@@ -173,7 +185,9 @@ func newMixed() (Client, error) {
 }
 
 func New() (Client, error) {
-	cResolver.DefaultResolver = nil
+	resolver.DefaultResolver = nil
+	resolver.SystemResolver = nil
+	dialer.DefaultInterfaceFinder.Store(nil)
 	rawConfig, err := configuration.Read()
 	if err != nil {
 		return nil, err

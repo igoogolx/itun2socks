@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/metacubex/mihomo/adapter"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -10,7 +11,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/executor"
 	"github.com/igoogolx/itun2socks/internal/manager"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	"github.com/igoogolx/itun2socks/pkg/clash/adapter"
 )
 
 func selectedRouter() http.Handler {

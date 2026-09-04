@@ -9,7 +9,7 @@ import (
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/dns"
 
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 
 	"go.uber.org/atomic"
 )
@@ -21,7 +21,7 @@ type tracker interface {
 
 type trackerInfo struct {
 	UUID          uuid.UUID        `json:"id"`
-	Metadata      *C.Metadata      `json:"metadata"`
+	Metadata      *metaC.Metadata  `json:"metadata"`
 	UploadTotal   *atomic.Int64    `json:"upload"`
 	DownloadTotal *atomic.Int64    `json:"download"`
 	Start         int64            `json:"start"`
@@ -60,7 +60,7 @@ func (tt *TcpTracker) Close() error {
 	return tt.Conn.Close()
 }
 
-func NewTCPTracker(conn net.Conn, manager *Manager, metadata *C.Metadata, rule rule_engine.Rule) *TcpTracker {
+func NewTCPTracker(conn net.Conn, manager *Manager, metadata *metaC.Metadata, rule rule_engine.Rule) *TcpTracker {
 	uid := uuid.NewV4()
 
 	t := &TcpTracker{
@@ -118,7 +118,7 @@ func (ut *UdpTracker) Close() error {
 	return ut.PacketConn.Close()
 }
 
-func NewUDPTracker(conn conn.CopyablePacketConn, manager *Manager, metadata *C.Metadata, rule rule_engine.Rule) *UdpTracker {
+func NewUDPTracker(conn conn.CopyablePacketConn, manager *Manager, metadata *metaC.Metadata, rule rule_engine.Rule) *UdpTracker {
 	uid := uuid.NewV4()
 
 	ut := &UdpTracker{
