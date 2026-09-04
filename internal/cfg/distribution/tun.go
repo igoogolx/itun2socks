@@ -2,11 +2,11 @@ package distribution
 
 import (
 	"fmt"
+
 	"github.com/metacubex/mihomo/component/fakeip"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	metaC "github.com/metacubex/mihomo/constant"
 )
@@ -53,7 +53,6 @@ func NewTun(
 		return Config{}, fmt.Errorf("dns can't be empty")
 	}
 
-	dns.ResetCache()
 	dnsConfig, err := NewDnsDistribution(boostDns, remoteDns, localDns, disableCache, fakeIpPool, defaultInterfaceName)
 	if err != nil {
 		return Config{}, err

@@ -4,7 +4,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/resolver"
 	"github.com/metacubex/mihomo/component/fakeip"
-	metaResolver "github.com/metacubex/mihomo/component/resolver"
 	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/dns"
 )
@@ -31,6 +30,7 @@ func NewDnsDistribution(
 	dd.Boost = SubDnsDistribution{
 		Client:    boostDnsService,
 		Addresses: bootDns,
+		Resolvers: &boostDnsClient,
 	}
 
 	//Local
@@ -44,6 +44,7 @@ func NewDnsDistribution(
 	dd.Local = SubDnsDistribution{
 		Addresses: localDns,
 		Client:    localDnsService,
+		Resolvers: &localDnsClient,
 	}
 
 	//Remote
@@ -68,13 +69,14 @@ func NewDnsDistribution(
 	dd.Remote = SubDnsDistribution{
 		Client:    remoteDnsService,
 		Addresses: remoteDns,
+		Resolvers: &remoteDnsClient,
 	}
 
-	metaResolver.DefaultResolver = boostDnsClient
 	return dd, nil
 }
 
 type SubDnsDistribution struct {
+	Resolvers *dns.Resolvers
 	Addresses []string
 	Client    *dns.Service
 }

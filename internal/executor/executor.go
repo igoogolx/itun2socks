@@ -3,10 +3,11 @@ package executor
 import (
 	"context"
 	"fmt"
-	"github.com/metacubex/mihomo/component/dialer"
-	"github.com/metacubex/mihomo/component/resolver"
 	"net/netip"
 	"time"
+
+	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/resolver"
 
 	"github.com/igoogolx/itun2socks/internal/cfg"
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
@@ -70,6 +71,9 @@ func newTun(isLocalServerEnabled bool) (*TunClient, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	dns.InitDnsForTunProxy(*config.Rule.Dns.Boost.Resolvers)
+
 	tunOptions := sTun.Options{
 		Name:             config.Device.Name,
 		MTU:              uint32(config.Device.Mtu),
@@ -135,6 +139,11 @@ func newSysProxy() (*SystemProxyClient, error) {
 		return nil, err
 	}
 
+	err = dns.InitDnsForSysProxy()
+	if err != nil {
+		return nil, err
+	}
+
 	tunnel.UpdateShouldFindProcess(false)
 	conn.UpdateConnMatcher([]conn.Matcher{
 		config.Rule.ConnMatcher,
@@ -177,6 +186,7 @@ func newMixed() (Client, error) {
 
 func New() (Client, error) {
 	resolver.DefaultResolver = nil
+	resolver.SystemResolver = nil
 	dialer.DefaultInterfaceFinder.Store(nil)
 	rawConfig, err := configuration.Read()
 	if err != nil {

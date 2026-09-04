@@ -2,11 +2,9 @@ package distribution
 
 import (
 	"fmt"
-	"github.com/metacubex/mihomo/component/resolver"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/internal/dns"
 	"github.com/igoogolx/itun2socks/internal/matcher"
 	metaC "github.com/metacubex/mihomo/constant"
 )
@@ -35,7 +33,5 @@ func (c SystemProxyConfig) ConnMatcher(metadata *metaC.Metadata, _ rule_engine.R
 }
 
 func NewSystemProxy() (SystemProxyConfig, error) {
-	dns.ResetCache()
-	resolver.DefaultResolver = nil
 	return SystemProxyConfig{}, nil
 }

@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"fmt"
+
 	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
 	_ "github.com/metacubex/mihomo/config" //Don't delete to init dns.ParseNameServer
 	metaC "github.com/metacubex/mihomo/constant"
@@ -36,18 +37,17 @@ func New(mainServer []string, proxyAdapter metaC.ProxyAdapter, defaultInterfaceN
 }
 
 func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, error) {
-	nameResolvers, err := dns.ParseNameServer(servers)
+	rawNameResolvers, err := dns.ParseNameServer(servers)
 	if err != nil {
 		return nil, err
 	}
+	var nameResolvers []dns.NameServer
 	needSystemDns := false
-	for index, nameResolver := range nameResolvers {
-		//FIXME: remove dhcp
+	for _, nameResolver := range rawNameResolvers {
 		if nameResolver.Net == "system" || (nameResolver.Net == "dhcp" && nameResolver.Addr == "auto") {
-			nameResolvers[index] = dns.NameServer{
-				Net: "system",
-			}
 			needSystemDns = true
+		} else {
+			nameResolvers = append(nameResolvers, nameResolver)
 		}
 	}
 
