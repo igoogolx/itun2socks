@@ -165,7 +165,11 @@ func getCurProxy() (string, string, string) {
 		if curAutoProxy != nil {
 			name = curAutoProxy.Name()
 			addr = curAutoProxy.Addr()
-			proxyType = curAutoProxy.Type().String()
+			proxyAdapterType := curAutoProxy.Type()
+			//TODO: map all types
+			if proxyAdapterType == metaC.Http {
+				proxyType = "http"
+			}
 		}
 	} else {
 		curSelectedProxy, err := configuration.GetSelectedProxy()
