@@ -2,9 +2,10 @@ package routes
 
 import (
 	"context"
-	"github.com/metacubex/mihomo/adapter"
 	"net/http"
 	"time"
+
+	"github.com/metacubex/mihomo/adapter"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -149,9 +150,10 @@ func getProxies(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func getCurProxy() (string, string) {
+func getCurProxy() (string, string, string) {
 	name := ""
 	addr := ""
+	proxyType := ""
 
 	if manager.GetIsStarted() {
 		curAutoProxy, err := conn.GetProxy(constants.PolicyProxy)
@@ -163,6 +165,7 @@ func getCurProxy() (string, string) {
 		if curAutoProxy != nil {
 			name = curAutoProxy.Name()
 			addr = curAutoProxy.Addr()
+			proxyType = curAutoProxy.Type().String()
 		}
 	} else {
 		curSelectedProxy, err := configuration.GetSelectedProxy()
@@ -173,18 +176,22 @@ func getCurProxy() (string, string) {
 			if proxyAddr, ok := curSelectedProxy["server"].(string); ok {
 				addr = proxyAddr
 			}
+			if pType, ok := curSelectedProxy["type"].(string); ok {
+				proxyType = pType
+			}
 		}
 	}
 
-	return name, addr
+	return name, addr, proxyType
 
 }
 
 func handleGetProxy(w http.ResponseWriter, r *http.Request) {
-	name, addr := getCurProxy()
+	name, addr, proxyType := getCurProxy()
 	render.JSON(w, r, render.M{
 		"name": name,
 		"addr": addr,
+		"type": proxyType,
 	})
 }
 
