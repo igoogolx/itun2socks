@@ -96,6 +96,6 @@ type RuntimeStatus struct {
 
 func getRuntimeStatus() (*RuntimeStatus, error) {
 	isStarted := manager.GetIsStarted()
-	name, addr := getCurProxy()
+	name, addr, _ := getCurProxy()
 	return &RuntimeStatus{name, addr, isStarted}, nil
 }
