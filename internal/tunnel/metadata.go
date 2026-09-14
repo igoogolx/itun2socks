@@ -83,11 +83,11 @@ func CreateMetadata(srcAddr, destAddr string, network metaC.NetWork) (*metaC.Met
 	if err != nil {
 		return nil, errors.New("fail to parse dest host")
 	}
-	metaSrcPort, err := strconv.Atoi(srcPort)
+	metaSrcPort, err := strconv.ParseUint(srcPort, 10, 16)
 	if err != nil {
 		return nil, err
 	}
-	metaDestPort, err := strconv.Atoi(destPort)
+	metaDestPort, err := strconv.ParseUint(destPort, 10, 16)
 
 	if err != nil {
 		return nil, err
