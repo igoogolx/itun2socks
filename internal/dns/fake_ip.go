@@ -1,16 +1,15 @@
 package dns
 
 import (
+	"github.com/metacubex/mihomo/component/fakeip"
 	"net/netip"
 
 	"github.com/igoogolx/itun2socks/internal/constants"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
 )
 
 var ipRange, _ = netip.ParsePrefix(constants.TunGateway)
 
 var FakeIpPool, _ = fakeip.New(fakeip.Options{
-	IPNet: &ipRange,
-	Host:  nil,
+	IPNet: ipRange,
 	Size:  4 * 1024,
 })

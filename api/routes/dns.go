@@ -10,11 +10,13 @@ import (
 	"github.com/go-chi/render"
 	"github.com/gorilla/websocket"
 	"github.com/igoogolx/itun2socks/internal/dns"
+	metaDns "github.com/metacubex/mihomo/dns"
 )
 
 func dnsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/statistic", getDnsStatistic)
+	r.Post("/validate", validate)
 	return r
 }
 
@@ -59,4 +61,28 @@ func getDnsStatistic(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+}
+
+type validateReq struct {
+	servers []string
+}
+
+func validate(w http.ResponseWriter, r *http.Request) {
+
+	var req validateReq
+	if err := render.DecodeJSON(r.Body, &req); err != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, ErrBadRequest)
+		return
+	}
+
+	_, err := metaDns.ParseNameServer(req.servers)
+
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, NewError(err.Error()))
+		return
+	}
+	render.NoContent(w, r)
+
 }

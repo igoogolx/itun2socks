@@ -5,12 +5,12 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/local_server"
 	"github.com/igoogolx/itun2socks/internal/cfg/outbound"
 	"github.com/igoogolx/itun2socks/internal/configuration"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type SystemProxyConfig struct {
 	Rule            distribution.SystemProxyConfig
-	Proxy           constant.Proxy
+	Proxy           metaC.Proxy
 	LocalServer     local_server.Cfg
 	ActiveInterface string
 }

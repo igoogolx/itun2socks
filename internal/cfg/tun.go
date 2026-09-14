@@ -7,12 +7,13 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/tun"
 	"github.com/igoogolx/itun2socks/internal/configuration"
 	"github.com/igoogolx/itun2socks/internal/dns"
-	"github.com/igoogolx/itun2socks/pkg/clash/constant"
+	"github.com/metacubex/mihomo/component/fakeip"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 type Config struct {
 	Rule              distribution.Config
-	Proxy             constant.Proxy
+	Proxy             metaC.Proxy
 	Device            *tun.Config
 	LocalServer       local_server.Cfg
 	HijackDns         configuration.HijackDns
@@ -33,17 +34,18 @@ func NewTun(defaultInterfaceName string) (*Config, error) {
 	}
 	disableDnsCache := rawConfig.Setting.Dns.DisableCache
 	remoteDnsItems := rawConfig.Setting.Dns.Server.Remote
+	var fakeIpPool *fakeip.Pool
 	fakeIp := rawConfig.Setting.Dns.FakeIp
 	if fakeIp {
-		remoteDnsItems = []string{"fake-ip://empty"}
+		fakeIpPool = dns.FakeIpPool
 	}
 	rule, err := distribution.NewTun(
 		rawConfig.Setting.Dns.Server.Boost,
 		remoteDnsItems,
 		rawConfig.Setting.Dns.Server.Local,
-		defaultInterfaceName,
 		disableDnsCache,
-		dns.FakeIpPool,
+		fakeIpPool,
+		defaultInterfaceName,
 	)
 
 	if err != nil {

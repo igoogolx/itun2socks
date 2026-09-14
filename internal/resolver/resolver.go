@@ -1,45 +1,78 @@
 package resolver
 
 import (
-	_ "unsafe"
+	"fmt"
 
-	"github.com/igoogolx/itun2socks/pkg/clash/component/fakeip"
-	cResolver "github.com/igoogolx/itun2socks/pkg/clash/component/resolver"
-	"github.com/igoogolx/itun2socks/pkg/clash/config"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
-	"github.com/igoogolx/itun2socks/pkg/clash/dns"
+	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
+	_ "github.com/metacubex/mihomo/config" //Don't delete to init dns.ParseNameServer
+	metaC "github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/dns"
+	"github.com/samber/lo"
 )
 
-func New(mainServer []string, defaultInterfaceName string, getDialer func() (C.Proxy, error), disableCache bool, fakeIpPool *fakeip.Pool) (cResolver.Resolver, error) {
-	mainNameResolver, err := parse(mainServer, defaultInterfaceName)
+func New(mainServer []string, proxyAdapter metaC.ProxyAdapter, defaultInterfaceName string, disableCache bool) (dns.Resolvers, error) {
+	nameservers, err := parse(mainServer, defaultInterfaceName)
 	if err != nil {
-		return nil, err
+		return dns.Resolvers{}, err
+	}
+
+	for index, nameserver := range nameservers {
+
+		nameserver.ProxyAdapter = proxyAdapter
+		nameservers[index] = nameserver
+	}
+
+	cacheMaxSize := 0
+	if disableCache {
+		//FIXME:It's a little trick to disable cache because 0 means 4096 internally.
+		cacheMaxSize = 1
 	}
 
 	mainDnsClient := dns.NewResolver(dns.Config{
-		Main:         mainNameResolver,
-		GetDialer:    getDialer,
-		DisableCache: disableCache,
-		Pool:         fakeIpPool,
+		Main:         nameservers,
+		CacheMaxSize: cacheMaxSize,
 	})
 
 	return mainDnsClient, nil
 }
 
 func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, error) {
-	nameResolvers, err := config.ParseNameServer(servers)
+	rawNameResolvers, err := dns.ParseNameServer(servers)
 	if err != nil {
 		return nil, err
 	}
-	for index, nameResolver := range nameResolvers {
-		//FIXME: remove dhcp
-		if nameResolver.Net == "system" || nameResolver.Net == "dhcp" {
-			nameResolvers[index] = dns.NameServer{
-				Net:       "system",
-				Interface: defaultInterfaceName,
-				Addr:      defaultInterfaceName,
-			}
+	var nameResolvers []dns.NameServer
+	needSystemDns := false
+	for _, nameResolver := range rawNameResolvers {
+		if nameResolver.Net == "system" || (nameResolver.Net == "dhcp" && nameResolver.Addr == "auto") {
+			needSystemDns = true
+		} else {
+			nameResolvers = append(nameResolvers, nameResolver)
 		}
 	}
+
+	if needSystemDns {
+
+		nameResolvers = append(nameResolvers, dns.NameServer{Net: "dhcp", Addr: defaultInterfaceName})
+
+		systemDnsServers, resolveSystemDnsErr := system_dns.ResolverV4Servers(defaultInterfaceName)
+
+		if resolveSystemDnsErr == nil {
+
+			rawSysDnsServers := lo.Map(systemDnsServers, func(item string, _ int) string {
+				return fmt.Sprintf("udp:\\\\%s", item)
+			})
+
+			systemDnsNameServers, parseSystemDnsNameServersErr := dns.ParseNameServer(rawSysDnsServers)
+
+			if parseSystemDnsNameServersErr == nil {
+
+				nameResolvers = append(nameResolvers, systemDnsNameServers...)
+
+			}
+
+		}
+	}
+
 	return nameResolvers, err
 }

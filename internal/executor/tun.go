@@ -2,6 +2,7 @@ package executor
 
 import (
 	"fmt"
+	"github.com/metacubex/mihomo/component/iface"
 	"net/netip"
 	"sync"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/dns"
 	localserver "github.com/igoogolx/itun2socks/internal/local_server"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
-	"github.com/igoogolx/itun2socks/pkg/clash/component/iface"
 	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	sTun "github.com/sagernet/sing-tun"
 )
@@ -52,7 +52,7 @@ func (c *TunClient) RuntimeDetail(hubAddress string) (any, error) {
 	remoteDns := DnsDetail{Addresses: c.config.Rule.Dns.Remote.Addresses, Servers: c.config.Rule.Dns.Remote.GetServers()}
 	boostDns := DnsDetail{Addresses: c.config.Rule.Dns.Boost.Addresses, Servers: c.config.Rule.Dns.Boost.GetServers()}
 	return &Detail{
-		DirectedInterfaceV4Addr: addr.IP.String(),
+		DirectedInterfaceV4Addr: addr.Addr().String(),
 		DirectedInterfaceName:   networkInterface.Name,
 		TunInterfaceName:        c.config.Device.Name,
 		LocalDns:                localDns,

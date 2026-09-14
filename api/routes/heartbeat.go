@@ -91,11 +91,12 @@ func runtimeStatus(w http.ResponseWriter, r *http.Request) {
 type RuntimeStatus struct {
 	Name      string `json:"name"`
 	Addr      string `json:"addr"`
+	ProxyType string `json:"type"`
 	IsStarted bool   `json:"isStarted"`
 }
 
 func getRuntimeStatus() (*RuntimeStatus, error) {
 	isStarted := manager.GetIsStarted()
-	name, addr := getCurProxy()
-	return &RuntimeStatus{name, addr, isStarted}, nil
+	name, addr, proxyType := getCurProxy()
+	return &RuntimeStatus{name, addr, proxyType, isStarted}, nil
 }

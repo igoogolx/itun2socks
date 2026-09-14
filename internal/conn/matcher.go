@@ -6,8 +6,8 @@ import (
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/internal/dns"
-	C "github.com/igoogolx/itun2socks/pkg/clash/constant"
 	"github.com/igoogolx/itun2socks/pkg/log"
+	metaC "github.com/metacubex/mihomo/constant"
 )
 
 var defaultConnMatchers []Matcher
@@ -25,11 +25,11 @@ func GetConnMatcher() []Matcher {
 	return defaultConnMatchers
 }
 
-func GetIsDNSConn(metadata *C.Metadata) bool {
-	return metadata.NetWork == C.UDP && metadata.DstPort.String() == constants.DnsPort
+func GetIsDNSConn(metadata *metaC.Metadata) bool {
+	return metadata.NetWork == metaC.UDP && metadata.DstPort == constants.DnsPort
 }
 
-func resolveMetadata(metadata *C.Metadata) rule_engine.Rule {
+func resolveMetadata(metadata *metaC.Metadata) rule_engine.Rule {
 
 	var logType = log.TcpPrefix
 	var printLog = log.Infoln
@@ -42,7 +42,7 @@ func resolveMetadata(metadata *C.Metadata) rule_engine.Rule {
 		}
 	}
 	remoteAddr := metadata.DstIP.String()
-	if metadata.NetWork == C.UDP {
+	if metadata.NetWork == metaC.UDP {
 		logType = log.UdpPrefix
 	}
 	if GetIsDNSConn(metadata) {

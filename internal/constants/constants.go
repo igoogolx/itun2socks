@@ -27,7 +27,7 @@ var (
 	ProcessRuleTypes = []RuleType{RuleProcess}
 )
 
-const DnsPort = "53"
+const DnsPort = 53
 
 func TunName() string {
 	return "utun"

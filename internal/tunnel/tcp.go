@@ -8,7 +8,6 @@ import (
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel/statistic"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	"github.com/igoogolx/itun2socks/pkg/network_iface"
 	"github.com/sagernet/sing/common/bufio"
 )
 
@@ -21,7 +20,7 @@ func TcpQueue() chan conn.TcpConnContext {
 }
 
 func handleTCPConn(ct conn.TcpConnContext) {
-	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule(), network_iface.GetDefaultInterfaceName())
+	remoteConn, err := conn.NewTcpConn(ct.Ctx(), ct.Metadata(), ct.Rule())
 	defer func() {
 		ct.Wg().Done()
 		if err := closeConn(ct.Conn()); err != nil {
