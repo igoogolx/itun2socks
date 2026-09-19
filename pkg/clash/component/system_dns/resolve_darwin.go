@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+//Copied from https://github.com/TransactCharlie/go-osx-dns
+
 func ResolveServers(_ string) ([]string, error) {
 	service, err := getNetworkService()
 	if err != nil {
