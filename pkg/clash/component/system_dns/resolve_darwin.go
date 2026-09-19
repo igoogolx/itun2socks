@@ -8,9 +8,35 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/samber/lo"
 )
 
 func ResolveServers(_ string) ([]string, error) {
+
+	var servers []string
+
+	serviceServers, serviceErr := resolveServersFormService()
+
+	if serviceErr == nil {
+		servers = append(servers, serviceServers...)
+	}
+
+	resolvConfServers, resolvErr := dnsReadConfig()
+
+	if resolvErr == nil {
+		servers = append(servers, resolvConfServers...)
+	}
+
+	if len(servers) == 0 {
+		return nil, fmt.Errorf("service error: %v, resolv conf error: %v", serviceErr, resolvErr)
+	}
+
+	return lo.Uniq(servers), nil
+
+}
+
+func resolveServersFormService() ([]string, error) {
 	service, err := getNetworkService()
 	if err != nil {
 		return nil, err
