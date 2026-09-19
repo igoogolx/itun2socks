@@ -13,10 +13,12 @@ require (
 	github.com/miekg/dns v1.1.73
 	github.com/sagernet/sing v0.8.14
 	github.com/sagernet/sing-tun v0.8.15
+	github.com/samber/lo v1.53.0
 	github.com/sirupsen/logrus v1.10.2
 	github.com/stretchr/testify v1.12.1
 	go.uber.org/atomic v1.11.0
 	golang.org/x/sys v0.47.0
+	golang.zx2c4.com/wireguard/windows v1.0.1
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
@@ -122,7 +124,6 @@ require (
 	github.com/sagernet/gvisor v0.0.0-20250811-sing-box-mod.1 // indirect
 	github.com/sagernet/netlink v0.0.0-20240916134442-83396419aa8b // indirect
 	github.com/sagernet/nftables v0.3.0-mod.2 // indirect
-	github.com/samber/lo v1.53.0 // indirect
 	github.com/sina-ghaderi/poly1305 v0.0.0-20220724002748-c5926b03988b // indirect
 	github.com/sina-ghaderi/rabaead v0.0.0-20220730151906-ab6e06b96e8c // indirect
 	github.com/sina-ghaderi/rabbitio v0.0.0-20220730151941-9ce26f4f872e // indirect
