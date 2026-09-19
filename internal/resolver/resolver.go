@@ -66,7 +66,7 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 			log.Infoln(log.FormatLog(log.DnsPrefix, "resolve system DNS: %v"), systemDnsServers)
 
 			rawSysDnsServers := lo.Map(systemDnsServers, func(item string, _ int) string {
-				return fmt.Sprintf("udp:\\\\%s", item)
+				return fmt.Sprintf("udp://%s", item)
 			})
 
 			systemDnsNameServers, parseSystemDnsNameServersErr := dns.ParseNameServer(rawSysDnsServers)

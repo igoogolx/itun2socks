@@ -1,8 +1,9 @@
 package system_dns
 
 import (
-	"github.com/metacubex/tailscale/util/winipcfg"
 	"net"
+
+	"golang.zx2c4.com/wireguard/windows/tunnel/winipcfg"
 )
 
 func ResolveServers(ifaceName string) ([]string, error) {
