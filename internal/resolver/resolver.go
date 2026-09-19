@@ -3,6 +3,7 @@ package resolver
 import (
 	"fmt"
 
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
 	"github.com/igoogolx/itun2socks/pkg/log"
 	_ "github.com/metacubex/mihomo/config" //Don't delete to init dns.ParseNameServer
@@ -57,6 +58,10 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 		systemDnsServers, resolveSystemDnsErr := system_dns.ResolverV4Servers(defaultInterfaceName)
 
 		if resolveSystemDnsErr == nil {
+
+			systemDnsServers = lo.Filter(systemDnsServers, func(item string, _ int) bool {
+				return item != constants.HijackedDns
+			})
 
 			log.Infoln(log.FormatLog(log.DnsPrefix, "resolve system DNS: %v"), systemDnsServers)
 
