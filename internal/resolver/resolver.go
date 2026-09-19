@@ -53,8 +53,6 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 
 	if needSystemDns {
 
-		nameResolvers = append(nameResolvers, dns.NameServer{Net: "dhcp", Addr: defaultInterfaceName})
-
 		systemDnsServers, resolveSystemDnsErr := system_dns.ResolverV4Servers(defaultInterfaceName)
 
 		if resolveSystemDnsErr == nil {
