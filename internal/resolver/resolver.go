@@ -3,7 +3,9 @@ package resolver
 import (
 	"fmt"
 
+	"github.com/igoogolx/itun2socks/internal/constants"
 	"github.com/igoogolx/itun2socks/pkg/clash/component/system_dns"
+	"github.com/igoogolx/itun2socks/pkg/log"
 	_ "github.com/metacubex/mihomo/config" //Don't delete to init dns.ParseNameServer
 	metaC "github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/dns"
@@ -53,11 +55,15 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 
 	if needSystemDns {
 
-		nameResolvers = append(nameResolvers, dns.NameServer{Net: "dhcp", Addr: defaultInterfaceName})
-
 		systemDnsServers, resolveSystemDnsErr := system_dns.ResolverV4Servers(defaultInterfaceName)
 
 		if resolveSystemDnsErr == nil {
+
+			systemDnsServers = lo.Filter(systemDnsServers, func(item string, _ int) bool {
+				return item != constants.HijackedDns
+			})
+
+			log.Infoln(log.FormatLog(log.DnsPrefix, "resolve system DNS: %v"), systemDnsServers)
 
 			rawSysDnsServers := lo.Map(systemDnsServers, func(item string, _ int) string {
 				return fmt.Sprintf("udp://%s", item)
@@ -70,6 +76,10 @@ func parse(servers []string, defaultInterfaceName string) ([]dns.NameServer, err
 				nameResolvers = append(nameResolvers, systemDnsNameServers...)
 
 			}
+
+		} else {
+
+			log.Warnln(log.FormatLog(log.DnsPrefix, "failed to resolve system DNS: %v"), resolveSystemDnsErr)
 
 		}
 	}

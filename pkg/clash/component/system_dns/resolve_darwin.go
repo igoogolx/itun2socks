@@ -4,11 +4,39 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"net/netip"
+	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/samber/lo"
 )
 
 func ResolveServers(_ string) ([]string, error) {
+
+	var servers []string
+
+	serviceServers, serviceErr := resolveServersFormService()
+
+	if serviceErr == nil {
+		servers = append(servers, serviceServers...)
+	}
+
+	resolvConfServers, resolvErr := dnsReadConfig()
+
+	if resolvErr == nil {
+		servers = append(servers, resolvConfServers...)
+	}
+
+	if len(servers) == 0 {
+		return nil, fmt.Errorf("service error: %v, resolv conf error: %v", serviceErr, resolvErr)
+	}
+
+	return lo.Uniq(servers), nil
+
+}
+
+func resolveServersFormService() ([]string, error) {
 	service, err := getNetworkService()
 	if err != nil {
 		return nil, err
@@ -88,6 +116,8 @@ type DNSPayload struct {
 	ServerAddresses []string
 }
 
+//Copied from https://github.com/TransactCharlie/go-osx-dns
+
 func getDNSForPrimaryService(service string) (*DNSPayload, error) {
 	script := []string{
 		"open",
@@ -123,4 +153,38 @@ func getDNSForPrimaryService(service string) (*DNSPayload, error) {
 		DomainName:      domain,
 		ServerAddresses: addresses,
 	}, nil
+}
+
+const resolvConf = "/etc/resolv.conf"
+
+//Copied from https://github.com/MetaCubeX/mihomo/blob/Meta/dns/system_posix.go
+
+func dnsReadConfig() (servers []string, err error) {
+	file, err := os.Open(resolvConf)
+	if err != nil {
+		err = fmt.Errorf("failed to read %s: %w", resolvConf, err)
+		return
+	}
+	defer func() { _ = file.Close() }()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) > 0 && (line[0] == ';' || line[0] == '#') {
+			// comment.
+			continue
+		}
+		f := strings.Fields(line)
+		if len(f) < 1 {
+			continue
+		}
+		switch f[0] {
+		case "nameserver": // add one name server
+			if len(f) > 1 {
+				if addr, err := netip.ParseAddr(f[1]); err == nil {
+					servers = append(servers, addr.String())
+				}
+			}
+		}
+	}
+	return
 }

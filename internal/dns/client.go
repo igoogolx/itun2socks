@@ -3,12 +3,13 @@ package dns
 import (
 	"context"
 	"fmt"
-	"github.com/metacubex/mihomo/dns"
 	"net"
 	"net/netip"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/metacubex/mihomo/dns"
 
 	"github.com/igoogolx/itun2socks/internal/cfg/distribution/rule_engine"
 	"github.com/igoogolx/itun2socks/internal/constants"
@@ -150,12 +151,18 @@ func Handle(dnsMessage *D.Msg, metadata *metaC.Metadata) (*D.Msg, error) {
 		res, err = dnsMap[dnsRule.GetPolicy()].ServeMsg(ctx, dnsMessage)
 	}
 
+	resolverType := "Remote DNS"
+	if dnsRule.GetPolicy() == constants.PolicyDirect {
+		resolverType = "Local DNS"
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("fail to exchange dns message, err: %v, question: %v", err, question)
+
+		return nil, fmt.Errorf("%v, fail to exchange dns message, err: %v, question: %v", resolverType, err, question)
 	}
 
 	if res == nil {
-		return nil, fmt.Errorf("empty dns msg: %v", question)
+		return nil, fmt.Errorf("%v, empty dns msg: %v", resolverType, question)
 	}
 
 	resIps := getResponseIp(res)
@@ -167,6 +174,6 @@ func Handle(dnsMessage *D.Msg, metadata *metaC.Metadata) (*D.Msg, error) {
 		}
 	}
 	elapsed := time.Since(start).Milliseconds()
-	log.Infoln(log.FormatLog(log.DnsPrefix, "target: %v, type: %v, time: %v ms, result: %v"), question, D.TypeToString[qType], elapsed, resIps)
+	log.Infoln(log.FormatLog(log.DnsPrefix, "%v, target: %v, type: %v, time: %v ms, result: %v"), resolverType, question, D.TypeToString[qType], elapsed, resIps)
 	return res, err
 }
