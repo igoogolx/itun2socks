@@ -22,7 +22,11 @@ type ConnHandler struct {
 
 func (uc ConnHandler) JudgeFlow(_ uint8, _ netip.AddrPort, _ netip.AddrPort, _ []byte) sTun.FlowVerdict {
 	return sTun.FlowVerdict{
-		Action: sTun.ActionAccept,
+		Action:      0,
+		Port:        nil,
+		Destination: netip.AddrPort{},
+		UDPTimeout:  0,
+		NewTracker:  nil,
 	}
 }
 
