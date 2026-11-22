@@ -11,8 +11,8 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/metacubex/mihomo v1.19.34
 	github.com/miekg/dns v1.1.73
-	github.com/sagernet/sing v0.9.6
-	github.com/sagernet/sing-tun v0.9.6
+	github.com/sagernet/sing v0.8.14
+	github.com/sagernet/sing-tun v0.8.15
 	github.com/samber/lo v1.53.0
 	github.com/sirupsen/logrus v1.10.2
 	github.com/stretchr/testify v1.12.1
