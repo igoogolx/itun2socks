@@ -2,18 +2,17 @@ package proxy_handler
 
 import (
 	"context"
-	"net"
-	"sync"
-	"time"
-
 	"github.com/igoogolx/itun2socks/internal/conn"
 	"github.com/igoogolx/itun2socks/internal/tunnel"
 	"github.com/igoogolx/itun2socks/pkg/log"
-	tun "github.com/sagernet/sing-tun"
+	sTun "github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/bufio"
 	"github.com/sagernet/sing/common/bufio/deadline"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/network"
+	"net"
+	"net/netip"
+	"sync"
 )
 
 type ConnHandler struct {
@@ -21,9 +20,17 @@ type ConnHandler struct {
 	udpIn chan conn.UdpConnContext
 }
 
-func (uc ConnHandler) PrepareConnection(_ string, _ M.Socksaddr, _ M.Socksaddr, _ tun.DirectRouteContext,
-	_ time.Duration) (tun.DirectRouteDestination, error) {
-	return nil, nil
+func (uc ConnHandler) JudgeFlow(_ uint8, _ netip.AddrPort, _ netip.AddrPort, _ []byte) sTun.FlowVerdict {
+	return sTun.FlowVerdict{
+		Action:      0,
+		Port:        nil,
+		Destination: netip.AddrPort{},
+		UDPTimeout:  0,
+		NewTracker:  nil,
+	}
+}
+
+func (uc ConnHandler) NewDNSPacket(_ []byte, _ M.Socksaddr, _ M.Socksaddr, _ network.PacketWriter) {
 }
 
 func (uc ConnHandler) NewConnectionEx(ctx context.Context, netConn net.Conn, source M.Socksaddr, destination M.Socksaddr, _ network.CloseHandlerFunc) {
